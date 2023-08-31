@@ -1,0 +1,118 @@
+package frc.robot.constants;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+
+public class SwerveModuleConstants {
+
+  public static class FrontLeftConstants {
+    public static final String MODULE_NAME = "FL";
+    public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(225);
+
+    public static class DriveMotor {
+      public static final String NAME = MODULE_NAME + " Drive";
+      public static final int MOTOR_PORT = -1;
+      public static final boolean INVERTED = true;
+
+      public static class MotorPid {
+        public static final double P = 0.04;
+      }
+    }
+
+    public static class PivotMotor {
+      public static final String NAME = MODULE_NAME + " Pivot";
+      public static final int MOTOR_PORT = -1;
+      public static final boolean INVERTED = true;
+
+      public static class MotorPid {
+        public static final double P = 0.04;
+        public static final boolean POSITION_PID_WRAPPING_ENABLED = true;
+        public static final int POSITION_PID_WRAPPING_MIN = 0;
+        public static final double POSITION_PID_WRAPPING_MAX = 2 * Math.PI;
+      }
+    }
+  }
+
+  public static class FrontRightConstants {
+    public static final String MODULE_NAME = "FR";
+    public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(135);
+
+    public static class DriveMotor {
+      public static final String NAME = MODULE_NAME + " Drive";
+      public static final int MOTOR_PORT = -1;
+      public static final boolean INVERTED = true;
+
+      public static class MotorPid {
+        public static final double P = 0.04;
+      }
+    }
+
+    public static class PivotMotor {
+      public static final String NAME = MODULE_NAME + " Pivot";
+      public static final int MOTOR_PORT = -1;
+      public static final boolean INVERTED = true;
+
+      public static class MotorPid {
+        public static final double P = 0.04;
+        public static final boolean POSITION_PID_WRAPPING_ENABLED = true;
+        public static final int POSITION_PID_WRAPPING_MIN = 0;
+        public static final double POSITION_PID_WRAPPING_MAX = 2 * Math.PI;
+      }
+    }
+  }
+
+  public static class BackLeftConstants {
+    public static final String MODULE_NAME = "BL";
+    public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(225);
+
+    public static class DriveMotor {
+      public static final String NAME = MODULE_NAME + " Drive";
+      public static final int MOTOR_PORT = -1;
+      public static final boolean INVERTED = true;
+
+      public static class MotorPid {
+        public static final double P = 0.04;
+      }
+    }
+
+    public static class PivotMotor {
+      public static final String NAME = MODULE_NAME + " Pivot";
+      public static final int MOTOR_PORT = -1;
+      public static final boolean INVERTED = true;
+
+      public static class MotorPid {
+        public static final double P = 0.04;
+        public static final boolean POSITION_PID_WRAPPING_ENABLED = true;
+        public static final int POSITION_PID_WRAPPING_MIN = 0;
+        public static final double POSITION_PID_WRAPPING_MAX = 2 * Math.PI;
+      }
+    }
+  }
+
+  public static class BackRightConstants {
+    public static final String MODULE_NAME = "BR";
+    public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(135);
+
+    public static class DriveMotor {
+      public static final String NAME = MODULE_NAME + " Drive";
+      public static final int MOTOR_PORT = -1;
+      public static final boolean INVERTED = true;
+
+      public static class MotorPid {
+        public static final double P = 0.04;
+      }
+    }
+
+    public static class PivotMotor {
+      public static final String NAME = MODULE_NAME + " Pivot";
+      public static final int MOTOR_PORT = -1;
+      public static final boolean INVERTED = true;
+
+      public static class MotorPid {
+        public static final double P = 0.04;
+        public static final boolean POSITION_PID_WRAPPING_ENABLED = true;
+        public static final int POSITION_PID_WRAPPING_MIN = 0;
+        public static final double POSITION_PID_WRAPPING_MAX = 2 * Math.PI;
+      }
+    }
+  }
+}
