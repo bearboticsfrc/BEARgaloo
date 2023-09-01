@@ -6,6 +6,10 @@ import frc.robot.util.RateLimiter;
 
 public class DriveConstants {
   public static final ShuffleboardTab DRIVE_SUBSYSTEM_TAB = Shuffleboard.getTab("Drive System");
+  public static final ShuffleboardTab COMPETITION_TAB = Shuffleboard.getTab("Competition");
+
+  public static final int DRIVER_CONTROLLER_PORT = 0;
+  public static final int OPERATOR_CONTROLLER_PORT = 0;
 
   // Reduction configurations for the SDS MK4i L2 module
   public static final double DRIVE_GEAR_REDUCTION = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
