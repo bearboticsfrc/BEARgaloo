@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -22,10 +23,10 @@ public class RobotContainer {
   private final DriveSubsystem robotDrive = new DriveSubsystem();
   private boolean isTeleop = false;
 
-  private final XboxController driverController =
-      new XboxController(DriveConstants.DRIVER_CONTROLLER_PORT);
-  private final XboxController operatorController =
-      new XboxController(DriveConstants.OPERATOR_CONTROLLER_PORT);
+  private final CommandXboxController driverController =
+      new CommandXboxController(DriveConstants.DRIVER_CONTROLLER_PORT);
+  private final CommandXboxController operatorController =
+      new CommandXboxController(DriveConstants.OPERATOR_CONTROLLER_PORT);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
