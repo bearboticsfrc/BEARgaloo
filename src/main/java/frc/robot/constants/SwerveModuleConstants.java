@@ -9,7 +9,7 @@ public class SwerveModuleConstants {
 
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
-      public static final int MOTOR_PORT = -1;
+      public static final int MOTOR_PORT = 3;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -19,7 +19,7 @@ public class SwerveModuleConstants {
 
     public static class PivotMotor {
       public static final String NAME = MODULE_NAME + " Pivot";
-      public static final int MOTOR_PORT = -1;
+      public static final int MOTOR_PORT = 8;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -37,7 +37,7 @@ public class SwerveModuleConstants {
 
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
-      public static final int MOTOR_PORT = -1;
+      public static final int MOTOR_PORT = 20;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -47,7 +47,7 @@ public class SwerveModuleConstants {
 
     public static class PivotMotor {
       public static final String NAME = MODULE_NAME + " Pivot";
-      public static final int MOTOR_PORT = -1;
+      public static final int MOTOR_PORT = 15;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -65,7 +65,7 @@ public class SwerveModuleConstants {
 
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
-      public static final int MOTOR_PORT = -1;
+      public static final int MOTOR_PORT = 2;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -75,7 +75,7 @@ public class SwerveModuleConstants {
 
     public static class PivotMotor {
       public static final String NAME = MODULE_NAME + " Pivot";
-      public static final int MOTOR_PORT = -1;
+      public static final int MOTOR_PORT = 6;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -93,7 +93,7 @@ public class SwerveModuleConstants {
 
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
-      public static final int MOTOR_PORT = -1;
+      public static final int MOTOR_PORT = 21;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -103,7 +103,7 @@ public class SwerveModuleConstants {
 
     public static class PivotMotor {
       public static final String NAME = MODULE_NAME + " Pivot";
-      public static final int MOTOR_PORT = -1;
+      public static final int MOTOR_PORT = 17;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
