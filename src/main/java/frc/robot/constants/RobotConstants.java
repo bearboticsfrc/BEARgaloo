@@ -8,10 +8,18 @@ public class RobotConstants {
   public static final double WHEEL_BASE = 0;
   public static final int PIGEON_CAN_ID = 0;
 
+  // Order here must line-up with SwerveCorner order!!
   public static final SwerveDriveKinematics DRIVE_KINEMATICS =
       new SwerveDriveKinematics(
-          new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2), // front left
-          new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2), // front right
-          new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2), // back left
-          new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)); // back right
+          new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2), // FL
+          new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2), // FR
+          new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2), // BL
+          new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)); // BR
+
+  public enum SwerveCorner {
+    FRONT_LEFT,
+    FRONT_RIGHT,
+    BACK_LEFT,
+    BACK_RIGHT,
+  }
 }
