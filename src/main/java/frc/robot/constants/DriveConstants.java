@@ -62,20 +62,4 @@ public class DriveConstants {
 
   public static final RateLimiter TURNING_ACCELERATION_LIMITER =
       new RateLimiter(MAX_ANGULAR_ACCELERATION_PER_SECOND, MAX_ANGULAR_DECELERATION_PER_SECOND);
-
-  public enum SpeedMode {
-    TURBO(2.0),
-    NORMAL(1.0),
-    TURTLE(0.5);
-
-    private final double maxSpeed;
-
-    private SpeedMode(double maxSpeed) {
-      this.maxSpeed = maxSpeed;
-    }
-
-    public double getMaxSpeed() {
-      return maxSpeed;
-    }
-  }
 }
