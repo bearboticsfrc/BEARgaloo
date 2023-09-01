@@ -54,7 +54,6 @@ public class DriveSubsystem extends SubsystemBase {
   private GenericEntry competitionTabMaxSpeedEntry;
 
   private double maxSpeed = DriveConstants.MAX_VELOCITY / 2;
-  private double previousSpeed = maxSpeed;
 
   private boolean fieldRelativeMode = true;
 
