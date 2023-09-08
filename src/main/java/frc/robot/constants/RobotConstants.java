@@ -6,7 +6,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 public class RobotConstants {
   public static final double TRACK_WIDTH = 0.521;
   public static final double WHEEL_BASE = 0.521;
-  public static final int PIGEON_CAN_ID = 0;
+  public static final double WHEEL_DIAMETER = 0.07691;
+  public static final int PIGEON_CAN_ID = 24;
 
   // Order here must line-up with SwerveCorner order!!
   public static final SwerveDriveKinematics DRIVE_KINEMATICS =

@@ -6,6 +6,7 @@ public class SwerveModuleConstants {
   public static class FrontLeftConstants {
     public static final String MODULE_NAME = "FL";
     public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(225);
+    public static final Rotation2d CHASSIS_ANGULAR_OFFSET = Rotation2d.fromRadians(-Math.PI / 2);
 
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
@@ -34,6 +35,7 @@ public class SwerveModuleConstants {
   public static class FrontRightConstants {
     public static final String MODULE_NAME = "FR";
     public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(135);
+    public static final Rotation2d CHASSIS_ANGULAR_OFFSET = Rotation2d.fromRadians(0);
 
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
@@ -62,6 +64,7 @@ public class SwerveModuleConstants {
   public static class BackLeftConstants {
     public static final String MODULE_NAME = "BL";
     public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(225);
+    public static final Rotation2d CHASSIS_ANGULAR_OFFSET = Rotation2d.fromRadians(Math.PI);
 
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
@@ -90,6 +93,7 @@ public class SwerveModuleConstants {
   public static class BackRightConstants {
     public static final String MODULE_NAME = "BR";
     public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(135);
+    public static final Rotation2d CHASSIS_ANGULAR_OFFSET = Rotation2d.fromRadians(Math.PI / 2);
 
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";

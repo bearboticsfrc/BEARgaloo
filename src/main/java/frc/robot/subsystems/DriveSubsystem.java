@@ -49,7 +49,8 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   private final SwerveDriveOdometry odometry;
 
-  private final ShuffleboardTab driveSystemTab = Shuffleboard.getTab("Drive System");
+  private final ShuffleboardTab driveSystemTab =
+      Shuffleboard.getTab("Drive System"); // TODO: Remove this pls
   private final ShuffleboardTab competitionTab = Shuffleboard.getTab("Competition");
   private GenericEntry competitionTabMaxSpeedEntry;
 
@@ -61,13 +62,13 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     CTREUtil.checkCtreError(pigeonImu.configFactoryDefault());
 
-    odometry =
-        new SwerveDriveOdometry(
-            RobotConstants.DRIVE_KINEMATICS, getHeading(), getModulePositions());
-
     for (SwerveCorner corner : SwerveCorner.values()) {
       swerveModules.put(corner, new SwerveModule(getSwerveConfigForCorner(corner), driveSystemTab));
     }
+
+    odometry =
+        new SwerveDriveOdometry(
+            RobotConstants.DRIVE_KINEMATICS, getHeading(), getModulePositions());
 
     zeroHeading();
     setupShuffleboardTab();
@@ -131,6 +132,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModuleBuilder()
             .setModuleName(FrontLeftConstants.MODULE_NAME)
             .setParkAngle(FrontLeftConstants.PARK_ANGLE)
+            .setChassisAngularOffset(FrontLeftConstants.CHASSIS_ANGULAR_OFFSET)
             .setDriveMotor(driveConfig)
             .setPivotMotor(pivotConfig);
 
@@ -169,6 +171,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModuleBuilder()
             .setModuleName(BackLeftConstants.MODULE_NAME)
             .setParkAngle(BackLeftConstants.PARK_ANGLE)
+            .setChassisAngularOffset(BackLeftConstants.CHASSIS_ANGULAR_OFFSET)
             .setDriveMotor(driveConfig)
             .setPivotMotor(pivotConfig);
 
@@ -207,6 +210,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModuleBuilder()
             .setModuleName(FrontRightConstants.MODULE_NAME)
             .setParkAngle(FrontRightConstants.PARK_ANGLE)
+            .setChassisAngularOffset(FrontRightConstants.CHASSIS_ANGULAR_OFFSET)
             .setDriveMotor(driveConfig)
             .setPivotMotor(pivotConfig);
 
@@ -245,6 +249,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModuleBuilder()
             .setModuleName(BackRightConstants.MODULE_NAME)
             .setParkAngle(BackRightConstants.PARK_ANGLE)
+            .setChassisAngularOffset(BackRightConstants.CHASSIS_ANGULAR_OFFSET)
             .setDriveMotor(driveConfig)
             .setPivotMotor(pivotConfig);
 
@@ -284,7 +289,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return An array containing the swerve modules, ordered.
    */
   private SwerveModule[] getSwerveModules() {
-    return (SwerveModule[]) swerveModules.values().toArray();
+    return (SwerveModule[]) swerveModules.values().toArray(new SwerveModule[4]);
   }
 
   /**
@@ -473,6 +478,8 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public SwerveModulePosition[] getModulePositions() {
     return (SwerveModulePosition[])
-        Arrays.stream(getSwerveModules()).map(module -> module.getPosition()).toArray();
+        Arrays.stream(getSwerveModules())
+            .map(module -> module.getPosition())
+            .toArray(SwerveModulePosition[]::new);
   }
 }

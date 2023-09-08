@@ -73,12 +73,10 @@ public class RobotContainer {
 
   public void autonomousInit() {
     isTeleop = false;
-    robotDrive.setParkMode(false);
   }
 
   public void teleopInit() {
     isTeleop = true;
-    robotDrive.setParkMode(false);
   }
 
   public void disabledInit() {
