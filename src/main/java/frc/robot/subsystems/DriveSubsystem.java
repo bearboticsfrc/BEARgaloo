@@ -368,6 +368,10 @@ public class DriveSubsystem extends SubsystemBase {
     return Collections.unmodifiableMap(swerveStates);
   }
 
+  public SwerveModuleState[] getModuleStatesArray() {
+    return (SwerveModuleState[]) getModuleStates().values().toArray();
+  }
+
   /**
    * Resets the odometry to the specified pose of a state in a PathPlanner trajectory.
    *
