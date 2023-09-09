@@ -1,7 +1,5 @@
 package frc.robot.location;
 
-import java.util.Map;
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -26,10 +24,8 @@ import frc.robot.commands.LogCommand;
 import frc.robot.constants.AutoConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.VisionConstants;
-import frc.robot.constants.RobotConstants.SwerveCorner;
 import frc.robot.fms.AllianceColor;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.SwerveModule;
 import frc.robot.subsystems.pose.PoseEstimatorSubsystem;
 import frc.robot.subsystems.pose.vision.StringFormatting;
 
@@ -128,9 +124,8 @@ public class LocationHelper {
 
   public static Translation2d getFieldRelativeLinearSpeedsMPS(
       DriveSubsystem driveSubsystem, PoseEstimatorSubsystem poseEstimatorSubsystem) {
-    Map<SwerveCorner,SwerveModuleState> moduleStates = driveSubsystem.getModuleStates();
+    SwerveModuleState[] moduleStates = driveSubsystem.getModuleStatesArray();
 
-        
     ChassisSpeeds robotRelativeSpeeds =
         RobotConstants.DRIVE_KINEMATICS.toChassisSpeeds(moduleStates);
     ChassisSpeeds fieldRelativeSpeeds =
