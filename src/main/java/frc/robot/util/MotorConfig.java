@@ -53,11 +53,12 @@ public class MotorConfig {
 
     if (motorEncoder instanceof RelativeEncoder) {
       RelativeEncoder encoder = (RelativeEncoder) motorEncoder;
+      RevUtil.checkRevError(motor.getPIDController().setFeedbackDevice(encoder));
 
       RevUtil.checkRevError(
-          encoder.setPositionConversionFactor(DriveConstants.POSITION_CONVERSION_FACTOR));
+          encoder.setPositionConversionFactor(DriveConstants.DRIVING_POSITION_CONVERSION_FACTOR));
       RevUtil.checkRevError(
-          encoder.setVelocityConversionFactor(DriveConstants.VELOCITY_CONVERSION_FACTOR));
+          encoder.setVelocityConversionFactor(DriveConstants.DRIVING_VELOCITY_CONVERSION_FACTOR));
 
       ((RelativeEncoder) motorEncoder).setPosition(0);
     } else if (motorEncoder instanceof AbsoluteEncoder) {
@@ -65,12 +66,13 @@ public class MotorConfig {
       // pivot motor it's safe to assume here.
       // Won't be the case for 100% of builds although.
       AbsoluteEncoder encoder = (AbsoluteEncoder) motorEncoder; // silly cast for silly java
+      RevUtil.checkRevError(encoder.setInverted(true)); // TODO: constant
       RevUtil.checkRevError(motor.getPIDController().setFeedbackDevice(encoder));
 
       RevUtil.checkRevError(
-          encoder.setPositionConversionFactor(DriveConstants.POSITION_CONVERSION_FACTOR));
+          encoder.setPositionConversionFactor(DriveConstants.PIVOT_POSITION_CONVERSION_FACTOR));
       RevUtil.checkRevError(
-          encoder.setVelocityConversionFactor(DriveConstants.VELOCITY_CONVERSION_FACTOR));
+          encoder.setVelocityConversionFactor(DriveConstants.PIVOT_VELOCITY_CONVERSION_FACTOR));
     }
 
     return this;
@@ -82,6 +84,8 @@ public class MotorConfig {
     RevUtil.checkRevError(motorPIDController.setI(motorPid.getI()));
     RevUtil.checkRevError(motorPIDController.setD(motorPid.getD()));
     RevUtil.checkRevError(motorPIDController.setFF(motorPid.getFf()));
+    RevUtil.checkRevError(
+        motorPIDController.setOutputRange(motorPid.getMinOutput(), motorPid.getMaxOutput()));
 
     boolean positionPidWrappingEnabled = motorPid.isPositionPidWrappingEnabled();
 
@@ -125,7 +129,7 @@ public class MotorConfig {
     private double maxOutput = 1;
     private boolean positionPidWrappingEnabled = false;
     private double positionPidWrappingMin = -1;
-    private double positionPidWrappingMax = -1;
+    private double positionPidWrappingMax = 1;
 
     public double getP() {
       return p;
@@ -216,7 +220,7 @@ public class MotorConfig {
     private boolean inverted;
     private MotorPIDBuilder motorPID;
     private double nominalVoltage = 12;
-    private int currentLimit = 12;
+    private int currentLimit;
 
     public String getName() {
       return name;

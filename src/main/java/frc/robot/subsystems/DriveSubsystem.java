@@ -118,6 +118,7 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(FrontLeftConstants.DriveMotor.NAME)
             .setMotorPort(FrontLeftConstants.DriveMotor.MOTOR_PORT)
+            .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
             .setInverted(FrontLeftConstants.DriveMotor.INVERTED)
             .setMotorPID(driveMotorPid);
 
@@ -125,6 +126,7 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(FrontLeftConstants.PivotMotor.NAME)
             .setMotorPort(FrontLeftConstants.PivotMotor.MOTOR_PORT)
+            .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
             .setInverted(FrontLeftConstants.PivotMotor.INVERTED)
             .setMotorPID(pivotMotorPid);
 
@@ -157,6 +159,7 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(BackLeftConstants.DriveMotor.NAME)
             .setMotorPort(BackLeftConstants.DriveMotor.MOTOR_PORT)
+            .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
             .setInverted(BackLeftConstants.DriveMotor.INVERTED)
             .setMotorPID(driveMotorPid);
 
@@ -164,6 +167,7 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(BackLeftConstants.PivotMotor.NAME)
             .setMotorPort(BackLeftConstants.PivotMotor.MOTOR_PORT)
+            .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
             .setInverted(BackLeftConstants.PivotMotor.INVERTED)
             .setMotorPID(pivotMotorPid);
 
@@ -196,6 +200,7 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(FrontRightConstants.DriveMotor.NAME)
             .setMotorPort(FrontRightConstants.DriveMotor.MOTOR_PORT)
+            .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
             .setInverted(FrontRightConstants.DriveMotor.INVERTED)
             .setMotorPID(driveMotorPid);
 
@@ -203,6 +208,7 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(FrontRightConstants.PivotMotor.NAME)
             .setMotorPort(FrontRightConstants.PivotMotor.MOTOR_PORT)
+            .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
             .setInverted(FrontRightConstants.PivotMotor.INVERTED)
             .setMotorPID(pivotMotorPid);
 
@@ -235,6 +241,7 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(BackRightConstants.DriveMotor.NAME)
             .setMotorPort(BackRightConstants.DriveMotor.MOTOR_PORT)
+            .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
             .setInverted(BackRightConstants.DriveMotor.INVERTED)
             .setMotorPID(driveMotorPid);
 
@@ -242,6 +249,7 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(BackRightConstants.PivotMotor.NAME)
             .setMotorPort(BackRightConstants.PivotMotor.MOTOR_PORT)
+            .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
             .setInverted(BackRightConstants.PivotMotor.INVERTED)
             .setMotorPID(pivotMotorPid);
 

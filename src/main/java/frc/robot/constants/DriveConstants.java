@@ -26,11 +26,14 @@ public class DriveConstants {
   public static final double DRIVE_WHEEL_FREE_SPEED_RPS =
       (DRIVE_MOTOR_FREE_SPEED_RPS * WHEEL_CIRUM) / DRIVE_GEAR_REDUCTION;
 
-  public static final double POSITION_CONVERSION_FACTOR =
+  public static final double DRIVING_POSITION_CONVERSION_FACTOR =
       (RobotConstants.WHEEL_BASE * Math.PI) / DRIVE_GEAR_REDUCTION; // meters
-  public static final double VELOCITY_CONVERSION_FACTOR =
+  public static final double DRIVING_VELOCITY_CONVERSION_FACTOR =
       ((RobotConstants.WHEEL_DIAMETER * Math.PI) / DRIVE_GEAR_REDUCTION)
           / 60.0; // meters per second
+
+  public static final double PIVOT_POSITION_CONVERSION_FACTOR = 2 * Math.PI;
+  public static final double PIVOT_VELOCITY_CONVERSION_FACTOR = (2 * Math.PI) / 60;
 
   /*
    * Max free spin for the NEO motor (taken from docs)

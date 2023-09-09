@@ -11,6 +11,7 @@ public class SwerveModuleConstants {
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
       public static final int MOTOR_PORT = 3;
+      public static final int CURRENT_LIMT = 50;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -21,10 +22,11 @@ public class SwerveModuleConstants {
     public static class PivotMotor {
       public static final String NAME = MODULE_NAME + " Pivot";
       public static final int MOTOR_PORT = 8;
+      public static final int CURRENT_LIMT = 20;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
-        public static final double P = 0.04;
+        public static final double P = 1;
         public static final boolean POSITION_PID_WRAPPING_ENABLED = true;
         public static final int POSITION_PID_WRAPPING_MIN = 0;
         public static final double POSITION_PID_WRAPPING_MAX = 2 * Math.PI;
@@ -40,6 +42,7 @@ public class SwerveModuleConstants {
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
       public static final int MOTOR_PORT = 20;
+      public static final int CURRENT_LIMT = 50;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -50,10 +53,11 @@ public class SwerveModuleConstants {
     public static class PivotMotor {
       public static final String NAME = MODULE_NAME + " Pivot";
       public static final int MOTOR_PORT = 15;
+      public static final int CURRENT_LIMT = 20;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
-        public static final double P = 0.04;
+        public static final double P = 1;
         public static final boolean POSITION_PID_WRAPPING_ENABLED = true;
         public static final int POSITION_PID_WRAPPING_MIN = 0;
         public static final double POSITION_PID_WRAPPING_MAX = 2 * Math.PI;
@@ -69,6 +73,7 @@ public class SwerveModuleConstants {
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
       public static final int MOTOR_PORT = 2;
+      public static final int CURRENT_LIMT = 50;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -79,10 +84,11 @@ public class SwerveModuleConstants {
     public static class PivotMotor {
       public static final String NAME = MODULE_NAME + " Pivot";
       public static final int MOTOR_PORT = 6;
+      public static final int CURRENT_LIMT = 20;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
-        public static final double P = 0.04;
+        public static final double P = 1;
         public static final boolean POSITION_PID_WRAPPING_ENABLED = true;
         public static final int POSITION_PID_WRAPPING_MIN = 0;
         public static final double POSITION_PID_WRAPPING_MAX = 2 * Math.PI;
@@ -98,6 +104,7 @@ public class SwerveModuleConstants {
     public static class DriveMotor {
       public static final String NAME = MODULE_NAME + " Drive";
       public static final int MOTOR_PORT = 21;
+      public static final int CURRENT_LIMT = 50;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
@@ -108,10 +115,11 @@ public class SwerveModuleConstants {
     public static class PivotMotor {
       public static final String NAME = MODULE_NAME + " Pivot";
       public static final int MOTOR_PORT = 17;
+      public static final int CURRENT_LIMT = 20;
       public static final boolean INVERTED = true;
 
       public static class MotorPid {
-        public static final double P = 0.04;
+        public static final double P = 1;
         public static final boolean POSITION_PID_WRAPPING_ENABLED = true;
         public static final int POSITION_PID_WRAPPING_MIN = 0;
         public static final double POSITION_PID_WRAPPING_MAX = 2 * Math.PI;

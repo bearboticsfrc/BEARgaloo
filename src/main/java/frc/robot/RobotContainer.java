@@ -20,7 +20,7 @@ import frc.robot.subsystems.DriveSubsystem;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final DriveSubsystem robotDrive = new DriveSubsystem();
+  private final DriveSubsystem driveSubsystem = new DriveSubsystem();
   private boolean isTeleop = false;
 
   private final CommandXboxController driverController =
@@ -37,13 +37,13 @@ public class RobotContainer {
     RunCommand defaultCommand =
         new RunCommand(
             () ->
-                robotDrive.drive(
+                driveSubsystem.drive(
                     -MathUtil.applyDeadband(driverController.getLeftY(), 0.1),
                     -MathUtil.applyDeadband(driverController.getLeftX(), 0.1),
                     -MathUtil.applyDeadband(driverController.getRightX(), 0.1)),
-            robotDrive);
+            driveSubsystem);
 
-    robotDrive.setDefaultCommand(defaultCommand);
+    driveSubsystem.setDefaultCommand(defaultCommand);
   }
 
   public void configureControllerMappings() {
@@ -77,6 +77,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     isTeleop = true;
+    driveSubsystem.setParkMode(true);
   }
 
   public void disabledInit() {
