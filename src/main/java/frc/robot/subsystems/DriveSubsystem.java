@@ -368,10 +368,8 @@ public class DriveSubsystem extends SubsystemBase {
     return Collections.unmodifiableMap(swerveStates);
   }
 
-  public SwerveModuleState[] getModuleStatesArray()
-  {
+  public SwerveModuleState[] getModuleStatesArray() {
     return (SwerveModuleState[]) getModuleStates().values().toArray();
-
   }
 
   /**
