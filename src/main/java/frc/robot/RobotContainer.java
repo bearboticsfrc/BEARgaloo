@@ -77,7 +77,6 @@ public class RobotContainer {
 
   public void teleopInit() {
     isTeleop = true;
-    driveSubsystem.setParkMode(true);
   }
 
   public void disabledInit() {
