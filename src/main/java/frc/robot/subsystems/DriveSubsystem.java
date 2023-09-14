@@ -16,7 +16,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DriveConstants;
@@ -49,12 +48,11 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   private final SwerveDriveOdometry odometry;
 
-  private final ShuffleboardTab driveSystemTab =
-      Shuffleboard.getTab("Drive System"); // TODO: Remove this pls
-  private final ShuffleboardTab competitionTab = Shuffleboard.getTab("Competition");
+  private final ShuffleboardTab driveSystemTab = DriveConstants.DRIVE_SUBSYSTEM_TAB;
+  private final ShuffleboardTab competitionTab = DriveConstants.COMPETITION_TAB;
   private GenericEntry competitionTabMaxSpeedEntry;
 
-  private double maxSpeed = DriveConstants.MAX_VELOCITY / 2;
+  private double maxSpeed = DriveConstants.MAX_VELOCITY;
 
   private boolean fieldRelativeMode = true;
 
@@ -103,6 +101,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SwerveModuleBuilder getFrontLeftSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
         new MotorPIDBuilder().setP(FrontLeftConstants.DriveMotor.MotorPid.P);
+    new MotorPIDBuilder().setFf(FrontLeftConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -119,7 +118,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setName(FrontLeftConstants.DriveMotor.NAME)
             .setMotorPort(FrontLeftConstants.DriveMotor.MOTOR_PORT)
             .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
-            .setInverted(FrontLeftConstants.DriveMotor.INVERTED)
+            .setMotorInverted(FrontLeftConstants.DriveMotor.INVERTED)
+            .setEncoderInverted(FrontLeftConstants.DriveMotor.ENCODER_INVERTED)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
@@ -127,7 +127,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setName(FrontLeftConstants.PivotMotor.NAME)
             .setMotorPort(FrontLeftConstants.PivotMotor.MOTOR_PORT)
             .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
-            .setInverted(FrontLeftConstants.PivotMotor.INVERTED)
+            .setMotorInverted(FrontLeftConstants.PivotMotor.INVERTED)
+            .setEncoderInverted(FrontLeftConstants.PivotMotor.ENCODER_INVERTED)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -144,6 +145,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SwerveModuleBuilder getBackLeftSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
         new MotorPIDBuilder().setP(BackLeftConstants.DriveMotor.MotorPid.P);
+    new MotorPIDBuilder().setFf(BackLeftConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -159,16 +161,18 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(BackLeftConstants.DriveMotor.NAME)
             .setMotorPort(BackLeftConstants.DriveMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
-            .setInverted(BackLeftConstants.DriveMotor.INVERTED)
+            .setCurrentLimit(BackLeftConstants.DriveMotor.CURRENT_LIMT)
+            .setMotorInverted(BackLeftConstants.DriveMotor.INVERTED)
+            .setEncoderInverted(BackLeftConstants.DriveMotor.ENCODER_INVERTED)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
         new MotorBuilder()
             .setName(BackLeftConstants.PivotMotor.NAME)
             .setMotorPort(BackLeftConstants.PivotMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
-            .setInverted(BackLeftConstants.PivotMotor.INVERTED)
+            .setCurrentLimit(BackLeftConstants.PivotMotor.CURRENT_LIMT)
+            .setMotorInverted(BackLeftConstants.PivotMotor.INVERTED)
+            .setEncoderInverted(BackLeftConstants.PivotMotor.ENCODER_INVERTED)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -185,6 +189,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SwerveModuleBuilder getFrontRightSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
         new MotorPIDBuilder().setP(FrontRightConstants.DriveMotor.MotorPid.P);
+    new MotorPIDBuilder().setFf(FrontRightConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -200,16 +205,18 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(FrontRightConstants.DriveMotor.NAME)
             .setMotorPort(FrontRightConstants.DriveMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
-            .setInverted(FrontRightConstants.DriveMotor.INVERTED)
+            .setCurrentLimit(FrontRightConstants.DriveMotor.CURRENT_LIMT)
+            .setMotorInverted(FrontRightConstants.DriveMotor.INVERTED)
+            .setEncoderInverted(FrontRightConstants.DriveMotor.ENCODER_INVERTED)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
         new MotorBuilder()
             .setName(FrontRightConstants.PivotMotor.NAME)
             .setMotorPort(FrontRightConstants.PivotMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
-            .setInverted(FrontRightConstants.PivotMotor.INVERTED)
+            .setCurrentLimit(FrontRightConstants.PivotMotor.CURRENT_LIMT)
+            .setMotorInverted(FrontRightConstants.PivotMotor.INVERTED)
+            .setEncoderInverted(FrontRightConstants.PivotMotor.ENCODER_INVERTED)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -226,6 +233,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SwerveModuleBuilder getBackRightSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
         new MotorPIDBuilder().setP(BackRightConstants.DriveMotor.MotorPid.P);
+    new MotorPIDBuilder().setFf(BackRightConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -241,16 +249,18 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(BackRightConstants.DriveMotor.NAME)
             .setMotorPort(BackRightConstants.DriveMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
-            .setInverted(BackRightConstants.DriveMotor.INVERTED)
+            .setCurrentLimit(BackRightConstants.DriveMotor.CURRENT_LIMT)
+            .setMotorInverted(BackRightConstants.DriveMotor.INVERTED)
+            .setEncoderInverted(BackRightConstants.DriveMotor.ENCODER_INVERTED)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
         new MotorBuilder()
             .setName(BackRightConstants.PivotMotor.NAME)
             .setMotorPort(BackRightConstants.PivotMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
-            .setInverted(BackRightConstants.PivotMotor.INVERTED)
+            .setCurrentLimit(BackRightConstants.PivotMotor.CURRENT_LIMT)
+            .setMotorInverted(BackRightConstants.PivotMotor.INVERTED)
+            .setEncoderInverted(BackRightConstants.PivotMotor.ENCODER_INVERTED)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -331,7 +341,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param mode The specified speed mode set by {@link SpeedMode}.
    */
   public void setSpeedMode(SpeedMode mode) {
-    maxSpeed = mode.getMaxSpeed();
+    maxSpeed = maxSpeed * mode.getMaxSpeed(); // TODO: impl needs work
     competitionTabMaxSpeedEntry.setDouble(maxSpeed);
   }
 

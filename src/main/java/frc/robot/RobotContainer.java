@@ -7,10 +7,12 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.constants.DriveConstants;
+import frc.robot.constants.DriveConstants.SpeedMode;
 import frc.robot.subsystems.DriveSubsystem;
 
 /*
@@ -31,6 +33,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     setDefaultCommand();
+    configureControllerMappings();
   }
 
   private void setDefaultCommand() {
@@ -58,6 +61,22 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureDriverController() {
+    driverController
+        .leftBumper()
+        .onTrue(new InstantCommand(() -> driveSubsystem.setFieldRelative(false)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setFieldRelative(true)));
+
+    driverController
+        .leftTrigger(0.10)
+        .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURBO)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.NORMAL))));
+
+    driverController
+        .rightTrigger(0.10)
+        .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURTLE)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.NORMAL))));
+
+    driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
     // Driver controller
   }
 

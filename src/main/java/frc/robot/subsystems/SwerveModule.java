@@ -56,9 +56,6 @@ public class SwerveModule {
     this.driveMotorEncoder = driveMotor.getEncoder();
     this.pivotMotorEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
-    this.driveMotorPIDController = driveMotor.getPIDController();
-    this.pivotMotorPIDController = pivotMotor.getPIDController();
-
     MotorConfig.fromMotorConstants(driveMotor, driveMotorEncoder, swerveModule.getDriveMotor())
         .configureMotor()
         .configurePID(swerveModule.getDriveMotor().getMotorPID())
@@ -68,6 +65,9 @@ public class SwerveModule {
         .configureMotor()
         .configurePID(swerveModule.getPivotMotor().getMotorPID())
         .burnFlash();
+
+    this.driveMotorPIDController = driveMotor.getPIDController();
+    this.pivotMotorPIDController = pivotMotor.getPIDController();
 
     setupShuffleboardTab(shuffleboardTab);
     setupDataLogging(DataLogManager.getLog());
@@ -250,14 +250,14 @@ public class SwerveModule {
       return;
     }
 
-    state.angle = state.angle.plus(chassisAngularOffset);
-    state = SwerveModuleState.optimize(state, getSteerAngle());
-    referenceAngle = state.angle;
+    SwerveModuleState desiredState =
+        new SwerveModuleState(state.speedMetersPerSecond, state.angle.plus(chassisAngularOffset));
+    desiredState = SwerveModuleState.optimize(desiredState, getSteerAngle());
 
-    DataLogManager.log(this.moduleName + " - state.angle: " + state.angle.getRadians());
+    pivotMotorPIDController.setReference(desiredState.angle.getRadians(), ControlType.kPosition);
+    driveMotorPIDController.setReference(desiredState.speedMetersPerSecond, ControlType.kVelocity);
 
-    pivotMotorPIDController.setReference(state.angle.getRadians(), ControlType.kPosition);
-    driveMotorPIDController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
+    referenceAngle = desiredState.angle;
   }
 
   public static class SwerveModuleBuilder {
