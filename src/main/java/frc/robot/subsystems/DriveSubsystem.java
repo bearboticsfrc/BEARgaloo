@@ -39,13 +39,11 @@ import java.util.Map;
 
 /** Controls the four swerve modules for autonomous and teleoperated modes. */
 public class DriveSubsystem extends SubsystemBase {
-  // Robot swerve modules
+  // Linked to maintain order.
   private final LinkedHashMap<SwerveCorner, SwerveModule> swerveModules = new LinkedHashMap<>();
 
-  // The Pigeon IMU sensor
   private final WPI_PigeonIMU pigeonImu = new WPI_PigeonIMU(RobotConstants.PIGEON_CAN_ID);
 
-  // Odometry class for tracking robot pose
   private final SwerveDriveOdometry odometry;
 
   private final ShuffleboardTab driveSystemTab = DriveConstants.DRIVE_SUBSYSTEM_TAB;
@@ -53,10 +51,8 @@ public class DriveSubsystem extends SubsystemBase {
   private GenericEntry competitionTabMaxSpeedEntry;
 
   private double maxSpeed = DriveConstants.MAX_VELOCITY;
-
   private boolean fieldRelativeMode = true;
 
-  /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     CTREUtil.checkCtreError(pigeonImu.configFactoryDefault());
 
@@ -70,6 +66,27 @@ public class DriveSubsystem extends SubsystemBase {
 
     zeroHeading();
     setupShuffleboardTab();
+  }
+
+  public void zeroHeading() {
+    pigeonImu.reset();
+  }
+
+  private void setupShuffleboardTab() {
+    competitionTabMaxSpeedEntry =
+        competitionTab
+            .add("Maximum Drive Speed", maxSpeed)
+            .withWidget(BuiltInWidgets.kNumberSlider)
+            .withSize(2, 1)
+            .withPosition(5, 1)
+            .withProperties(Map.of("min", 0, "max", maxSpeed))
+            .getEntry();
+
+    competitionTab.addNumber("Pigeon Heading", () -> getHeading().getDegrees());
+
+    driveSystemTab.addDouble("Pitch", this::getPitch);
+    driveSystemTab.addDouble("Roll", this::getRoll);
+    driveSystemTab.addBoolean("Field Relative?", () -> fieldRelativeMode);
   }
 
   @Override
@@ -274,23 +291,6 @@ public class DriveSubsystem extends SubsystemBase {
     return moduleConfig;
   }
 
-  private void setupShuffleboardTab() {
-    competitionTabMaxSpeedEntry =
-        competitionTab
-            .add("Maximum Drive Speed", maxSpeed)
-            .withWidget(BuiltInWidgets.kNumberSlider)
-            .withSize(2, 1)
-            .withPosition(5, 1)
-            .withProperties(Map.of("min", 0, "max", maxSpeed))
-            .getEntry();
-
-    competitionTab.addNumber("pigeon2 heading", () -> getHeading().getDegrees());
-
-    driveSystemTab.addDouble("Pitch", this::getPitch);
-    driveSystemTab.addDouble("Roll", this::getRoll);
-    driveSystemTab.addBoolean("Field Relative?", () -> fieldRelativeMode);
-  }
-
   public double getPitch() {
     return pigeonImu.getPitch();
   }
@@ -325,10 +325,7 @@ public class DriveSubsystem extends SubsystemBase {
         continue;
       }
 
-      SwerveModuleState state = module.getState();
-
-      state.speedMetersPerSecond = 0;
-      state.angle = module.getParkedAngle();
+      SwerveModuleState state = new SwerveModuleState(0, module.getParkedAngle());
 
       module.set(state);
       module.setParked(true);
@@ -336,12 +333,16 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the maximum speed for the robot based on the specified speed mode.
+   * Multiplies the maximum speed for the robot based on the specified speed mode.
    *
    * @param mode The specified speed mode set by {@link SpeedMode}.
    */
   public void setSpeedMode(SpeedMode mode) {
-    maxSpeed = maxSpeed * mode.getMaxSpeed(); // TODO: impl needs work
+    maxSpeed =
+        Math.max(
+            Math.min(maxSpeed * mode.getMaxSpeedMultiplier(), DriveConstants.MAX_VELOCITY),
+            DriveConstants.MAX_VELOCITY * 0.25);
+
     competitionTabMaxSpeedEntry.setDouble(maxSpeed);
   }
 
@@ -377,6 +378,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
+   * Resets the odometry to the specified pose of a state in a PathPlanner trajectory.
+   *
+   * @param state The state of the PathPlanner trajectory to construct a pose.
+   */
+  public void resetOdometry(PathPlannerState state) {
+    resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
+  }
+
+  /**
    * Returns the state of every swerve module in a key-value pair.
    *
    * @return The key-value pair of these states.
@@ -389,15 +399,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     return Collections.unmodifiableMap(swerveStates);
-  }
-
-  /**
-   * Resets the odometry to the specified pose of a state in a PathPlanner trajectory.
-   *
-   * @param state The state of the PathPlanner trajectory to construct a pose.
-   */
-  public void resetOdometry(PathPlannerState state) {
-    resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
   }
 
   /**
@@ -429,7 +430,7 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.TURNING_ACCELERATION_LIMITER.calculate(rot)
             * DriveConstants.MAX_ANGULAR_ACCELERATION_PER_SECOND;
 
-    if (maxSpeed == 0.5) {
+    if (maxSpeed <= 0.5) {
       rot /= 4.0;
     }
 
@@ -459,11 +460,6 @@ public class DriveSubsystem extends SubsystemBase {
     for (SwerveModule module : swerveModules.values()) {
       module.set(stateIterator.next());
     }
-  }
-
-  /** Zeroes the heading of the robot. */
-  public void zeroHeading() {
-    pigeonImu.reset();
   }
 
   public void setHeadingOffest(double offset) {

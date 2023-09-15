@@ -164,13 +164,15 @@ public class SwerveModule {
       }
 
       dataLogs.get(String.format("%s_MOTOR_CURRENT", motorType)).append(motor.getOutputCurrent());
-      dataLogs.get(String.format("%s_MOTOR_VELOCITY", motorType)).append(motor.getOutputCurrent());
+      dataLogs
+          .get(String.format("%s_MOTOR_VELOCITY", motorType))
+          .append(motor.getEncoder().getVelocity());
       dataLogs
           .get(String.format("%s_MOTOR_APPLIED_OUTPUT", motorType))
-          .append(motor.getOutputCurrent());
+          .append(motor.getAppliedOutput());
       dataLogs
           .get(String.format("%s_MOTOR_TEMPERATURE", motorType))
-          .append(motor.getOutputCurrent());
+          .append(motor.getMotorTemperature());
     }
   }
 

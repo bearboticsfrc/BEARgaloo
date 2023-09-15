@@ -85,14 +85,14 @@ public class DriveConstants {
     NORMAL(1.0),
     TURTLE(0.5);
 
-    private final double maxSpeed;
+    private final double maxSpeedMultiplier;
 
-    private SpeedMode(double maxSpeed) {
-      this.maxSpeed = maxSpeed;
+    private SpeedMode(double maxSpeedMultiplier) {
+      this.maxSpeedMultiplier = maxSpeedMultiplier;
     }
 
-    public double getMaxSpeed() {
-      return maxSpeed;
+    public double getMaxSpeedMultiplier() {
+      return maxSpeedMultiplier;
     }
   }
 }

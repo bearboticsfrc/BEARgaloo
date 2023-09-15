@@ -5,12 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
 import frc.robot.subsystems.DriveSubsystem;
@@ -54,13 +52,13 @@ public class RobotContainer {
     configureOperatorController();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling passing it to a
-   * {@link JoystickButton}.
-   */
   private void configureDriverController() {
+    driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
+    driverController
+        .b()
+        .onTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setParkMode(false)));
+
     driverController
         .leftBumper()
         .onTrue(new InstantCommand(() -> driveSubsystem.setFieldRelative(false)))
@@ -69,23 +67,14 @@ public class RobotContainer {
     driverController
         .leftTrigger(0.10)
         .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURBO)))
-        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.NORMAL))));
+        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURTLE))));
 
     driverController
         .rightTrigger(0.10)
         .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURTLE)))
-        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.NORMAL))));
-
-    driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
-    // Driver controller
+        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURBO))));
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling passing it to a
-   * {@link JoystickButton}.
-   */
   private void configureOperatorController() {
     // operator controller
   }
