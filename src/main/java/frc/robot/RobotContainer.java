@@ -5,13 +5,20 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.auto.DropCubeBottomExitCommunity;
+import frc.robot.commands.auto.DropCubeTopExitCommunity;
+import frc.robot.commands.auto.LeaveCommunityBottom;
+import frc.robot.commands.auto.LeaveCommunityTop;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -20,6 +27,7 @@ import frc.robot.subsystems.DriveSubsystem;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private List<Pair<String, Command>> autoList = new ArrayList<Pair<String, Command>>();
   private final DriveSubsystem robotDrive = new DriveSubsystem();
   private boolean isTeleop = false;
 
@@ -83,6 +91,17 @@ public class RobotContainer {
 
   public void disabledInit() {
     isTeleop = false;
+  }
+
+  private void addToAutoList(String name, Command command) {
+    autoList.add(new Pair<String, Command>(name, command));
+  }
+
+  private void buildAutoList() {
+    addToAutoList("1-DropCubeBottomExitCommunity", DropCubeBottomExitCommunity.get(robotDrive));
+    addToAutoList("2-DropCubeTopmmunity", DropCubeTopExitCommunity.get(robotDrive));
+    addToAutoList("3-LeaveCommunityBottom", LeaveCommunityBottom.get(robotDrive));
+    addToAutoList("4-LeaveCommunityTop", LeaveCommunityTop.get(robotDrive));
   }
 
   public Command getAutonomousCommand() {
