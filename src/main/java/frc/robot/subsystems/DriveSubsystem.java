@@ -117,8 +117,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   private SwerveModuleBuilder getFrontLeftSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder().setP(FrontLeftConstants.DriveMotor.MotorPid.P);
-    new MotorPIDBuilder().setFf(FrontLeftConstants.DriveMotor.MotorPid.Ff);
+        new MotorPIDBuilder()
+            .setP(FrontLeftConstants.DriveMotor.MotorPid.P)
+            .setFf(FrontLeftConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -161,8 +162,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   private SwerveModuleBuilder getBackLeftSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder().setP(BackLeftConstants.DriveMotor.MotorPid.P);
-    new MotorPIDBuilder().setFf(BackLeftConstants.DriveMotor.MotorPid.Ff);
+        new MotorPIDBuilder()
+            .setP(BackLeftConstants.DriveMotor.MotorPid.P)
+            .setFf(BackLeftConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -205,8 +207,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   private SwerveModuleBuilder getFrontRightSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder().setP(FrontRightConstants.DriveMotor.MotorPid.P);
-    new MotorPIDBuilder().setFf(FrontRightConstants.DriveMotor.MotorPid.Ff);
+        new MotorPIDBuilder()
+            .setP(FrontRightConstants.DriveMotor.MotorPid.P)
+            .setFf(FrontRightConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -249,8 +252,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   private SwerveModuleBuilder getBackRightSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder().setP(BackRightConstants.DriveMotor.MotorPid.P);
-    new MotorPIDBuilder().setFf(BackRightConstants.DriveMotor.MotorPid.Ff);
+        new MotorPIDBuilder()
+            .setP(BackRightConstants.DriveMotor.MotorPid.P)
+            .setFf(BackRightConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
