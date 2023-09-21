@@ -5,9 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -16,8 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
@@ -32,45 +28,57 @@ import frc.robot.util.CTREUtil;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import frc.robot.util.MotorConfig.MotorPIDBuilder;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** Controls the four swerve modules for autonomous and teleoperated modes. */
 public class DriveSubsystem extends SubsystemBase {
-  // Robot swerve modules
+  // Linked to maintain order.
   private final LinkedHashMap<SwerveCorner, SwerveModule> swerveModules = new LinkedHashMap<>();
-
-  // The Pigeon IMU sensor
   private final WPI_PigeonIMU pigeonImu = new WPI_PigeonIMU(RobotConstants.PIGEON_CAN_ID);
 
-  // Odometry class for tracking robot pose
   private final SwerveDriveOdometry odometry;
-
-  private final ShuffleboardTab driveSystemTab = Shuffleboard.getTab("Drive System");
-  private final ShuffleboardTab competitionTab = Shuffleboard.getTab("Competition");
   private GenericEntry competitionTabMaxSpeedEntry;
 
-  private double maxSpeed = DriveConstants.MAX_VELOCITY / 2;
-
+  private double maxSpeed = DriveConstants.DRIVE_VELOCITY;
   private boolean fieldRelativeMode = true;
 
-  /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     CTREUtil.checkCtreError(pigeonImu.configFactoryDefault());
+
+    for (SwerveCorner corner : SwerveCorner.values()) {
+      swerveModules.put(
+          corner,
+          new SwerveModule(getSwerveConfigForCorner(corner), DriveConstants.DRIVE_SYSTEM_TAB));
+    }
 
     odometry =
         new SwerveDriveOdometry(
             RobotConstants.DRIVE_KINEMATICS, getHeading(), getModulePositions());
 
-    for (SwerveCorner corner : SwerveCorner.values()) {
-      swerveModules.put(corner, new SwerveModule(getSwerveConfigForCorner(corner), driveSystemTab));
-    }
-
     zeroHeading();
     setupShuffleboardTab();
+  }
+
+  public void zeroHeading() {
+    pigeonImu.reset();
+  }
+
+  private void setupShuffleboardTab() {
+    competitionTabMaxSpeedEntry =
+        DriveConstants.COMPETITION_TAB
+            .add("Maximum Drive Speed", maxSpeed)
+            .withWidget(BuiltInWidgets.kNumberSlider)
+            .withSize(2, 1)
+            .withPosition(5, 1)
+            .withProperties(Map.of("min", 0, "max", maxSpeed * 2))
+            .getEntry();
+
+    DriveConstants.COMPETITION_TAB.addNumber("Pigeon Heading", () -> getHeading().getDegrees());
+    DriveConstants.DRIVE_SYSTEM_TAB.addDouble("Pitch", this::getPitch);
+    DriveConstants.DRIVE_SYSTEM_TAB.addDouble("Roll", this::getRoll);
+    DriveConstants.DRIVE_SYSTEM_TAB.addBoolean("Field Relative?", () -> fieldRelativeMode);
   }
 
   @Override
@@ -101,7 +109,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   private SwerveModuleBuilder getFrontLeftSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder().setP(FrontLeftConstants.DriveMotor.MotorPid.P);
+        new MotorPIDBuilder()
+            .setP(FrontLeftConstants.DriveMotor.MotorPid.P)
+            .setFf(FrontLeftConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -117,20 +127,25 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(FrontLeftConstants.DriveMotor.NAME)
             .setMotorPort(FrontLeftConstants.DriveMotor.MOTOR_PORT)
-            .setInverted(FrontLeftConstants.DriveMotor.INVERTED)
+            .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
+            .setMotorInverted(FrontLeftConstants.DriveMotor.INVERTED)
+            .setEncoderInverted(FrontLeftConstants.DriveMotor.ENCODER_INVERTED)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
         new MotorBuilder()
             .setName(FrontLeftConstants.PivotMotor.NAME)
             .setMotorPort(FrontLeftConstants.PivotMotor.MOTOR_PORT)
-            .setInverted(FrontLeftConstants.PivotMotor.INVERTED)
+            .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
+            .setMotorInverted(FrontLeftConstants.PivotMotor.INVERTED)
+            .setEncoderInverted(FrontLeftConstants.PivotMotor.ENCODER_INVERTED)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
         new SwerveModuleBuilder()
             .setModuleName(FrontLeftConstants.MODULE_NAME)
             .setParkAngle(FrontLeftConstants.PARK_ANGLE)
+            .setChassisAngularOffset(FrontLeftConstants.CHASSIS_ANGULAR_OFFSET)
             .setDriveMotor(driveConfig)
             .setPivotMotor(pivotConfig);
 
@@ -139,7 +154,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   private SwerveModuleBuilder getBackLeftSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder().setP(BackLeftConstants.DriveMotor.MotorPid.P);
+        new MotorPIDBuilder()
+            .setP(BackLeftConstants.DriveMotor.MotorPid.P)
+            .setFf(BackLeftConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -155,20 +172,25 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(BackLeftConstants.DriveMotor.NAME)
             .setMotorPort(BackLeftConstants.DriveMotor.MOTOR_PORT)
-            .setInverted(BackLeftConstants.DriveMotor.INVERTED)
+            .setCurrentLimit(BackLeftConstants.DriveMotor.CURRENT_LIMT)
+            .setMotorInverted(BackLeftConstants.DriveMotor.INVERTED)
+            .setEncoderInverted(BackLeftConstants.DriveMotor.ENCODER_INVERTED)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
         new MotorBuilder()
             .setName(BackLeftConstants.PivotMotor.NAME)
             .setMotorPort(BackLeftConstants.PivotMotor.MOTOR_PORT)
-            .setInverted(BackLeftConstants.PivotMotor.INVERTED)
+            .setCurrentLimit(BackLeftConstants.PivotMotor.CURRENT_LIMT)
+            .setMotorInverted(BackLeftConstants.PivotMotor.INVERTED)
+            .setEncoderInverted(BackLeftConstants.PivotMotor.ENCODER_INVERTED)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
         new SwerveModuleBuilder()
             .setModuleName(BackLeftConstants.MODULE_NAME)
             .setParkAngle(BackLeftConstants.PARK_ANGLE)
+            .setChassisAngularOffset(BackLeftConstants.CHASSIS_ANGULAR_OFFSET)
             .setDriveMotor(driveConfig)
             .setPivotMotor(pivotConfig);
 
@@ -177,7 +199,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   private SwerveModuleBuilder getFrontRightSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder().setP(FrontRightConstants.DriveMotor.MotorPid.P);
+        new MotorPIDBuilder()
+            .setP(FrontRightConstants.DriveMotor.MotorPid.P)
+            .setFf(FrontRightConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -193,20 +217,25 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(FrontRightConstants.DriveMotor.NAME)
             .setMotorPort(FrontRightConstants.DriveMotor.MOTOR_PORT)
-            .setInverted(FrontRightConstants.DriveMotor.INVERTED)
+            .setCurrentLimit(FrontRightConstants.DriveMotor.CURRENT_LIMT)
+            .setMotorInverted(FrontRightConstants.DriveMotor.INVERTED)
+            .setEncoderInverted(FrontRightConstants.DriveMotor.ENCODER_INVERTED)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
         new MotorBuilder()
             .setName(FrontRightConstants.PivotMotor.NAME)
             .setMotorPort(FrontRightConstants.PivotMotor.MOTOR_PORT)
-            .setInverted(FrontRightConstants.PivotMotor.INVERTED)
+            .setCurrentLimit(FrontRightConstants.PivotMotor.CURRENT_LIMT)
+            .setMotorInverted(FrontRightConstants.PivotMotor.INVERTED)
+            .setEncoderInverted(FrontRightConstants.PivotMotor.ENCODER_INVERTED)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
         new SwerveModuleBuilder()
             .setModuleName(FrontRightConstants.MODULE_NAME)
             .setParkAngle(FrontRightConstants.PARK_ANGLE)
+            .setChassisAngularOffset(FrontRightConstants.CHASSIS_ANGULAR_OFFSET)
             .setDriveMotor(driveConfig)
             .setPivotMotor(pivotConfig);
 
@@ -215,7 +244,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   private SwerveModuleBuilder getBackRightSwerveConfig() {
     MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder().setP(BackRightConstants.DriveMotor.MotorPid.P);
+        new MotorPIDBuilder()
+            .setP(BackRightConstants.DriveMotor.MotorPid.P)
+            .setFf(BackRightConstants.DriveMotor.MotorPid.Ff);
 
     MotorPIDBuilder pivotMotorPid =
         new MotorPIDBuilder()
@@ -231,41 +262,29 @@ public class DriveSubsystem extends SubsystemBase {
         new MotorBuilder()
             .setName(BackRightConstants.DriveMotor.NAME)
             .setMotorPort(BackRightConstants.DriveMotor.MOTOR_PORT)
-            .setInverted(BackRightConstants.DriveMotor.INVERTED)
+            .setCurrentLimit(BackRightConstants.DriveMotor.CURRENT_LIMT)
+            .setMotorInverted(BackRightConstants.DriveMotor.INVERTED)
+            .setEncoderInverted(BackRightConstants.DriveMotor.ENCODER_INVERTED)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
         new MotorBuilder()
             .setName(BackRightConstants.PivotMotor.NAME)
             .setMotorPort(BackRightConstants.PivotMotor.MOTOR_PORT)
-            .setInverted(BackRightConstants.PivotMotor.INVERTED)
+            .setCurrentLimit(BackRightConstants.PivotMotor.CURRENT_LIMT)
+            .setMotorInverted(BackRightConstants.PivotMotor.INVERTED)
+            .setEncoderInverted(BackRightConstants.PivotMotor.ENCODER_INVERTED)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
         new SwerveModuleBuilder()
             .setModuleName(BackRightConstants.MODULE_NAME)
             .setParkAngle(BackRightConstants.PARK_ANGLE)
+            .setChassisAngularOffset(BackRightConstants.CHASSIS_ANGULAR_OFFSET)
             .setDriveMotor(driveConfig)
             .setPivotMotor(pivotConfig);
 
     return moduleConfig;
-  }
-
-  private void setupShuffleboardTab() {
-    competitionTabMaxSpeedEntry =
-        competitionTab
-            .add("Maximum Drive Speed", maxSpeed)
-            .withWidget(BuiltInWidgets.kNumberSlider)
-            .withSize(2, 1)
-            .withPosition(5, 1)
-            .withProperties(Map.of("min", 0, "max", maxSpeed))
-            .getEntry();
-
-    competitionTab.addNumber("pigeon2 heading", () -> getHeading().getDegrees());
-
-    driveSystemTab.addDouble("Pitch", this::getPitch);
-    driveSystemTab.addDouble("Roll", this::getRoll);
-    driveSystemTab.addBoolean("Field Relative?", () -> fieldRelativeMode);
   }
 
   public double getPitch() {
@@ -284,7 +303,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return An array containing the swerve modules, ordered.
    */
   private SwerveModule[] getSwerveModules() {
-    return (SwerveModule[]) swerveModules.values().toArray();
+    return (SwerveModule[]) swerveModules.values().toArray(new SwerveModule[4]);
   }
 
   /**
@@ -302,10 +321,7 @@ public class DriveSubsystem extends SubsystemBase {
         continue;
       }
 
-      SwerveModuleState state = module.getState();
-
-      state.speedMetersPerSecond = 0;
-      state.angle = module.getParkedAngle();
+      SwerveModuleState state = new SwerveModuleState(0, module.getParkedAngle());
 
       module.set(state);
       module.setParked(true);
@@ -313,12 +329,16 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the maximum speed for the robot based on the specified speed mode.
+   * Multiplies the maximum speed for the robot based on the specified speed mode.
    *
    * @param mode The specified speed mode set by {@link SpeedMode}.
    */
   public void setSpeedMode(SpeedMode mode) {
-    maxSpeed = mode.getMaxSpeed();
+    maxSpeed =
+        Math.max(
+            Math.min(maxSpeed * mode.getMaxSpeedMultiplier(), DriveConstants.MAX_VELOCITY),
+            SpeedMode.TURTLE.getMaxSpeed());
+
     competitionTabMaxSpeedEntry.setDouble(maxSpeed);
   }
 
@@ -333,48 +353,6 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void setFieldRelative(boolean mode) {
     fieldRelativeMode = mode;
-  }
-
-  /**
-   * Returns the currently-estimated pose of the robot.
-   *
-   * @return The pose.
-   */
-  public Pose2d getPose() {
-    return odometry.getPoseMeters();
-  }
-
-  /**
-   * Resets the odometry to the specified pose.
-   *
-   * @param pose The pose to which to set the odometry.
-   */
-  public void resetOdometry(Pose2d pose) {
-    odometry.resetPosition(getHeading(), getModulePositions(), pose);
-  }
-
-  /**
-   * Returns the state of every swerve module in a key-value pair.
-   *
-   * @return The key-value pair of these states.
-   */
-  public Map<SwerveCorner, SwerveModuleState> getModuleStates() {
-    HashMap<SwerveCorner, SwerveModuleState> swerveStates = new HashMap<>();
-
-    for (Map.Entry<SwerveCorner, SwerveModule> entry : swerveModules.entrySet()) {
-      swerveStates.put(entry.getKey(), entry.getValue().getState());
-    }
-
-    return Collections.unmodifiableMap(swerveStates);
-  }
-
-  /**
-   * Resets the odometry to the specified pose of a state in a PathPlanner trajectory.
-   *
-   * @param state The state of the PathPlanner trajectory to construct a pose.
-   */
-  public void resetOdometry(PathPlannerState state) {
-    resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
   }
 
   /**
@@ -406,7 +384,7 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.TURNING_ACCELERATION_LIMITER.calculate(rot)
             * DriveConstants.MAX_ANGULAR_ACCELERATION_PER_SECOND;
 
-    if (maxSpeed == 0.5) {
+    if (maxSpeed == SpeedMode.TURTLE.getMaxSpeed()) {
       rot /= 4.0;
     }
 
@@ -438,15 +416,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  /** Zeroes the heading of the robot. */
-  public void zeroHeading() {
-    pigeonImu.reset();
-  }
-
-  public void setHeadingOffest(double offset) {
-    pigeonImu.addYaw(offset);
-  }
-
   /**
    * Returns the heading of the robot.
    *
@@ -458,21 +427,14 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Returns the turn rate of the robot.
-   *
-   * @return The turn rate of the robot, in degrees per second.
-   */
-  public double getTurnRate() {
-    return pigeonImu.getRate();
-  }
-
-  /**
    * Returns the position of every swerve module.
    *
    * @return The positions.
    */
   public SwerveModulePosition[] getModulePositions() {
     return (SwerveModulePosition[])
-        Arrays.stream(getSwerveModules()).map(module -> module.getPosition()).toArray();
+        Arrays.stream(getSwerveModules())
+            .map(module -> module.getPosition())
+            .toArray(SwerveModulePosition[]::new);
   }
 }

@@ -12,7 +12,8 @@ public class MotorConfig {
   private MotorFeedbackSensor motorEncoder;
   private String moduleName;
   private String name;
-  private boolean inverted;
+  private boolean motorInverted;
+  private boolean encoderInverted;
   private double nominalVoltage;
   private int currentLimit;
 
@@ -28,14 +29,16 @@ public class MotorConfig {
       MotorFeedbackSensor motorEncoder,
       String moduleName,
       String name,
-      boolean inverted,
+      boolean motorInverted,
+      boolean encoderInverted,
       double nominalVoltage,
       int currentLimit) {
     this.motor = motor;
     this.motorEncoder = motorEncoder;
     this.moduleName = moduleName;
     this.name = name;
-    this.inverted = inverted;
+    this.motorInverted = motorInverted;
+    this.encoderInverted = encoderInverted;
     this.nominalVoltage = nominalVoltage;
     this.currentLimit = currentLimit;
   }
@@ -44,7 +47,7 @@ public class MotorConfig {
    * Generic configuration method
    */
   public MotorConfig configureMotor() {
-    motor.setInverted(inverted);
+    motor.setInverted(motorInverted);
 
     RevUtil.checkRevError(motor.setIdleMode(CANSparkMax.IdleMode.kBrake));
     RevUtil.checkRevError(motor.enableVoltageCompensation(nominalVoltage));
@@ -53,11 +56,12 @@ public class MotorConfig {
 
     if (motorEncoder instanceof RelativeEncoder) {
       RelativeEncoder encoder = (RelativeEncoder) motorEncoder;
+      RevUtil.checkRevError(motor.getPIDController().setFeedbackDevice(encoder));
 
       RevUtil.checkRevError(
-          encoder.setPositionConversionFactor(DriveConstants.POSITION_CONVERSION_FACTOR));
+          encoder.setPositionConversionFactor(DriveConstants.DRIVING_POSITION_CONVERSION_FACTOR));
       RevUtil.checkRevError(
-          encoder.setVelocityConversionFactor(DriveConstants.VELOCITY_CONVERSION_FACTOR));
+          encoder.setVelocityConversionFactor(DriveConstants.DRIVING_VELOCITY_CONVERSION_FACTOR));
 
       ((RelativeEncoder) motorEncoder).setPosition(0);
     } else if (motorEncoder instanceof AbsoluteEncoder) {
@@ -65,12 +69,14 @@ public class MotorConfig {
       // pivot motor it's safe to assume here.
       // Won't be the case for 100% of builds although.
       AbsoluteEncoder encoder = (AbsoluteEncoder) motorEncoder; // silly cast for silly java
+
+      RevUtil.checkRevError(encoder.setInverted(encoderInverted));
       RevUtil.checkRevError(motor.getPIDController().setFeedbackDevice(encoder));
 
       RevUtil.checkRevError(
-          encoder.setPositionConversionFactor(DriveConstants.POSITION_CONVERSION_FACTOR));
+          encoder.setPositionConversionFactor(DriveConstants.PIVOT_POSITION_CONVERSION_FACTOR));
       RevUtil.checkRevError(
-          encoder.setVelocityConversionFactor(DriveConstants.VELOCITY_CONVERSION_FACTOR));
+          encoder.setVelocityConversionFactor(DriveConstants.PIVOT_VELOCITY_CONVERSION_FACTOR));
     }
 
     return this;
@@ -82,6 +88,8 @@ public class MotorConfig {
     RevUtil.checkRevError(motorPIDController.setI(motorPid.getI()));
     RevUtil.checkRevError(motorPIDController.setD(motorPid.getD()));
     RevUtil.checkRevError(motorPIDController.setFF(motorPid.getFf()));
+    RevUtil.checkRevError(
+        motorPIDController.setOutputRange(motorPid.getMinOutput(), motorPid.getMaxOutput()));
 
     boolean positionPidWrappingEnabled = motorPid.isPositionPidWrappingEnabled();
 
@@ -111,7 +119,8 @@ public class MotorConfig {
         motorEncoder,
         constants.getModuleName(),
         constants.getName(),
-        constants.isInverted(),
+        constants.isMotorInverted(),
+        constants.isEncoderInverted(),
         constants.getNominalVoltage(),
         constants.getCurrentLimit());
   }
@@ -125,7 +134,7 @@ public class MotorConfig {
     private double maxOutput = 1;
     private boolean positionPidWrappingEnabled = false;
     private double positionPidWrappingMin = -1;
-    private double positionPidWrappingMax = -1;
+    private double positionPidWrappingMax = 1;
 
     public double getP() {
       return p;
@@ -213,10 +222,11 @@ public class MotorConfig {
     private String name;
     private String moduleName;
     private int motorPort;
-    private boolean inverted;
+    private boolean motorInverted;
+    private boolean encoderInverted;
     private MotorPIDBuilder motorPID;
     private double nominalVoltage = 12;
-    private int currentLimit = 12;
+    private int currentLimit;
 
     public String getName() {
       return name;
@@ -233,15 +243,6 @@ public class MotorConfig {
 
     public MotorBuilder setMotorPort(int motorPort) {
       this.motorPort = motorPort;
-      return this;
-    }
-
-    public boolean isInverted() {
-      return inverted;
-    }
-
-    public MotorBuilder setInverted(boolean inverted) {
-      this.inverted = inverted;
       return this;
     }
 
@@ -278,6 +279,36 @@ public class MotorConfig {
 
     public MotorBuilder setCurrentLimit(int currentLimit) {
       this.currentLimit = currentLimit;
+      return this;
+    }
+
+    /**
+     * @return the motorInverted
+     */
+    public boolean isMotorInverted() {
+      return motorInverted;
+    }
+
+    /**
+     * @param motorInverted the motorInverted to set
+     */
+    public MotorBuilder setMotorInverted(boolean motorInverted) {
+      this.motorInverted = motorInverted;
+      return this;
+    }
+
+    /**
+     * @return the encoderInverted
+     */
+    public boolean isEncoderInverted() {
+      return encoderInverted;
+    }
+
+    /**
+     * @param encoderInverted the encoderInverted to set
+     */
+    public MotorBuilder setEncoderInverted(boolean encoderInverted) {
+      this.encoderInverted = encoderInverted;
       return this;
     }
   }

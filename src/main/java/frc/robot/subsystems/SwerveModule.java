@@ -6,8 +6,8 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -15,7 +15,6 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.constants.DriveConstants;
 import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import java.util.HashMap;
@@ -35,6 +34,8 @@ public class SwerveModule {
 
   private Rotation2d referenceAngle = new Rotation2d();
   private Rotation2d parkedAngle;
+  private Rotation2d chassisAngularOffset;
+
   private boolean parked = false;
 
   private HashMap<String, DoubleLogEntry> dataLogs = new HashMap<String, DoubleLogEntry>();
@@ -42,6 +43,7 @@ public class SwerveModule {
   public SwerveModule(SwerveModuleBuilder swerveModule, ShuffleboardTab shuffleboardTab) {
     this.moduleName = swerveModule.getModuleName();
     this.parkedAngle = swerveModule.getParkAngle();
+    this.chassisAngularOffset = swerveModule.getChassisAngularOffset();
 
     this.driveMotor =
         new CANSparkMax(
@@ -50,6 +52,9 @@ public class SwerveModule {
     this.pivotMotor =
         new CANSparkMax(
             swerveModule.getPivotMotor().getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
+
+    this.driveMotorEncoder = driveMotor.getEncoder();
+    this.pivotMotorEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
     MotorConfig.fromMotorConstants(driveMotor, driveMotorEncoder, swerveModule.getDriveMotor())
         .configureMotor()
@@ -61,6 +66,9 @@ public class SwerveModule {
         .configurePID(swerveModule.getPivotMotor().getMotorPID())
         .burnFlash();
 
+    this.driveMotorPIDController = driveMotor.getPIDController();
+    this.pivotMotorPIDController = pivotMotor.getPIDController();
+
     setupShuffleboardTab(shuffleboardTab);
     setupDataLogging(DataLogManager.getLog());
   }
@@ -71,22 +79,22 @@ public class SwerveModule {
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
     shuffleboardTab
         .addNumber(String.format("%s Vel", moduleName), this::getDriveVelocity)
-        .withSize(2, 1);
+        .withSize(1, 1);
     shuffleboardTab
         .addNumber(String.format("%s Drive Out", moduleName), driveMotor::getAppliedOutput)
-        .withSize(2, 1);
+        .withSize(1, 1);
     shuffleboardTab
         .addNumber(String.format("%s Pos", moduleName), this::getDistance)
-        .withSize(2, 1);
+        .withSize(1, 1);
     shuffleboardTab
-        .addNumber(String.format("%s Steer Deg", moduleName), getSteerAngle()::getDegrees)
-        .withSize(9, 1);
+        .addNumber(String.format("%s Steer Deg", moduleName), () -> getSteerAngle().getDegrees())
+        .withSize(1, 1);
     shuffleboardTab
-        .addNumber(String.format("%s AE Deg", moduleName), getAbsoluteAngle()::getDegrees)
-        .withSize(2, 1);
+        .addNumber(String.format("%s AE Deg", moduleName), () -> getAbsoluteAngle().getDegrees())
+        .withSize(1, 1);
     shuffleboardTab
-        .addNumber(String.format("%s Ref Deg", moduleName), referenceAngle::getDegrees)
-        .withSize(2, 1);
+        .addNumber(String.format("%s Ref Deg", moduleName), () -> referenceAngle.getDegrees())
+        .withSize(1, 1);
   }
 
   private void setupDataLogging(DataLog log) {
@@ -156,13 +164,15 @@ public class SwerveModule {
       }
 
       dataLogs.get(String.format("%s_MOTOR_CURRENT", motorType)).append(motor.getOutputCurrent());
-      dataLogs.get(String.format("%s_MOTOR_VELOCITY", motorType)).append(motor.getOutputCurrent());
+      dataLogs
+          .get(String.format("%s_MOTOR_VELOCITY", motorType))
+          .append(motor.getEncoder().getVelocity());
       dataLogs
           .get(String.format("%s_MOTOR_APPLIED_OUTPUT", motorType))
-          .append(motor.getOutputCurrent());
+          .append(motor.getAppliedOutput());
       dataLogs
           .get(String.format("%s_MOTOR_TEMPERATURE", motorType))
-          .append(motor.getOutputCurrent());
+          .append(motor.getMotorTemperature());
     }
   }
 
@@ -176,9 +186,7 @@ public class SwerveModule {
    * @return The angle
    */
   public Rotation2d getAbsoluteAngle() {
-    double angle =
-        MathUtil.inputModulus(Math.toRadians(pivotMotorEncoder.getPosition()), 0.0, 2.0 * Math.PI);
-    return Rotation2d.fromRadians(angle);
+    return Rotation2d.fromRadians(pivotMotorEncoder.getPosition());
   }
 
   /**
@@ -187,9 +195,7 @@ public class SwerveModule {
    * @return Rotation2d of the angle
    */
   public Rotation2d getSteerAngle() {
-    double pivotAngleRadians =
-        MathUtil.inputModulus(pivotMotorEncoder.getPosition(), 0.0, 2.0 * Math.PI);
-    return Rotation2d.fromRadians(pivotAngleRadians);
+    return Rotation2d.fromRadians(pivotMotorEncoder.getPosition());
   }
 
   /**
@@ -198,7 +204,7 @@ public class SwerveModule {
    * @return The veloticty
    */
   public double getDriveVelocity() {
-    return driveMotorEncoder.getVelocity() * DriveConstants.POSITION_CONVERSION_FACTOR / 60;
+    return driveMotorEncoder.getVelocity();
   }
 
   /**
@@ -207,7 +213,7 @@ public class SwerveModule {
    * @return The position
    */
   public double getDistance() {
-    return driveMotorEncoder.getPosition() * DriveConstants.POSITION_CONVERSION_FACTOR;
+    return driveMotorEncoder.getPosition();
   }
 
   /**
@@ -216,16 +222,9 @@ public class SwerveModule {
    * @return The position
    */
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(getDistance(), getSteerAngle());
-  }
-
-  /**
-   * Returns the position of the swerve module
-   *
-   * @return The position
-   */
-  public SwerveModuleState getState() {
-    return new SwerveModuleState(getDriveVelocity(), getSteerAngle());
+    return new SwerveModulePosition(
+        driveMotorEncoder.getPosition(),
+        new Rotation2d(pivotMotorEncoder.getPosition() - chassisAngularOffset.getRadians()));
   }
 
   public void setParked(boolean mode) {
@@ -242,19 +241,20 @@ public class SwerveModule {
       return;
     }
 
-    state = SwerveModuleState.optimize(state, getSteerAngle());
+    SwerveModuleState desiredState =
+        new SwerveModuleState(state.speedMetersPerSecond, state.angle.plus(chassisAngularOffset));
+    desiredState = SwerveModuleState.optimize(desiredState, getSteerAngle());
 
-    pivotMotorPIDController.setReference(
-        MathUtil.inputModulus(referenceAngle.getRadians(), 0, 2.0 * Math.PI),
-        CANSparkMax.ControlType.kPosition);
-    referenceAngle = state.angle;
+    pivotMotorPIDController.setReference(desiredState.angle.getRadians(), ControlType.kPosition);
+    driveMotorPIDController.setReference(desiredState.speedMetersPerSecond, ControlType.kVelocity);
 
-    driveMotorPIDController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
+    referenceAngle = desiredState.angle;
   }
 
   public static class SwerveModuleBuilder {
     private String moduleName;
     private Rotation2d parkAngle;
+    private Rotation2d chassisAngularOffset;
     private MotorBuilder driveMotor;
     private MotorBuilder pivotMotor;
 
@@ -291,6 +291,15 @@ public class SwerveModule {
 
     public SwerveModuleBuilder setPivotMotor(MotorBuilder pivotMotor) {
       this.pivotMotor = pivotMotor;
+      return this;
+    }
+
+    public Rotation2d getChassisAngularOffset() {
+      return chassisAngularOffset;
+    }
+
+    public SwerveModuleBuilder setChassisAngularOffset(Rotation2d chassisAngularOffset) {
+      this.chassisAngularOffset = chassisAngularOffset;
       return this;
     }
   }

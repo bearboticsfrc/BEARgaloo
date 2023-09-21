@@ -5,12 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.constants.DriveConstants;
+import frc.robot.constants.DriveConstants.SpeedMode;
 import frc.robot.subsystems.DriveSubsystem;
 
 /*
@@ -20,72 +19,51 @@ import frc.robot.subsystems.DriveSubsystem;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final DriveSubsystem robotDrive = new DriveSubsystem();
-  private boolean isTeleop = false;
+  private final DriveSubsystem driveSubsystem = new DriveSubsystem();
 
   private final CommandXboxController driverController =
       new CommandXboxController(DriveConstants.DRIVER_CONTROLLER_PORT);
-  private final CommandXboxController operatorController =
-      new CommandXboxController(DriveConstants.OPERATOR_CONTROLLER_PORT);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    setDefaultCommand();
+    driveSubsystem.setDefaultCommand(getDefaultCommand());
+    configureControllerMappings();
   }
 
-  private void setDefaultCommand() {
-    RunCommand defaultCommand =
-        new RunCommand(
-            () ->
-                robotDrive.drive(
-                    -MathUtil.applyDeadband(driverController.getLeftY(), 0.1),
-                    -MathUtil.applyDeadband(driverController.getLeftX(), 0.1),
-                    -MathUtil.applyDeadband(driverController.getRightX(), 0.1)),
-            robotDrive);
-
-    robotDrive.setDefaultCommand(defaultCommand);
+  private RunCommand getDefaultCommand() {
+    return new RunCommand(
+        () ->
+            driveSubsystem.drive(
+                -MathUtil.applyDeadband(driverController.getLeftY(), 0.1),
+                -MathUtil.applyDeadband(driverController.getLeftX(), 0.1),
+                -MathUtil.applyDeadband(driverController.getRightX(), 0.1)),
+        driveSubsystem);
   }
 
   public void configureControllerMappings() {
     configureDriverController();
-    configureOperatorController();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling passing it to a
-   * {@link JoystickButton}.
-   */
   private void configureDriverController() {
-    // Driver controller
-  }
+    driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
+    driverController
+        .b()
+        .onTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setParkMode(false)));
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling passing it to a
-   * {@link JoystickButton}.
-   */
-  private void configureOperatorController() {
-    // operator controller
-  }
+    driverController
+        .leftBumper()
+        .onTrue(new InstantCommand(() -> driveSubsystem.setFieldRelative(false)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setFieldRelative(true)));
 
-  public void autonomousInit() {
-    isTeleop = false;
-    robotDrive.setParkMode(false);
-  }
+    driverController
+        .leftTrigger(0.1)
+        .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURBO)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURTLE))));
 
-  public void teleopInit() {
-    isTeleop = true;
-    robotDrive.setParkMode(false);
-  }
-
-  public void disabledInit() {
-    isTeleop = false;
-  }
-
-  public Command getAutonomousCommand() {
-    return new RunCommand(() -> "".isEmpty()); // TODO: Implement
+    driverController
+        .rightTrigger(0.1)
+        .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURTLE)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURBO))));
   }
 }
