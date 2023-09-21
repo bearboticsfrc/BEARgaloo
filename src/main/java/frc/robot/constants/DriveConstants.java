@@ -94,5 +94,9 @@ public class DriveConstants {
     public double getMaxSpeedMultiplier() {
       return maxSpeedMultiplier;
     }
+
+    public double getMaxSpeed() {
+      return (MAX_VELOCITY / 2) * SpeedMode.TURTLE.getMaxSpeedMultiplier();
+    }
   }
 }

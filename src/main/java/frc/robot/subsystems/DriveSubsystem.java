@@ -5,9 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -16,7 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
@@ -31,8 +28,6 @@ import frc.robot.util.CTREUtil;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import frc.robot.util.MotorConfig.MotorPIDBuilder;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,23 +36,21 @@ import java.util.Map;
 public class DriveSubsystem extends SubsystemBase {
   // Linked to maintain order.
   private final LinkedHashMap<SwerveCorner, SwerveModule> swerveModules = new LinkedHashMap<>();
-
   private final WPI_PigeonIMU pigeonImu = new WPI_PigeonIMU(RobotConstants.PIGEON_CAN_ID);
 
   private final SwerveDriveOdometry odometry;
-
-  private final ShuffleboardTab driveSystemTab = DriveConstants.DRIVE_SUBSYSTEM_TAB;
-  private final ShuffleboardTab competitionTab = DriveConstants.COMPETITION_TAB;
   private GenericEntry competitionTabMaxSpeedEntry;
 
-  private double maxSpeed = DriveConstants.MAX_VELOCITY;
+  private double maxSpeed = DriveConstants.MAX_VELOCITY / 2;
   private boolean fieldRelativeMode = true;
 
   public DriveSubsystem() {
     CTREUtil.checkCtreError(pigeonImu.configFactoryDefault());
 
     for (SwerveCorner corner : SwerveCorner.values()) {
-      swerveModules.put(corner, new SwerveModule(getSwerveConfigForCorner(corner), driveSystemTab));
+      swerveModules.put(
+          corner,
+          new SwerveModule(getSwerveConfigForCorner(corner), DriveConstants.DRIVE_SUBSYSTEM_TAB));
     }
 
     odometry =
@@ -74,19 +67,18 @@ public class DriveSubsystem extends SubsystemBase {
 
   private void setupShuffleboardTab() {
     competitionTabMaxSpeedEntry =
-        competitionTab
+        DriveConstants.COMPETITION_TAB
             .add("Maximum Drive Speed", maxSpeed)
             .withWidget(BuiltInWidgets.kNumberSlider)
             .withSize(2, 1)
             .withPosition(5, 1)
-            .withProperties(Map.of("min", 0, "max", maxSpeed))
+            .withProperties(Map.of("min", 0, "max", maxSpeed * 2))
             .getEntry();
 
-    competitionTab.addNumber("Pigeon Heading", () -> getHeading().getDegrees());
-
-    driveSystemTab.addDouble("Pitch", this::getPitch);
-    driveSystemTab.addDouble("Roll", this::getRoll);
-    driveSystemTab.addBoolean("Field Relative?", () -> fieldRelativeMode);
+    DriveConstants.COMPETITION_TAB.addNumber("Pigeon Heading", () -> getHeading().getDegrees());
+    DriveConstants.DRIVE_SUBSYSTEM_TAB.addDouble("Pitch", this::getPitch);
+    DriveConstants.DRIVE_SUBSYSTEM_TAB.addDouble("Roll", this::getRoll);
+    DriveConstants.DRIVE_SUBSYSTEM_TAB.addBoolean("Field Relative?", () -> fieldRelativeMode);
   }
 
   @Override
@@ -345,7 +337,7 @@ public class DriveSubsystem extends SubsystemBase {
     maxSpeed =
         Math.max(
             Math.min(maxSpeed * mode.getMaxSpeedMultiplier(), DriveConstants.MAX_VELOCITY),
-            DriveConstants.MAX_VELOCITY * 0.25);
+            SpeedMode.TURTLE.getMaxSpeed());
 
     competitionTabMaxSpeedEntry.setDouble(maxSpeed);
   }
@@ -361,48 +353,6 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void setFieldRelative(boolean mode) {
     fieldRelativeMode = mode;
-  }
-
-  /**
-   * Returns the currently-estimated pose of the robot.
-   *
-   * @return The pose.
-   */
-  public Pose2d getPose() {
-    return odometry.getPoseMeters();
-  }
-
-  /**
-   * Resets the odometry to the specified pose.
-   *
-   * @param pose The pose to which to set the odometry.
-   */
-  public void resetOdometry(Pose2d pose) {
-    odometry.resetPosition(getHeading(), getModulePositions(), pose);
-  }
-
-  /**
-   * Resets the odometry to the specified pose of a state in a PathPlanner trajectory.
-   *
-   * @param state The state of the PathPlanner trajectory to construct a pose.
-   */
-  public void resetOdometry(PathPlannerState state) {
-    resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
-  }
-
-  /**
-   * Returns the state of every swerve module in a key-value pair.
-   *
-   * @return The key-value pair of these states.
-   */
-  public Map<SwerveCorner, SwerveModuleState> getModuleStates() {
-    HashMap<SwerveCorner, SwerveModuleState> swerveStates = new HashMap<>();
-
-    for (Map.Entry<SwerveCorner, SwerveModule> entry : swerveModules.entrySet()) {
-      swerveStates.put(entry.getKey(), entry.getValue().getState());
-    }
-
-    return Collections.unmodifiableMap(swerveStates);
   }
 
   /**
@@ -434,7 +384,7 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.TURNING_ACCELERATION_LIMITER.calculate(rot)
             * DriveConstants.MAX_ANGULAR_ACCELERATION_PER_SECOND;
 
-    if (maxSpeed <= 0.5) {
+    if (maxSpeed == SpeedMode.TURTLE.getMaxSpeed()) {
       rot /= 4.0;
     }
 
@@ -466,10 +416,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  public void setHeadingOffest(double offset) {
-    pigeonImu.addYaw(offset);
-  }
-
   /**
    * Returns the heading of the robot.
    *
@@ -478,15 +424,6 @@ public class DriveSubsystem extends SubsystemBase {
   public Rotation2d getHeading() {
     return Rotation2d.fromDegrees(
         MathUtil.inputModulus(pigeonImu.getRotation2d().getDegrees(), 0, 360));
-  }
-
-  /**
-   * Returns the turn rate of the robot.
-   *
-   * @return The turn rate of the robot, in degrees per second.
-   */
-  public double getTurnRate() {
-    return pigeonImu.getRate();
   }
 
   /**

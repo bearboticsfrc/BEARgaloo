@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -21,35 +20,28 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class RobotContainer {
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  private boolean isTeleop = false;
 
   private final CommandXboxController driverController =
       new CommandXboxController(DriveConstants.DRIVER_CONTROLLER_PORT);
-  private final CommandXboxController operatorController =
-      new CommandXboxController(DriveConstants.OPERATOR_CONTROLLER_PORT);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    setDefaultCommand();
+    driveSubsystem.setDefaultCommand(getDefaultCommand());
     configureControllerMappings();
   }
 
-  private void setDefaultCommand() {
-    RunCommand defaultCommand =
-        new RunCommand(
-            () ->
-                driveSubsystem.drive(
-                    -MathUtil.applyDeadband(driverController.getLeftY(), 0.1),
-                    -MathUtil.applyDeadband(driverController.getLeftX(), 0.1),
-                    -MathUtil.applyDeadband(driverController.getRightX(), 0.1)),
-            driveSubsystem);
-
-    driveSubsystem.setDefaultCommand(defaultCommand);
+  private RunCommand getDefaultCommand() {
+    return new RunCommand(
+        () ->
+            driveSubsystem.drive(
+                -MathUtil.applyDeadband(driverController.getLeftY(), 0.1),
+                -MathUtil.applyDeadband(driverController.getLeftX(), 0.1),
+                -MathUtil.applyDeadband(driverController.getRightX(), 0.1)),
+        driveSubsystem);
   }
 
   public void configureControllerMappings() {
     configureDriverController();
-    configureOperatorController();
   }
 
   private void configureDriverController() {
@@ -65,33 +57,13 @@ public class RobotContainer {
         .onFalse(new InstantCommand(() -> driveSubsystem.setFieldRelative(true)));
 
     driverController
-        .leftTrigger(0.10)
+        .leftTrigger(0.1)
         .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURBO)))
         .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURTLE))));
 
     driverController
-        .rightTrigger(0.10)
+        .rightTrigger(0.1)
         .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURTLE)))
         .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURBO))));
-  }
-
-  private void configureOperatorController() {
-    // operator controller
-  }
-
-  public void autonomousInit() {
-    isTeleop = false;
-  }
-
-  public void teleopInit() {
-    isTeleop = true;
-  }
-
-  public void disabledInit() {
-    isTeleop = false;
-  }
-
-  public Command getAutonomousCommand() {
-    return new RunCommand(() -> "".isEmpty()); // TODO: Implement
   }
 }

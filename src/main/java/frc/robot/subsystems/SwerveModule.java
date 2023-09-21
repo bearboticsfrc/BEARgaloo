@@ -227,17 +227,6 @@ public class SwerveModule {
         new Rotation2d(pivotMotorEncoder.getPosition() - chassisAngularOffset.getRadians()));
   }
 
-  /**
-   * Returns the position of the swerve module
-   *
-   * @return The position
-   */
-  public SwerveModuleState getState() {
-    return new SwerveModuleState(
-        driveMotorEncoder.getVelocity(),
-        new Rotation2d(pivotMotorEncoder.getPosition() - chassisAngularOffset.getRadians()));
-  }
-
   public void setParked(boolean mode) {
     parked = mode;
   }

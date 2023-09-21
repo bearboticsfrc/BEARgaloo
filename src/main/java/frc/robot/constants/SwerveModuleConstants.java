@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class SwerveModuleConstants {
   public static class FrontLeftConstants {
     public static final String MODULE_NAME = "FL";
-    public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(225);
+    public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(135);
     public static final Rotation2d CHASSIS_ANGULAR_OFFSET = Rotation2d.fromRadians(-Math.PI / 2);
 
     public static class DriveMotor {
@@ -39,7 +39,7 @@ public class SwerveModuleConstants {
 
   public static class FrontRightConstants {
     public static final String MODULE_NAME = "FR";
-    public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(135);
+    public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(45);
     public static final Rotation2d CHASSIS_ANGULAR_OFFSET = Rotation2d.fromRadians(0);
 
     public static class DriveMotor {
