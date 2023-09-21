@@ -34,7 +34,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase implements AllianceRea
   private final DoubleLogEntry poseYLog;
   private final DoubleLogEntry poseAngleDegreesLog;
 
-  private RobotCamera[] robotCameras = {};
+  
 
   private List<EstimationRunnable> estimationRunnables = new ArrayList<EstimationRunnable>();
   private List<Notifier> notifiers = new ArrayList<Notifier>();
@@ -51,7 +51,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase implements AllianceRea
             VisionConstants.STATE_STD_DEVS,
             VisionConstants.VISION_STD_DEVS);
 
-    for (RobotCamera robotCamera : robotCameras) {
+    for (RobotCamera robotCamera : VisionConstants.robotCameras) {
       PhotonCamera photonCamera = new PhotonCamera(robotCamera.getCameraName());
 
       EstimationRunnable estimatorRunnable =

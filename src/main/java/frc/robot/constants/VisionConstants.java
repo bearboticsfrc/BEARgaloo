@@ -4,6 +4,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.pose.vision.RobotCamera;
 
 public class VisionConstants {
   public static final Vector<N3> STATE_STD_DEVS =
@@ -13,4 +14,6 @@ public class VisionConstants {
   public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
   public static final double FIELD_LENGTH_METERS = 16.54175;
   public static final double FIELD_WIDTH_METERS = 8.0137;
+  public static final RobotCamera[] robotCameras = {};
+
 }
