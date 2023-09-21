@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.util.RateLimiter;
 
 public class DriveConstants {
-  public static final ShuffleboardTab DRIVE_SUBSYSTEM_TAB = Shuffleboard.getTab("Drive System");
+  public static final ShuffleboardTab DRIVE_SYSTEM_TAB = Shuffleboard.getTab("Drive System");
   public static final ShuffleboardTab COMPETITION_TAB = Shuffleboard.getTab("Competition");
 
   public static final int DRIVER_CONTROLLER_PORT = 0;
@@ -44,6 +44,8 @@ public class DriveConstants {
   public static final double MAX_VELOCITY =
       (MAX_MOTOR_FREE_SPEED_RPM / 60.0 * RobotConstants.WHEEL_DIAMETER * Math.PI)
           / DRIVE_GEAR_REDUCTION;
+
+  public static final double DRIVE_VELOCITY = MAX_VELOCITY / 2;
 
   /** The max drive angular velocity in radians/sec */
   public static final double MAX_ANGULAR_VELOCITY =
@@ -96,7 +98,7 @@ public class DriveConstants {
     }
 
     public double getMaxSpeed() {
-      return (MAX_VELOCITY / 2) * SpeedMode.TURTLE.getMaxSpeedMultiplier();
+      return DRIVE_VELOCITY * SpeedMode.TURTLE.getMaxSpeedMultiplier();
     }
   }
 }

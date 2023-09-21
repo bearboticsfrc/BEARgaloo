@@ -41,7 +41,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveDriveOdometry odometry;
   private GenericEntry competitionTabMaxSpeedEntry;
 
-  private double maxSpeed = DriveConstants.MAX_VELOCITY / 2;
+  private double maxSpeed = DriveConstants.DRIVE_VELOCITY;
   private boolean fieldRelativeMode = true;
 
   public DriveSubsystem() {
@@ -50,7 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
     for (SwerveCorner corner : SwerveCorner.values()) {
       swerveModules.put(
           corner,
-          new SwerveModule(getSwerveConfigForCorner(corner), DriveConstants.DRIVE_SUBSYSTEM_TAB));
+          new SwerveModule(getSwerveConfigForCorner(corner), DriveConstants.DRIVE_SYSTEM_TAB));
     }
 
     odometry =
@@ -76,9 +76,9 @@ public class DriveSubsystem extends SubsystemBase {
             .getEntry();
 
     DriveConstants.COMPETITION_TAB.addNumber("Pigeon Heading", () -> getHeading().getDegrees());
-    DriveConstants.DRIVE_SUBSYSTEM_TAB.addDouble("Pitch", this::getPitch);
-    DriveConstants.DRIVE_SUBSYSTEM_TAB.addDouble("Roll", this::getRoll);
-    DriveConstants.DRIVE_SUBSYSTEM_TAB.addBoolean("Field Relative?", () -> fieldRelativeMode);
+    DriveConstants.DRIVE_SYSTEM_TAB.addDouble("Pitch", this::getPitch);
+    DriveConstants.DRIVE_SYSTEM_TAB.addDouble("Roll", this::getRoll);
+    DriveConstants.DRIVE_SYSTEM_TAB.addBoolean("Field Relative?", () -> fieldRelativeMode);
   }
 
   @Override
