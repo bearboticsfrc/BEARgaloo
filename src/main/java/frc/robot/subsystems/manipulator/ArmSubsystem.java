@@ -20,7 +20,7 @@ public class ArmSubsystem extends SubsystemBase {
   private CANSparkMax followerMotor;
 
   public ArmSubsystem(MotorBuilder motorConstants, MotorBuilder followerMotorConstants) {
-    this.moduleName = motorConstants.getModuleName();
+    this.moduleName = motorConstants.getName();
 
     this.motor =
         new CANSparkMax(motorConstants.getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);

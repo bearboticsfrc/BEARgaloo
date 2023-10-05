@@ -12,6 +12,7 @@ import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
 import frc.robot.constants.manipulator.ArmConstants;
 import frc.robot.constants.manipulator.RollerConstants;
+import frc.robot.constants.manipulator.RollerConstants.RollerSpeed;
 import frc.robot.constants.manipulator.WristConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.manipulator.ArmSubsystem;
@@ -135,5 +136,7 @@ public class RobotContainer {
         .rightTrigger(0.1)
         .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURTLE)))
         .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURBO))));
+
+    driverController.x().whileTrue(new InstantCommand(() -> rollerSubsystem.set(RollerSpeed.HIGH)));
   }
 }

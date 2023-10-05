@@ -26,8 +26,8 @@ public class ArmConstants {
   }
 
   public enum ArmPositions {
-    TOP(-1),
-    BOTTOM(-1);
+    HIGH(0.19),
+    HOME(0);
 
     private final double position;
 

@@ -20,7 +20,7 @@ public class WristSubsystem extends SubsystemBase {
   private CANSparkMax motor;
 
   public WristSubsystem(MotorBuilder motorConstants) {
-    this.moduleName = motorConstants.getModuleName();
+    this.moduleName = motorConstants.getName(); // TODO: Use name AND moduleName
 
     this.motor =
         new CANSparkMax(motorConstants.getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);

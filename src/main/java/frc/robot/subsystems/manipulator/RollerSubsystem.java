@@ -19,7 +19,7 @@ public class RollerSubsystem extends SubsystemBase {
   private CANSparkMax motor;
 
   public RollerSubsystem(MotorBuilder motorConstants) {
-    this.moduleName = motorConstants.getModuleName();
+    this.moduleName = motorConstants.getName();
 
     this.motor =
         new CANSparkMax(motorConstants.getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
