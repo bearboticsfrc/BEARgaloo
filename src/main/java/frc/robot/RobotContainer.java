@@ -16,6 +16,7 @@ import frc.robot.constants.manipulator.WristConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.manipulator.ArmSubsystem;
 import frc.robot.subsystems.manipulator.RollerSubsystem;
+import frc.robot.subsystems.manipulator.WristSubsystem;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import frc.robot.util.MotorConfig.MotorPIDBuilder;
 
@@ -28,7 +29,9 @@ import frc.robot.util.MotorConfig.MotorPIDBuilder;
 public class RobotContainer {
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
   private final ArmSubsystem armSubsystem;
+  private final WristSubsystem wristSubsystem;
   private final RollerSubsystem rollerSubsystem;
+
   private final CommandXboxController driverController =
       new CommandXboxController(DriveConstants.DRIVER_CONTROLLER_PORT);
 
@@ -37,6 +40,7 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(getDefaultCommand());
 
     armSubsystem = getArmSubsystem();
+    wristSubsystem = getWristSubsystem();
     rollerSubsystem = getRollerSubsystem();
 
     configureControllerMappings();
@@ -81,7 +85,7 @@ public class RobotContainer {
     return new RollerSubsystem(rollerMotorConfig);
   }
 
-  private RollerSubsystem getWristSubsystem() {
+  private WristSubsystem getWristSubsystem() {
     MotorPIDBuilder wristMotorPid = new MotorPIDBuilder().setP(WristConstants.Motor.MotorPid.P);
 
     MotorBuilder wristMotorConfig =
@@ -93,7 +97,7 @@ public class RobotContainer {
             .setEncoderInverted(WristConstants.Motor.ENCODER_INVERTED)
             .setMotorPID(wristMotorPid);
 
-    return new RollerSubsystem(wristMotorConfig);
+    return new WristSubsystem(wristMotorConfig);
   }
 
   private RunCommand getDefaultCommand() {
