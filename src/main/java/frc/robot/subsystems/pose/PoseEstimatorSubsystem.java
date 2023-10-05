@@ -151,6 +151,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase implements AllianceRea
 
   public Pose3d getRobotFieldSpacPose3d() {
     LimelightTarget_Fiducial limelightTargetFiducial = new LimelightTarget_Fiducial();
+  
     Pose3d botPose3dTargetSpace = limelightTargetFiducial.getRobotPose_FieldSpace();
     return new Pose3d();
   }
@@ -158,4 +159,20 @@ public class PoseEstimatorSubsystem extends SubsystemBase implements AllianceRea
   public Pose2d getRobotFieldSpace2d() {
     return new Pose2d();
   }
+}
+public void estimatorChecker() {
+  Pose2d visionPose = getRobotFieldSpacPose3d().toPose2d();
+  
+  if (visionPose != null) {
+    
+    return;
+    
+    Pose2d adjustedPose =
+        new Pose2d(visionPose.getX(), visionPose.getY(), driveSubsystem.getHeading());
+
+    logPose(adjustedPose);
+    poseEstimator.addVisionMeasurement(
+        adjustedPose);// need timestamp and confidence 
+  }
+}
 }
