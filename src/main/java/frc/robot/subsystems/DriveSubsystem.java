@@ -392,24 +392,21 @@ public class DriveSubsystem extends SubsystemBase {
   public void drive(double xSpeed, double ySpeed, double rot) {
     drive(xSpeed, ySpeed, rot, fieldRelativeMode);
   }
-  
 
   public void drive(
-    double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
-  SwerveModuleState[]swerveModuleStates =
-      RobotConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
-          ChassisSpeeds.fromDiscreteSpeeds(
-              fieldRelative
-                  ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                      xSpeed, ySpeed, rot, pigeonImu.getRotation2d())
-                  : new ChassisSpeeds(xSpeed, ySpeed, rot),
-              periodSeconds));
-  SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, maxSpeed);
-  getSwerveModules()[0].set(swerveModuleStates[0]);
-  getSwerveModules()[1].set(swerveModuleStates[1]);
-  getSwerveModules()[2].set(swerveModuleStates[2]);
-  getSwerveModules()[3].set(swerveModuleStates[3]);
-}
+      double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
+    SwerveModuleState[] swerveModuleStates =
+        RobotConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
+            discretize(
+                fieldRelative
+                    ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeed, ySpeed, rot, pigeonImu.getRotation2d())
+                    : new ChassisSpeeds(xSpeed, ySpeed, rot),
+                periodSeconds));
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, maxSpeed);
+
+    setModuleStates(swerveModuleStates);
+  }
 
   /**
    * Method to drive the robot using joystick info.
@@ -465,8 +462,13 @@ public class DriveSubsystem extends SubsystemBase {
     var twist = new Pose2d().log(desiredDeltaPose);
     return new ChassisSpeeds(twist.dx / dt, twist.dy / dt, twist.dtheta / dt);
   }
+
   public static ChassisSpeeds discretize(ChassisSpeeds continuousSpeeds, double dt) {
-    return discretize(continuousSpeeds.vxMetersPerSecond, continuousSpeeds.vyMetersPerSecond, continuousSpeeds.omegaRadiansPerSecond, dt);
+    return discretize(
+        continuousSpeeds.vxMetersPerSecond,
+        continuousSpeeds.vyMetersPerSecond,
+        continuousSpeeds.omegaRadiansPerSecond,
+        dt);
   }
 
   /** Zeroes the heading of the robot. */
