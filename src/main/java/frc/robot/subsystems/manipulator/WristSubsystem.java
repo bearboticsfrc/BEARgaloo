@@ -1,10 +1,9 @@
 package frc.robot.subsystems.manipulator;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,7 +14,7 @@ import frc.robot.util.MotorConfig.MotorBuilder;
 
 public class WristSubsystem extends SubsystemBase {
   private String moduleName;
-  private AbsoluteEncoder motorEncoder;
+  private RelativeEncoder motorEncoder;
   private SparkMaxPIDController motorPid;
   private CANSparkMax motor;
 
@@ -25,7 +24,7 @@ public class WristSubsystem extends SubsystemBase {
     this.motor =
         new CANSparkMax(motorConstants.getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    this.motorEncoder = motor.getAbsoluteEncoder(Type.kDutyCycle);
+    this.motorEncoder = motor.getEncoder();
     this.motorPid = motor.getPIDController();
 
     MotorConfig.fromMotorConstants(motor, motorEncoder, motorConstants)
@@ -42,7 +41,7 @@ public class WristSubsystem extends SubsystemBase {
    */
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
     shuffleboardTab
-        .addNumber(String.format("%s AE Pos", moduleName), this.motorEncoder::getPosition)
+        .addNumber(String.format("%s Pos", moduleName), this.motorEncoder::getPosition)
         .withSize(1, 1);
   }
 

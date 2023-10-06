@@ -10,16 +10,11 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
-import frc.robot.constants.manipulator.ArmConstants;
-import frc.robot.constants.manipulator.RollerConstants;
+import frc.robot.constants.manipulator.ArmConstants.ArmPositions;
 import frc.robot.constants.manipulator.RollerConstants.RollerSpeed;
-import frc.robot.constants.manipulator.WristConstants;
+import frc.robot.constants.manipulator.WristConstants.WristPositions;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.manipulator.ArmSubsystem;
-import frc.robot.subsystems.manipulator.RollerSubsystem;
-import frc.robot.subsystems.manipulator.WristSubsystem;
-import frc.robot.util.MotorConfig.MotorBuilder;
-import frc.robot.util.MotorConfig.MotorPIDBuilder;
+import frc.robot.subsystems.manipulator.ManipulatorSubsystem;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -29,76 +24,18 @@ import frc.robot.util.MotorConfig.MotorPIDBuilder;
  */
 public class RobotContainer {
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  private final ArmSubsystem armSubsystem;
-  private final WristSubsystem wristSubsystem;
-  private final RollerSubsystem rollerSubsystem;
+  private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem();
 
   private final CommandXboxController driverController =
       new CommandXboxController(DriveConstants.DRIVER_CONTROLLER_PORT);
+  private final CommandXboxController operatorController =
+      new CommandXboxController(DriveConstants.OPERATOR_CONTROLLER_PORT);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driveSubsystem.setDefaultCommand(getDefaultCommand());
 
-    armSubsystem = getArmSubsystem();
-    wristSubsystem = getWristSubsystem();
-    rollerSubsystem = getRollerSubsystem();
-
     configureControllerMappings();
-  }
-
-  private ArmSubsystem getArmSubsystem() {
-    MotorPIDBuilder armMotorPid = new MotorPIDBuilder().setP(ArmConstants.Motor.MotorPid.P);
-
-    MotorBuilder armMotorConfig =
-        new MotorBuilder()
-            .setName(ArmConstants.Motor.NAME)
-            .setMotorPort(ArmConstants.Motor.MOTOR_PORT)
-            .setCurrentLimit(ArmConstants.Motor.CURRENT_LIMT)
-            .setMotorInverted(ArmConstants.Motor.INVERTED)
-            .setEncoderInverted(ArmConstants.Motor.ENCODER_INVERTED)
-            .setMotorPID(armMotorPid);
-
-    MotorBuilder armFollowerMotorConfig =
-        new MotorBuilder()
-            .setName(ArmConstants.FollowerMotor.NAME)
-            .setMotorPort(ArmConstants.FollowerMotor.MOTOR_PORT)
-            .setCurrentLimit(ArmConstants.FollowerMotor.CURRENT_LIMT)
-            .setMotorInverted(ArmConstants.FollowerMotor.INVERTED)
-            .setEncoderInverted(ArmConstants.FollowerMotor.ENCODER_INVERTED)
-            .setMotorPID(armMotorPid);
-
-    return new ArmSubsystem(armMotorConfig, armFollowerMotorConfig);
-  }
-
-  private RollerSubsystem getRollerSubsystem() {
-    MotorPIDBuilder rollerMotorPid = new MotorPIDBuilder().setP(RollerConstants.Motor.MotorPid.P);
-
-    MotorBuilder rollerMotorConfig =
-        new MotorBuilder()
-            .setName(RollerConstants.Motor.NAME)
-            .setMotorPort(RollerConstants.Motor.MOTOR_PORT)
-            .setCurrentLimit(RollerConstants.Motor.CURRENT_LIMT)
-            .setMotorInverted(RollerConstants.Motor.INVERTED)
-            .setEncoderInverted(RollerConstants.Motor.ENCODER_INVERTED)
-            .setMotorPID(rollerMotorPid);
-
-    return new RollerSubsystem(rollerMotorConfig);
-  }
-
-  private WristSubsystem getWristSubsystem() {
-    MotorPIDBuilder wristMotorPid = new MotorPIDBuilder().setP(WristConstants.Motor.MotorPid.P);
-
-    MotorBuilder wristMotorConfig =
-        new MotorBuilder()
-            .setName(WristConstants.Motor.NAME)
-            .setMotorPort(WristConstants.Motor.MOTOR_PORT)
-            .setCurrentLimit(WristConstants.Motor.CURRENT_LIMT)
-            .setMotorInverted(WristConstants.Motor.INVERTED)
-            .setEncoderInverted(WristConstants.Motor.ENCODER_INVERTED)
-            .setMotorPID(wristMotorPid);
-
-    return new WristSubsystem(wristMotorConfig);
   }
 
   private RunCommand getDefaultCommand() {
@@ -113,6 +50,7 @@ public class RobotContainer {
 
   public void configureControllerMappings() {
     configureDriverController();
+    configureOperatorController();
   }
 
   private void configureDriverController() {
@@ -136,7 +74,27 @@ public class RobotContainer {
         .rightTrigger(0.1)
         .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURTLE)))
         .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURBO))));
+  }
 
-    driverController.x().whileTrue(new InstantCommand(() -> rollerSubsystem.set(RollerSpeed.HIGH)));
+  public void configureOperatorController() {
+    operatorController
+        .leftTrigger(0.1)
+        .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.RELEASE))
+        .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
+
+    operatorController
+        .rightTrigger(0.1)
+        .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.INTAKE))
+        .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
+
+    operatorController
+        .b()
+        .onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM))
+        .onFalse(manipulatorSubsystem.getWristRunCommand(WristPositions.HOME));
+
+    operatorController
+        .y()
+        .onTrue(manipulatorSubsystem.getArmRunCommand(ArmPositions.HIGH))
+        .onFalse(manipulatorSubsystem.getArmRunCommand(ArmPositions.HOME));
   }
 }

@@ -57,6 +57,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void set(ArmPositions position) {
+    System.out.println(position.getPosition());
     motorPid.setReference(position.getPosition(), ControlType.kPosition);
   }
 }
