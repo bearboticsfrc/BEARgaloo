@@ -55,9 +55,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase implements AllianceRea
             RobotConstants.DRIVE_KINEMATICS, // DriveConstants.DRIVE_KINEMATICS,
             driveSubsystem.getHeading(),
             driveSubsystem.getModulePositions(),
-            getInitialPose2d(),
-            VisionConstants.STATE_STD_DEVS,
-            VisionConstants.VISION_STD_DEVS);
+            getInitialPose2d());
 
     tab.addString("Pose", () -> StringFormatting.poseToString(getPose()))
         .withPosition(0, 0)
