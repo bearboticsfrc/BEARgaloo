@@ -87,14 +87,11 @@ public class RobotContainer {
         .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.INTAKE))
         .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
 
-    operatorController
-        .b()
-        .onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM))
-        .onFalse(manipulatorSubsystem.getWristRunCommand(WristPositions.HOME));
+    operatorController.b().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
+    operatorController.a().onTrue(manipulatorSubsystem.getHomeAllCommand());
 
-    operatorController
-        .y()
-        .onTrue(manipulatorSubsystem.getArmRunCommand(ArmPositions.HIGH))
-        .onFalse(manipulatorSubsystem.getArmRunCommand(ArmPositions.HOME));
+    operatorController.x().onTrue(manipulatorSubsystem.getArmRunCommand(ArmPositions.HIGH));
+
+    operatorController.y().onTrue(manipulatorSubsystem.getArmRunCommand(ArmPositions.HOME));
   }
 }

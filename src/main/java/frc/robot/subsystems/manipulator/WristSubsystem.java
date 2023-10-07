@@ -13,13 +13,13 @@ import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
 
 public class WristSubsystem extends SubsystemBase {
-  private String moduleName;
+  private String name;
   private RelativeEncoder motorEncoder;
   private SparkMaxPIDController motorPid;
   private CANSparkMax motor;
 
   public WristSubsystem(MotorBuilder motorConstants) {
-    this.moduleName = motorConstants.getName(); // TODO: Use name AND moduleName
+    this.name = motorConstants.getName(); // TODO: Use name AND moduleName
 
     this.motor =
         new CANSparkMax(motorConstants.getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -41,7 +41,7 @@ public class WristSubsystem extends SubsystemBase {
    */
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
     shuffleboardTab
-        .addNumber(String.format("%s Pos", moduleName), this.motorEncoder::getPosition)
+        .addNumber(String.format("%s Pos", name), this.motorEncoder::getPosition)
         .withSize(1, 1);
   }
 

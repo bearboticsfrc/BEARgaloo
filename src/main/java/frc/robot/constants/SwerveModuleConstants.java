@@ -3,6 +3,16 @@ package frc.robot.constants;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class SwerveModuleConstants {
+
+  public static final double DRIVE_POSITION_CONVERSION_FACTOR =
+      (RobotConstants.WHEEL_DIAMETER * Math.PI) / DriveConstants.DRIVE_GEAR_REDUCTION; // meters
+  public static final double DRIVE_VELOCITY_CONVERSION_FACTOR =
+      ((RobotConstants.WHEEL_DIAMETER * Math.PI) / DriveConstants.DRIVE_GEAR_REDUCTION)
+          / 60.0; // meters per second
+
+  public static final double PIVOT_POSITION_CONVERSION_FACTOR = 2 * Math.PI;
+  public static final double PIVOT_VELOCITY_CONVERSION_FACTOR = (2 * Math.PI) / 60;
+
   public static class FrontLeftConstants {
     public static final String MODULE_NAME = "FL";
     public static final Rotation2d PARK_ANGLE = Rotation2d.fromDegrees(135);
@@ -14,6 +24,8 @@ public class SwerveModuleConstants {
       public static final int CURRENT_LIMT = 50;
       public static final boolean INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
+      public static final double POSITION_CONVERSION_FACTOR = DRIVE_POSITION_CONVERSION_FACTOR;
+      public static final double VELOCITY_CONVERSION_FACTOR = DRIVE_VELOCITY_CONVERSION_FACTOR;
 
       public static class MotorPid {
         public static final double P = 0.04;
@@ -27,6 +39,8 @@ public class SwerveModuleConstants {
       public static final int CURRENT_LIMT = 20;
       public static final boolean INVERTED = false;
       public static final boolean ENCODER_INVERTED = true;
+      public static final double POSITION_CONVERSION_FACTOR = PIVOT_POSITION_CONVERSION_FACTOR;
+      public static final double VELOCITY_CONVERSION_FACTOR = PIVOT_VELOCITY_CONVERSION_FACTOR;
 
       public static class MotorPid {
         public static final double P = 1;
@@ -48,6 +62,8 @@ public class SwerveModuleConstants {
       public static final int CURRENT_LIMT = 50;
       public static final boolean INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
+      public static final double POSITION_CONVERSION_FACTOR = DRIVE_POSITION_CONVERSION_FACTOR;
+      public static final double VELOCITY_CONVERSION_FACTOR = DRIVE_VELOCITY_CONVERSION_FACTOR;
 
       public static class MotorPid {
         public static final double P = 0.04;
@@ -61,6 +77,8 @@ public class SwerveModuleConstants {
       public static final int CURRENT_LIMT = 20;
       public static final boolean INVERTED = false;
       public static final boolean ENCODER_INVERTED = true;
+      public static final double POSITION_CONVERSION_FACTOR = PIVOT_POSITION_CONVERSION_FACTOR;
+      public static final double VELOCITY_CONVERSION_FACTOR = PIVOT_VELOCITY_CONVERSION_FACTOR;
 
       public static class MotorPid {
         public static final double P = 1;
@@ -82,6 +100,8 @@ public class SwerveModuleConstants {
       public static final int CURRENT_LIMT = 50;
       public static final boolean INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
+      public static final double POSITION_CONVERSION_FACTOR = DRIVE_POSITION_CONVERSION_FACTOR;
+      public static final double VELOCITY_CONVERSION_FACTOR = DRIVE_VELOCITY_CONVERSION_FACTOR;
 
       public static class MotorPid {
         public static final double P = 0.04;
@@ -95,6 +115,8 @@ public class SwerveModuleConstants {
       public static final int CURRENT_LIMT = 20;
       public static final boolean INVERTED = false;
       public static final boolean ENCODER_INVERTED = true;
+      public static final double POSITION_CONVERSION_FACTOR = PIVOT_POSITION_CONVERSION_FACTOR;
+      public static final double VELOCITY_CONVERSION_FACTOR = PIVOT_VELOCITY_CONVERSION_FACTOR;
 
       public static class MotorPid {
         public static final double P = 1;
@@ -116,6 +138,8 @@ public class SwerveModuleConstants {
       public static final int CURRENT_LIMT = 50;
       public static final boolean INVERTED = false;
       public static final boolean ENCODER_INVERTED = false;
+      public static final double POSITION_CONVERSION_FACTOR = DRIVE_POSITION_CONVERSION_FACTOR;
+      public static final double VELOCITY_CONVERSION_FACTOR = DRIVE_VELOCITY_CONVERSION_FACTOR;
 
       public static class MotorPid {
         public static final double P = 0.04;
@@ -129,6 +153,8 @@ public class SwerveModuleConstants {
       public static final int CURRENT_LIMT = 20;
       public static final boolean INVERTED = false;
       public static final boolean ENCODER_INVERTED = true;
+      public static final double POSITION_CONVERSION_FACTOR = PIVOT_POSITION_CONVERSION_FACTOR;
+      public static final double VELOCITY_CONVERSION_FACTOR = PIVOT_VELOCITY_CONVERSION_FACTOR;
 
       public static class MotorPid {
         public static final double P = 1;

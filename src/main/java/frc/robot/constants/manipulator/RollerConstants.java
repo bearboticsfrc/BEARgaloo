@@ -2,7 +2,7 @@ package frc.robot.constants.manipulator;
 
 public class RollerConstants {
   public static class Motor {
-    public static final String MODULE_NAME = "Roller Motor";
+    public static final String NAME = "Roller Motor";
     public static final int MOTOR_PORT = 10;
     public static final int CURRENT_LIMT = 60;
     public static final boolean INVERTED = false;
@@ -10,7 +10,7 @@ public class RollerConstants {
   }
 
   public enum RollerSpeed {
-    INTAKE(-1),
+    INTAKE(-0.5),
     MEDIUM(0.5),
     OFF(0),
     RELEASE(1);

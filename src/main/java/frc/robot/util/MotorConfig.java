@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import frc.robot.constants.DriveConstants;
 
 public class MotorConfig {
   private CANSparkMax motor;
@@ -16,6 +15,8 @@ public class MotorConfig {
   private boolean encoderInverted;
   private double nominalVoltage;
   private int currentLimit;
+  private double positionConversionFactor;
+  private double velocityConversionFactor;
 
   /**
    * @param motor Specific motor to configure
@@ -32,7 +33,9 @@ public class MotorConfig {
       boolean motorInverted,
       boolean encoderInverted,
       double nominalVoltage,
-      int currentLimit) {
+      int currentLimit,
+      double positionConversionFactor,
+      double velocityConversionFactor) {
     this.motor = motor;
     this.motorEncoder = motorEncoder;
     this.moduleName = moduleName;
@@ -41,6 +44,8 @@ public class MotorConfig {
     this.encoderInverted = encoderInverted;
     this.nominalVoltage = nominalVoltage;
     this.currentLimit = currentLimit;
+    this.positionConversionFactor = positionConversionFactor;
+    this.velocityConversionFactor = velocityConversionFactor;
   }
 
   /*
@@ -58,10 +63,8 @@ public class MotorConfig {
       RelativeEncoder encoder = (RelativeEncoder) motorEncoder;
       RevUtil.checkRevError(motor.getPIDController().setFeedbackDevice(encoder));
 
-      RevUtil.checkRevError(
-          encoder.setPositionConversionFactor(DriveConstants.DRIVING_POSITION_CONVERSION_FACTOR));
-      RevUtil.checkRevError(
-          encoder.setVelocityConversionFactor(DriveConstants.DRIVING_VELOCITY_CONVERSION_FACTOR));
+      RevUtil.checkRevError(encoder.setPositionConversionFactor(positionConversionFactor));
+      RevUtil.checkRevError(encoder.setVelocityConversionFactor(velocityConversionFactor));
 
       ((RelativeEncoder) motorEncoder).setPosition(0);
     } else if (motorEncoder instanceof AbsoluteEncoder) {
@@ -73,10 +76,8 @@ public class MotorConfig {
       RevUtil.checkRevError(encoder.setInverted(encoderInverted));
       RevUtil.checkRevError(motor.getPIDController().setFeedbackDevice(encoder));
 
-      RevUtil.checkRevError(
-          encoder.setPositionConversionFactor(DriveConstants.PIVOT_POSITION_CONVERSION_FACTOR));
-      RevUtil.checkRevError(
-          encoder.setVelocityConversionFactor(DriveConstants.PIVOT_VELOCITY_CONVERSION_FACTOR));
+      RevUtil.checkRevError(encoder.setPositionConversionFactor(positionConversionFactor));
+      RevUtil.checkRevError(encoder.setVelocityConversionFactor(velocityConversionFactor));
     }
 
     return this;
@@ -90,6 +91,29 @@ public class MotorConfig {
     RevUtil.checkRevError(motorPIDController.setFF(motorPid.getFf()));
     RevUtil.checkRevError(
         motorPIDController.setOutputRange(motorPid.getMinOutput(), motorPid.getMaxOutput()));
+
+    boolean positionPidWrappingEnabled = motorPid.isPositionPidWrappingEnabled();
+
+    if (positionPidWrappingEnabled) {
+      RevUtil.checkRevError(
+          motorPIDController.setPositionPIDWrappingEnabled(positionPidWrappingEnabled));
+      RevUtil.checkRevError(
+          motorPIDController.setPositionPIDWrappingMinInput(motorPid.getPositionPidWrappingMin()));
+      RevUtil.checkRevError(
+          motorPIDController.setPositionPIDWrappingMaxInput(motorPid.getPositionPidWrappingMax()));
+    }
+
+    return this;
+  }
+
+  public MotorConfig configurePID(MotorPIDBuilder motorPid, int slot) {
+    SparkMaxPIDController motorPIDController = motor.getPIDController();
+    RevUtil.checkRevError(motorPIDController.setP(motorPid.getP(), slot));
+    RevUtil.checkRevError(motorPIDController.setI(motorPid.getI(), slot));
+    RevUtil.checkRevError(motorPIDController.setD(motorPid.getD(), slot));
+    RevUtil.checkRevError(motorPIDController.setFF(motorPid.getFf(), slot));
+    RevUtil.checkRevError(
+        motorPIDController.setOutputRange(motorPid.getMinOutput(), motorPid.getMaxOutput(), slot));
 
     boolean positionPidWrappingEnabled = motorPid.isPositionPidWrappingEnabled();
 
@@ -122,7 +146,9 @@ public class MotorConfig {
         constants.isMotorInverted(),
         constants.isEncoderInverted(),
         constants.getNominalVoltage(),
-        constants.getCurrentLimit());
+        constants.getCurrentLimit(),
+        constants.getPositionConversionFactor(),
+        constants.getVelocityConversionFactor());
   }
 
   public static class MotorPIDBuilder {
@@ -227,6 +253,48 @@ public class MotorConfig {
     private MotorPIDBuilder motorPID;
     private double nominalVoltage = 12;
     private int currentLimit;
+    private double positionConversionFactor = 1;
+    private double velocityConversionFactor = 1;
+    private MotorPIDBuilder[] pidSlots = new MotorPIDBuilder[2];
+
+    public MotorBuilder setMotorPid(MotorPIDBuilder motorPid, int slot) {
+      pidSlots[slot] = motorPid;
+      return this;
+    }
+
+    public MotorPIDBuilder getMotorPid(int slot) {
+      return pidSlots[slot];
+    }
+
+    /**
+     * @return the positionConversionFactor
+     */
+    public double getPositionConversionFactor() {
+      return positionConversionFactor;
+    }
+
+    /**
+     * @param positionConversionFactor the positionConversionFactor to set
+     */
+    public MotorBuilder setPositionConversionFactor(double positionConversionFactor) {
+      this.positionConversionFactor = positionConversionFactor;
+      return this;
+    }
+
+    /**
+     * @return the velocityConversionFactor
+     */
+    public double getVelocityConversionFactor() {
+      return velocityConversionFactor;
+    }
+
+    /**
+     * @param velocityConversionFactor the velocityConversionFactor to set
+     */
+    public MotorBuilder setVelocityConversionFactor(double velocityConversionFactor) {
+      this.velocityConversionFactor = velocityConversionFactor;
+      return this;
+    }
 
     public String getName() {
       return name;

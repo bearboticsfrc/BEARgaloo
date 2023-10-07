@@ -13,14 +13,14 @@ import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
 
 public class ArmSubsystem extends SubsystemBase {
-  private String moduleName;
+  private String name;
   private RelativeEncoder motorEncoder;
   private SparkMaxPIDController motorPid;
   private CANSparkMax motor;
   private CANSparkMax followerMotor;
 
   public ArmSubsystem(MotorBuilder motorConstants, MotorBuilder followerMotorConstants) {
-    this.moduleName = motorConstants.getName();
+    this.name = motorConstants.getName();
 
     this.motor =
         new CANSparkMax(motorConstants.getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -31,17 +31,18 @@ public class ArmSubsystem extends SubsystemBase {
     this.motorEncoder = motor.getEncoder();
     this.motorPid = motor.getPIDController();
 
+    followerMotor.follow(motor, true);
+
     MotorConfig.fromMotorConstants(motor, motorEncoder, motorConstants)
         .configureMotor()
-        .configurePID(motorConstants.getMotorPID())
+        .configurePID(motorConstants.getMotorPid(0), 0)
+        .configurePID(motorConstants.getMotorPid(1), 1)
         .burnFlash();
 
     MotorConfig.fromMotorConstants(
             followerMotor, followerMotor.getEncoder(), followerMotorConstants)
         .configureMotor()
         .burnFlash();
-
-    followerMotor.follow(motor, true);
 
     setupShuffleboardTab(RobotConstants.MANIPULATOR_SYSTEM_TAB);
     // setupDataLogging(DataLogManager.getLog()); TODO: impl
@@ -52,12 +53,16 @@ public class ArmSubsystem extends SubsystemBase {
    */
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
     shuffleboardTab
-        .addNumber(String.format("%s Pos", moduleName), this.motorEncoder::getPosition)
+        .addNumber(String.format("%s Pos", name), this.motorEncoder::getPosition)
+        .withSize(1, 1);
+
+    shuffleboardTab
+        .addNumber(String.format("%s Amps", name), this.motor::getAppliedOutput)
         .withSize(1, 1);
   }
 
   public void set(ArmPositions position) {
-    System.out.println(position.getPosition());
-    motorPid.setReference(position.getPosition(), ControlType.kPosition);
+    int slot = position == ArmPositions.HIGH ? 0 : 1;
+    motorPid.setReference(position.getPosition(), ControlType.kPosition, slot);
   }
 }

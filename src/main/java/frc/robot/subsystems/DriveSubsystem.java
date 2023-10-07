@@ -130,6 +130,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
             .setMotorInverted(FrontLeftConstants.DriveMotor.INVERTED)
             .setEncoderInverted(FrontLeftConstants.DriveMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(FrontLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(FrontLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
@@ -139,6 +141,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
             .setMotorInverted(FrontLeftConstants.PivotMotor.INVERTED)
             .setEncoderInverted(FrontLeftConstants.PivotMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(FrontLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(FrontLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -175,6 +179,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(BackLeftConstants.DriveMotor.CURRENT_LIMT)
             .setMotorInverted(BackLeftConstants.DriveMotor.INVERTED)
             .setEncoderInverted(BackLeftConstants.DriveMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(BackLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(BackLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
@@ -184,6 +190,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(BackLeftConstants.PivotMotor.CURRENT_LIMT)
             .setMotorInverted(BackLeftConstants.PivotMotor.INVERTED)
             .setEncoderInverted(BackLeftConstants.PivotMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(BackLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(BackLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -220,6 +228,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(FrontRightConstants.DriveMotor.CURRENT_LIMT)
             .setMotorInverted(FrontRightConstants.DriveMotor.INVERTED)
             .setEncoderInverted(FrontRightConstants.DriveMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(FrontRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(FrontRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
@@ -229,6 +239,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(FrontRightConstants.PivotMotor.CURRENT_LIMT)
             .setMotorInverted(FrontRightConstants.PivotMotor.INVERTED)
             .setEncoderInverted(FrontRightConstants.PivotMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(FrontRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(FrontRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -265,6 +277,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(BackRightConstants.DriveMotor.CURRENT_LIMT)
             .setMotorInverted(BackRightConstants.DriveMotor.INVERTED)
             .setEncoderInverted(BackRightConstants.DriveMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(BackRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(BackRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
@@ -274,6 +288,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(BackRightConstants.PivotMotor.CURRENT_LIMT)
             .setMotorInverted(BackRightConstants.PivotMotor.INVERTED)
             .setEncoderInverted(BackRightConstants.PivotMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(BackRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(BackRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =

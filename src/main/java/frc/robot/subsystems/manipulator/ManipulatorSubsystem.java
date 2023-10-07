@@ -2,6 +2,7 @@ package frc.robot.subsystems.manipulator;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.manipulator.ArmConstants;
 import frc.robot.constants.manipulator.ArmConstants.ArmPositions;
@@ -24,25 +25,28 @@ public class ManipulatorSubsystem extends SubsystemBase {
   }
 
   private ArmSubsystem getArmSubsystem() {
-    MotorPIDBuilder armMotorPid = new MotorPIDBuilder().setP(ArmConstants.Motor.MotorPid.P);
+    MotorPIDBuilder armMotorPidRaise =
+        new MotorPIDBuilder().setP(ArmConstants.Motor.MotorPidRaise.P);
+    MotorPIDBuilder armMotorPidLower =
+        new MotorPIDBuilder().setP(ArmConstants.Motor.MotorPidLower.P);
 
     MotorBuilder armMotorConfig =
         new MotorBuilder()
-            .setName(ArmConstants.Motor.MODULE_NAME)
+            .setName(ArmConstants.Motor.NAME)
             .setMotorPort(ArmConstants.Motor.MOTOR_PORT)
             .setCurrentLimit(ArmConstants.Motor.CURRENT_LIMT)
             .setMotorInverted(ArmConstants.Motor.INVERTED)
             .setEncoderInverted(ArmConstants.Motor.ENCODER_INVERTED)
-            .setMotorPID(armMotorPid);
+            .setMotorPid(armMotorPidRaise, 0)
+            .setMotorPid(armMotorPidLower, 1);
 
     MotorBuilder armFollowerMotorConfig =
         new MotorBuilder()
-            .setName(ArmConstants.FollowerMotor.MODULE_NAME)
+            .setName(ArmConstants.FollowerMotor.NAME)
             .setMotorPort(ArmConstants.FollowerMotor.MOTOR_PORT)
             .setCurrentLimit(ArmConstants.FollowerMotor.CURRENT_LIMT)
             .setMotorInverted(ArmConstants.FollowerMotor.INVERTED)
-            .setEncoderInverted(ArmConstants.FollowerMotor.ENCODER_INVERTED)
-            .setMotorPID(armMotorPid);
+            .setEncoderInverted(ArmConstants.FollowerMotor.ENCODER_INVERTED);
 
     return new ArmSubsystem(armMotorConfig, armFollowerMotorConfig);
   }
@@ -52,7 +56,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
     MotorBuilder wristMotorConfig =
         new MotorBuilder()
-            .setName(WristConstants.Motor.MODULE_NAME)
+            .setName(WristConstants.Motor.NAME)
             .setMotorPort(WristConstants.Motor.MOTOR_PORT)
             .setCurrentLimit(WristConstants.Motor.CURRENT_LIMT)
             .setMotorInverted(WristConstants.Motor.INVERTED)
@@ -65,7 +69,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
   private RollerSubsystem getRollerSubsystem() {
     MotorBuilder rollerMotorConfig =
         new MotorBuilder()
-            .setName(RollerConstants.Motor.MODULE_NAME)
+            .setName(RollerConstants.Motor.NAME)
             .setMotorPort(RollerConstants.Motor.MOTOR_PORT)
             .setCurrentLimit(RollerConstants.Motor.CURRENT_LIMT)
             .setMotorInverted(RollerConstants.Motor.INVERTED)
@@ -84,5 +88,10 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
   public CommandBase getArmRunCommand(ArmPositions position) {
     return new InstantCommand(() -> armSubsystem.set(position));
+  }
+
+  public CommandBase getHomeAllCommand() {
+    return new ParallelCommandGroup(
+        getWristRunCommand(WristPositions.HOME), getArmRunCommand(ArmPositions.HOME));
   }
 }

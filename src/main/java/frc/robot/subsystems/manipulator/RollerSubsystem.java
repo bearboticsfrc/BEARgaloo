@@ -11,12 +11,12 @@ import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
 
 public class RollerSubsystem extends SubsystemBase {
-  private String moduleName;
+  private String name;
   private RelativeEncoder motorEncoder;
   private CANSparkMax motor;
 
   public RollerSubsystem(MotorBuilder motorConstants) {
-    this.moduleName = motorConstants.getName();
+    this.name = motorConstants.getName();
 
     this.motor =
         new CANSparkMax(motorConstants.getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -35,15 +35,15 @@ public class RollerSubsystem extends SubsystemBase {
    */
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
     shuffleboardTab
-        .addNumber(String.format("%s Pos", moduleName), this.motorEncoder::getPosition)
+        .addNumber(String.format("%s Pos", name), this.motorEncoder::getPosition)
         .withSize(2, 1);
     shuffleboardTab
-        .addNumber(String.format("%s Amps", moduleName), this.motor::getOutputCurrent)
+        .addNumber(String.format("%s Amps", name), this.motor::getOutputCurrent)
         .withSize(2, 1);
     shuffleboardTab
-        .addNumber(String.format("%s Output", moduleName), this.motor::getAppliedOutput)
+        .addNumber(String.format("%s Output", name), this.motor::getAppliedOutput)
         .withSize(2, 1);
-    shuffleboardTab.addBoolean(String.format("%s Cube?", moduleName), this::hasCube).withSize(1, 1);
+    shuffleboardTab.addBoolean(String.format("%s Cube?", name), this::hasCube).withSize(1, 1);
   }
 
   private boolean hasCube() {
