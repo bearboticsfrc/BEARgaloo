@@ -9,17 +9,21 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.PathCommand;
 import frc.robot.constants.AutoConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.manipulator.ManipulatorSubsystem;
 
 public class DropCubeTopExitCommunity {
 
-  public static Command get(DriveSubsystem driveSubsystem) {
+  public static Command get(
+      DriveSubsystem driveSubsystem, ManipulatorSubsystem manipulatorSubsystem) {
     PathPlannerTrajectory pathPlannerTrajectory =
         PathPlanner.loadPath(
             "DropCubeTopExitCommunity",
             AutoConstants.MAX_SPEED_METERS_PER_SECOND,
             AutoConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     return new SequentialCommandGroup(
-            new ProxyCommand(() -> new PathCommand(driveSubsystem, pathPlannerTrajectory)),
+            manipulatorSubsystem.getShootCubeCommand(),
+            new ProxyCommand(
+                () -> new PathCommand(driveSubsystem, pathPlannerTrajectory, true, true)),
             new InstantCommand(() -> driveSubsystem.stop()))
         .withName("DropCubeTopExitCommunity");
   }

@@ -61,7 +61,7 @@ public class DriveConstants {
 
   public static final double MAX_ACCELERATION_PER_SECOND = 4;
   public static final double MAX_DECELERATION_PER_SECOND = 4;
-  public static final double MAX_ANGULAR_ACCELERATION_PER_SECOND = 8 * (Math.PI * 2);
+  public static final double MAX_ANGULAR_ACCELERATION_PER_SECOND = 6 * (Math.PI * 2);
   public static final double MAX_ANGULAR_DECELERATION_PER_SECOND = 20;
 
   public static final RateLimiter X_ACCELERATION_LIMITER =

@@ -5,7 +5,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -401,7 +403,7 @@ public class DriveSubsystem extends SubsystemBase {
             * DriveConstants.MAX_ANGULAR_ACCELERATION_PER_SECOND;
 
     if (maxSpeed == SpeedMode.TURTLE.getMaxSpeed()) {
-      rot /= 4.0;
+      rot /= 6.0;
     }
 
     SwerveModuleState[] swerveModuleStates =
@@ -433,6 +435,20 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
+   * Returns the state of every swerve module.
+   *
+   * @return The states.
+   */
+  public SwerveModuleState[] getModuleStates() {
+    SwerveModuleState[] states = new SwerveModuleState[4];
+    int index = 0;
+    for (SwerveModule module : swerveModules.values()) {
+      states[index++] = module.getState();
+    }
+    return states;
+  }
+
+  /**
    * Returns the heading of the robot.
    *
    * @return the robot's heading as a Rotation2d
@@ -452,5 +468,33 @@ public class DriveSubsystem extends SubsystemBase {
         Arrays.stream(getSwerveModules())
             .map(module -> module.getPosition())
             .toArray(SwerveModulePosition[]::new);
+  }
+
+  /**
+   * Returns the currently-estimated pose of the robot.
+   *
+   * @return The pose.
+   */
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  /**
+   * Resets the odometry to the specified pose.
+   *
+   * @param pose The pose to which to set the odometry.
+   */
+  public void resetOdometry(Pose2d pose) {
+    odometry.resetPosition(getHeading(), getModulePositions(), pose);
+    // pigeon2.addYaw(pose.getRotation().getDegrees());
+  }
+
+  /**
+   * Resets the odometry to the specified pose of a state in a PathPlanner trajectory.
+   *
+   * @param state The state of the PathPlanner trajectory to contstruct a pose.
+   */
+  public void resetOdometry(PathPlannerState state) {
+    resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
   }
 }

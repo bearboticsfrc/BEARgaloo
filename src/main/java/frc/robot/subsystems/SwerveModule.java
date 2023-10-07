@@ -231,6 +231,10 @@ public class SwerveModule {
     parked = mode;
   }
 
+  public SwerveModuleState getState() {
+    return new SwerveModuleState(getDriveVelocity(), getSteerAngle());
+  }
+
   /**
    * Sets the steer angle in radians
    *

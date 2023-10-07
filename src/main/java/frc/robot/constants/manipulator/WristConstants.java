@@ -4,7 +4,7 @@ public class WristConstants {
   public static class Motor {
     public static final String NAME = "Wrist Motor";
     public static final int MOTOR_PORT = 13;
-    public static final int CURRENT_LIMT = 60;
+    public static final int CURRENT_LIMT = 80;
     public static final boolean INVERTED = true;
     public static final boolean ENCODER_INVERTED = true;
 
@@ -12,6 +12,8 @@ public class WristConstants {
       public static final double P = 0.02;
     }
   }
+
+  public static int WRIST_LIMIT_SWITCH_PORT = 9;
 
   public enum WristPositions {
     HOME(0),

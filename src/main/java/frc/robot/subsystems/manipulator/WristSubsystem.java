@@ -5,9 +5,11 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.RobotConstants;
+import frc.robot.constants.manipulator.WristConstants;
 import frc.robot.constants.manipulator.WristConstants.WristPositions;
 import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
@@ -18,6 +20,7 @@ public class WristSubsystem extends SubsystemBase {
   private SparkMaxPIDController motorPid;
   private CANSparkMax motor;
   private double targetPosition = 0.0;
+  private final DigitalInput limitSwitch = new DigitalInput(WristConstants.WRIST_LIMIT_SWITCH_PORT);
 
   public WristSubsystem(MotorBuilder motorConstants) {
     this.name = motorConstants.getName(); // TODO: Use name AND moduleName
@@ -37,10 +40,23 @@ public class WristSubsystem extends SubsystemBase {
     // setupDataLogging(DataLogManager.getLog()); TODO: impl
   }
 
+  @Override
+  public void periodic() {
+    if (limitSwitch.get()) {
+      motorEncoder.setPosition(0.0);
+    }
+  }
+
+  public boolean isLimitSwitchActive() {
+    return limitSwitch.get();
+  }
   /**
    * @param shuffleboardTab The shuffleboard tab to use
    */
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
+    shuffleboardTab
+        .addBoolean(String.format("%s Limit SW", name), this::isLimitSwitchActive)
+        .withSize(1, 1);
     shuffleboardTab
         .addNumber(String.format("%s Pos", name), this.motorEncoder::getPosition)
         .withSize(1, 1);

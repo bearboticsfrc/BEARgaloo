@@ -1,9 +1,12 @@
 package frc.robot.subsystems.manipulator;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.manipulator.ArmConstants;
 import frc.robot.constants.manipulator.ArmConstants.ArmPositions;
 import frc.robot.constants.manipulator.RollerConstants;
@@ -12,6 +15,7 @@ import frc.robot.constants.manipulator.WristConstants;
 import frc.robot.constants.manipulator.WristConstants.WristPositions;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import frc.robot.util.MotorConfig.MotorPIDBuilder;
+import java.util.HashMap;
 
 public class ManipulatorSubsystem extends SubsystemBase {
   private final ArmSubsystem armSubsystem;
@@ -110,5 +114,36 @@ public class ManipulatorSubsystem extends SubsystemBase {
   public CommandBase getMidScoreCommand() {
     return new ParallelCommandGroup(
         getWristRunCommand(WristPositions.TOP), getArmRunCommand(ArmPositions.HOME));
+  }
+
+  public Command getShootCubeCommand() {
+    SequentialCommandGroup command =
+        new SequentialCommandGroup(
+            getRollerRunCommand(RollerSpeed.RELEASE),
+            new WaitCommand(.2),
+            getRollerRunCommand(RollerSpeed.OFF));
+    command.addRequirements(this);
+    return command;
+  }
+
+  public Command getPickupCubeCommand() {
+    SequentialCommandGroup command =
+        new SequentialCommandGroup(
+            getWristRunCommand(WristPositions.BOTTOM),
+            getRollerRunCommand(RollerSpeed.INTAKE),
+            new WaitCommand(1),
+            getRollerRunCommand(RollerSpeed.OFF),
+            getWristRunCommand(WristPositions.HOME));
+    command.addRequirements(this);
+    return command;
+  }
+
+  public HashMap<String, Command> getEventMap() {
+
+    HashMap<String, Command> eventMap = new HashMap<>();
+    eventMap.put("lowerWrist", getWristRunCommand(WristPositions.BOTTOM));
+    eventMap.put("startRollers", getRollerRunCommand(RollerSpeed.INTAKE));
+
+    return eventMap;
   }
 }
