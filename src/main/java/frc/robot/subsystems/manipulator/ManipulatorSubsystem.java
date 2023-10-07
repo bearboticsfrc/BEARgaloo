@@ -86,6 +86,13 @@ public class ManipulatorSubsystem extends SubsystemBase {
     return new InstantCommand(() -> wristSubsystem.set(position));
   }
 
+  public void adjustWristHeight(double direction) {
+    if (direction < 0.01 && direction > -0.01) return;
+    double position = wristSubsystem.getPosition();
+    position = position + (direction * 0.1);
+    wristSubsystem.set(position);
+  }
+
   public CommandBase getArmRunCommand(ArmPositions position) {
     return new InstantCommand(() -> armSubsystem.set(position));
   }
@@ -93,5 +100,15 @@ public class ManipulatorSubsystem extends SubsystemBase {
   public CommandBase getHomeAllCommand() {
     return new ParallelCommandGroup(
         getWristRunCommand(WristPositions.HOME), getArmRunCommand(ArmPositions.HOME));
+  }
+
+  public CommandBase getHighScoreCommand() {
+    return new ParallelCommandGroup(
+        getWristRunCommand(WristPositions.TOP), getArmRunCommand(ArmPositions.HIGH));
+  }
+
+  public CommandBase getMidScoreCommand() {
+    return new ParallelCommandGroup(
+        getWristRunCommand(WristPositions.TOP), getArmRunCommand(ArmPositions.HOME));
   }
 }

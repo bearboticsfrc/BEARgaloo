@@ -17,6 +17,7 @@ public class WristSubsystem extends SubsystemBase {
   private RelativeEncoder motorEncoder;
   private SparkMaxPIDController motorPid;
   private CANSparkMax motor;
+  private double targetPosition = 0.0;
 
   public WristSubsystem(MotorBuilder motorConstants) {
     this.name = motorConstants.getName(); // TODO: Use name AND moduleName
@@ -43,9 +44,25 @@ public class WristSubsystem extends SubsystemBase {
     shuffleboardTab
         .addNumber(String.format("%s Pos", name), this.motorEncoder::getPosition)
         .withSize(1, 1);
+    shuffleboardTab
+        .addNumber(String.format("%s Amps", name), this.motor::getOutputCurrent)
+        .withSize(1, 1);
+    shuffleboardTab.addNumber(String.format("%s setpoint", name), this::getPosition).withSize(1, 1);
   }
 
   public void set(WristPositions position) {
+    this.targetPosition = position.getPosition();
     motorPid.setReference(position.getPosition(), ControlType.kPosition);
+  }
+
+  public void set(double position) {
+    if (position < WristPositions.HOME.getPosition()
+        || position > WristPositions.BOTTOM.getPosition()) return;
+    this.targetPosition = position;
+    motorPid.setReference(position, ControlType.kPosition);
+  }
+
+  public double getPosition() {
+    return targetPosition;
   }
 }

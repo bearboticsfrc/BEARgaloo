@@ -34,7 +34,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driveSubsystem.setDefaultCommand(getDefaultCommand());
-
+    setManipulatorDefaultCommand();
     configureControllerMappings();
   }
 
@@ -46,6 +46,22 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(driverController.getLeftX(), 0.1),
                 -MathUtil.applyDeadband(driverController.getRightX(), 0.1)),
         driveSubsystem);
+  }
+
+  private void setManipulatorDefaultCommand() {
+    manipulatorSubsystem.setDefaultCommand(
+        new RunCommand(
+            () -> {
+              // manipulator.runRollerDefault(
+              //    MathUtil.applyDeadband(
+              //        squareWithSign(operatorXboxController.getLeftTriggerAxis()), 0.1),
+              //    MathUtil.applyDeadband(
+              //        squareWithSign(operatorXboxController.getRightTriggerAxis()), 0.1));
+
+              manipulatorSubsystem.adjustWristHeight(
+                  MathUtil.applyDeadband(operatorController.getRightY(), 0.2));
+            },
+            manipulatorSubsystem));
   }
 
   public void configureControllerMappings() {
@@ -87,11 +103,19 @@ public class RobotContainer {
         .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.INTAKE))
         .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
 
+    operatorController
+        .povDown()
+        .onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
+    operatorController.povUp().onTrue(manipulatorSubsystem.getHighScoreCommand());
+    operatorController.povLeft().onTrue(manipulatorSubsystem.getMidScoreCommand());
+    operatorController
+        .povRight()
+        .onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
     operatorController.b().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
-    operatorController.a().onTrue(manipulatorSubsystem.getHomeAllCommand());
+    operatorController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
 
     operatorController.x().onTrue(manipulatorSubsystem.getArmRunCommand(ArmPositions.HIGH));
 
-    operatorController.y().onTrue(manipulatorSubsystem.getArmRunCommand(ArmPositions.HOME));
+    operatorController.a().onTrue(manipulatorSubsystem.getArmRunCommand(ArmPositions.HOME));
   }
 }

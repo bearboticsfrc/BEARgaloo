@@ -57,7 +57,10 @@ public class ArmSubsystem extends SubsystemBase {
         .withSize(1, 1);
 
     shuffleboardTab
-        .addNumber(String.format("%s Amps", name), this.motor::getAppliedOutput)
+        .addNumber(String.format("%s m Amps", name), this.motor::getAppliedOutput)
+        .withSize(1, 1);
+    shuffleboardTab
+        .addNumber(String.format("%s f Amps", name), this.followerMotor::getAppliedOutput)
         .withSize(1, 1);
   }
 
