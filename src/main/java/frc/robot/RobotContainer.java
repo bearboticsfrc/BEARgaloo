@@ -5,9 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.auto.DropCubeBottomExitCommunity;
+import frc.robot.commands.auto.DropCubeTopExitCommunity;
+import frc.robot.commands.auto.LeaveCommunityBottom;
+import frc.robot.commands.auto.LeaveCommunityTop;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
 import frc.robot.constants.manipulator.ArmConstants.ArmPositions;
@@ -15,6 +23,8 @@ import frc.robot.constants.manipulator.RollerConstants.RollerSpeed;
 import frc.robot.constants.manipulator.WristConstants.WristPositions;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.manipulator.ManipulatorSubsystem;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -23,7 +33,9 @@ import frc.robot.subsystems.manipulator.ManipulatorSubsystem;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+  private List<Pair<String, Command>> autoList = new ArrayList<Pair<String, Command>>();
+  private final DriveSubsystem robotDrive = new DriveSubsystem();
+  private boolean isTeleop = false;
   private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem();
 
   private final CommandXboxController driverController =
@@ -117,5 +129,19 @@ public class RobotContainer {
     operatorController.x().onTrue(manipulatorSubsystem.getArmRunCommand(ArmPositions.HIGH));
 
     operatorController.a().onTrue(manipulatorSubsystem.getArmRunCommand(ArmPositions.HOME));
+  }
+  private void addToAutoList(String name, Command command) {
+    autoList.add(new Pair<String, Command>(name, command));
+  }
+
+  private void buildAutoList() {
+    addToAutoList("1-DropCubeBottomExitCommunity", DropCubeBottomExitCommunity.get(robotDrive));
+    addToAutoList("2-DropCubeTopmmunity", DropCubeTopExitCommunity.get(robotDrive));
+    addToAutoList("3-LeaveCommunityBottom", LeaveCommunityBottom.get(robotDrive));
+    addToAutoList("4-LeaveCommunityTop", LeaveCommunityTop.get(robotDrive));
+  }
+
+  public Command getAutonomousCommand() {
+    return new RunCommand(() -> "".isEmpty()); // TODO: Implement
   }
 }
