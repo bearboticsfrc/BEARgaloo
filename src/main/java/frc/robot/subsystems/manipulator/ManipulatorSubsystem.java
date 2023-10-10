@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.constants.AutoConstants.ScorePosition;
 import frc.robot.constants.manipulator.ArmConstants;
 import frc.robot.constants.manipulator.ArmConstants.ArmPositions;
 import frc.robot.constants.manipulator.RollerConstants;
@@ -83,22 +84,24 @@ public class ManipulatorSubsystem extends SubsystemBase {
   }
 
   public CommandBase getRollerRunCommand(RollerSpeed speed) {
-    return new InstantCommand(() -> rollerSubsystem.set(speed));
+    return new InstantCommand(() -> rollerSubsystem.set(speed), rollerSubsystem);
   }
 
   public CommandBase getWristRunCommand(WristPositions position) {
-    return new InstantCommand(() -> wristSubsystem.set(position));
-  }
-
-  public void adjustWristHeight(double direction) {
-    if (direction < 0.01 && direction > -0.01) return;
-    double position = wristSubsystem.getPosition();
-    position = position + (direction * 0.1);
-    wristSubsystem.set(position);
+    return new InstantCommand(() -> wristSubsystem.set(position), wristSubsystem);
   }
 
   public CommandBase getArmRunCommand(ArmPositions position) {
-    return new InstantCommand(() -> armSubsystem.set(position));
+    return new InstantCommand(() -> armSubsystem.set(position), armSubsystem);
+  }
+
+  public void adjustWristHeight(double direction) {
+    if (Math.abs(direction) < 0.01) {
+      return;
+    }
+
+    double position = wristSubsystem.getPosition() + (direction * 0.1);
+    wristSubsystem.set(position);
   }
 
   public CommandBase getHomeAllCommand() {
@@ -106,24 +109,19 @@ public class ManipulatorSubsystem extends SubsystemBase {
         getWristRunCommand(WristPositions.HOME), getArmRunCommand(ArmPositions.HOME));
   }
 
-  public CommandBase getHighScoreCommand() {
-    return new ParallelCommandGroup(
-        getWristRunCommand(WristPositions.TOP), getArmRunCommand(ArmPositions.HIGH));
-  }
+  public CommandBase getShelfScoreCommand(ScorePosition position) {
+    ArmPositions armPosition =
+        position == ScorePosition.HIGH ? ArmPositions.HIGH : ArmPositions.HOME;
 
-  public CommandBase getMidScoreCommand() {
     return new ParallelCommandGroup(
-        getWristRunCommand(WristPositions.TOP), getArmRunCommand(ArmPositions.HOME));
+        getWristRunCommand(WristPositions.HOME), getArmRunCommand(armPosition));
   }
 
   public Command getShootCubeCommand() {
-    SequentialCommandGroup command =
-        new SequentialCommandGroup(
-            getRollerRunCommand(RollerSpeed.RELEASE),
-            new WaitCommand(.2),
-            getRollerRunCommand(RollerSpeed.OFF));
-    command.addRequirements(this);
-    return command;
+    return new SequentialCommandGroup(
+        getRollerRunCommand(RollerSpeed.RELEASE),
+        new WaitCommand(.2),
+        getRollerRunCommand(RollerSpeed.OFF));
   }
 
   public Command getPickupCubeCommand() {
@@ -138,9 +136,14 @@ public class ManipulatorSubsystem extends SubsystemBase {
     return command;
   }
 
-  public HashMap<String, Command> getEventMap() {
+  public boolean hasCube() {
+    return rollerSubsystem.hasCube();
+  }
 
+  public HashMap<String, Command> getEventMap() {
+    // TODO: see if can be refactored
     HashMap<String, Command> eventMap = new HashMap<>();
+
     eventMap.put("lowerWrist", getWristRunCommand(WristPositions.BOTTOM));
     eventMap.put("startRollers", getRollerRunCommand(RollerSpeed.INTAKE));
 

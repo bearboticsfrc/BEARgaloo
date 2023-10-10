@@ -46,8 +46,8 @@ public class RollerSubsystem extends SubsystemBase {
     shuffleboardTab.addBoolean(String.format("%s Cube?", name), this::hasCube).withSize(1, 1);
   }
 
-  private boolean hasCube() {
-    return motor.getOutputCurrent() > 40;
+  public boolean hasCube() {
+    return motor.getOutputCurrent() > 60;
   }
   /**
    * Sets the roller speed.

@@ -12,12 +12,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.CubeHuntCommand;
 import frc.robot.commands.auto.CubeCubeLS;
 import frc.robot.commands.auto.DropCubeBottomExitCommunity;
 import frc.robot.commands.auto.DropCubeTopExitCommunity;
 import frc.robot.commands.auto.LeaveCommunityBottom;
 import frc.robot.commands.auto.LeaveCommunityTop;
+import frc.robot.constants.AutoConstants.ScorePosition;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
 import frc.robot.constants.manipulator.RollerConstants.RollerSpeed;
@@ -87,6 +90,7 @@ public class RobotContainer {
 
   private void configureDriverController() {
     driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
+
     driverController
         .b()
         .onTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
@@ -109,6 +113,18 @@ public class RobotContainer {
   }
 
   public void configureOperatorController() {
+    operatorController.a().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
+    operatorController
+        .b()
+        .whileTrue(
+            new SequentialCommandGroup(
+                manipulatorSubsystem.getRollerRunCommand(RollerSpeed.INTAKE),
+                new CubeHuntCommand(driveSubsystem, manipulatorSubsystem::hasCube),
+                manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF)));
+
+    operatorController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
+    operatorController.x().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
+
     operatorController
         .leftTrigger(0.1)
         .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.RELEASE))
@@ -122,18 +138,18 @@ public class RobotContainer {
     operatorController
         .povDown()
         .onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
-    operatorController.povUp().onTrue(manipulatorSubsystem.getHighScoreCommand());
-    operatorController.povLeft().onTrue(manipulatorSubsystem.getMidScoreCommand());
+
+    operatorController
+        .povUp()
+        .onTrue(manipulatorSubsystem.getShelfScoreCommand(ScorePosition.HIGH));
+
+    operatorController
+        .povLeft()
+        .onTrue(manipulatorSubsystem.getShelfScoreCommand(ScorePosition.MIDDLE));
+
     operatorController
         .povRight()
         .onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
-
-    operatorController.b().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
-    operatorController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
-
-    operatorController.x().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
-
-    operatorController.a().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
   }
 
   private void setupShuffleboardTab() {
@@ -141,6 +157,7 @@ public class RobotContainer {
     for (Pair<String, Command> command : autoList) {
       chooser.addOption(command.getFirst(), command.getSecond());
     }
+
     chooser.setDefaultOption(autoList.get(0).getFirst(), autoList.get(0).getSecond());
     compTab.add("Auto Command", chooser).withSize(4, 1).withPosition(0, 1);
   }
@@ -153,8 +170,9 @@ public class RobotContainer {
     addToAutoList("1-DropCubeBottomExitCommunity", DropCubeBottomExitCommunity.get(driveSubsystem));
     addToAutoList(
         "2-DropCubeTopmmunity", DropCubeTopExitCommunity.get(driveSubsystem, manipulatorSubsystem));
-    addToAutoList("3-LeaveCommunityBottom", LeaveCommunityBottom.get(driveSubsystem));
-    addToAutoList("4-LeaveCommunityTop", LeaveCommunityTop.get(driveSubsystem));
+    addToAutoList(
+        "3-LeaveCommunityBottom", LeaveCommunityBottom.get(driveSubsystem)); // TODO: remove maybe
+    addToAutoList("4-LeaveCommunityTop", LeaveCommunityTop.get(driveSubsystem)); // ^
     addToAutoList("5-CubeCubeLS", CubeCubeLS.get(driveSubsystem, manipulatorSubsystem));
   }
 

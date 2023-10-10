@@ -6,4 +6,9 @@ public class AutoConstants {
   public static final double PX_CONTROLLER = 0;
   public static final double PY_CONTROLLER = 0;
   public static final double PTHETA_CONTROLLER = 0;
+
+  public enum ScorePosition {
+    HIGH,
+    MIDDLE,
+  }
 }
