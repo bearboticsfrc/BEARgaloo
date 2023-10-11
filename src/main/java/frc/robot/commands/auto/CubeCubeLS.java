@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.CubeHuntCommand;
 import frc.robot.commands.LogCommand;
 import frc.robot.commands.PathCommand;
 import frc.robot.constants.AutoConstants;
@@ -37,17 +38,20 @@ public class CubeCubeLS {
             AutoConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
     return new SequentialCommandGroup(
             manipulatorSubsystem.getShootCubeCommand(),
-            new ProxyCommand(
-                () ->
-                    new FollowPathWithEvents(
-                        new PathCommand(driveSubsystem, pathPlannerTrajectory, true, true),
-                        pathPlannerTrajectory.getMarkers(),
-                        manipulatorSubsystem.getEventMap())),
+            new FollowPathWithEvents(
+                new PathCommand(driveSubsystem, pathPlannerTrajectory, true, true),
+                pathPlannerTrajectory.getMarkers(),
+                manipulatorSubsystem.getEventMap()),
             manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF),
             manipulatorSubsystem.getWristRunCommand(WristPositions.HOME),
             new ProxyCommand(() -> getDynamicPathToCubeNode(driveSubsystem)),
             manipulatorSubsystem.getShootCubeCommand(),
             new ProxyCommand(() -> getDynamicPathToSecondCube(driveSubsystem)),
+            manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM),
+            manipulatorSubsystem.getRollerRunCommand(RollerSpeed.INTAKE),
+            new CubeHuntCommand(driveSubsystem, manipulatorSubsystem::hasCube),
+            manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF),
+            manipulatorSubsystem.getWristRunCommand(WristPositions.HOME),
             new InstantCommand(() -> driveSubsystem.stop()))
         .withName("CubeCubeLS");
   }
@@ -84,14 +88,14 @@ public class CubeCubeLS {
     // Pose2d cubeNodePose = new Pose2d(1.9, 4.42, Rotation2d.fromDegrees(180.0));
     Pose2d cubeNodePose =
         LocationHelper.transformYAxisForAllianceColor(
-            new Pose2d(2.3, 4.52, Rotation2d.fromDegrees(180.0)));
+            new Pose2d(2.1, 4.52, Rotation2d.fromDegrees(180.0)));
     Pose2d entryPose =
         LocationHelper.transformYAxisForAllianceColor(
             new Pose2d(4.0, 4.85, Rotation2d.fromDegrees(180.0)));
 
     PathPlannerTrajectory trajectory =
         PathPlanner.generatePath(
-            new PathConstraints(2.5, 4),
+            new PathConstraints(3.0, 5),
             new PathPoint(
                     driveSubsystem.getPose().getTranslation(),
                     LocationHelper.transformHeadingForAllianceColor(Rotation2d.fromDegrees(155.0)),
@@ -122,7 +126,7 @@ public class CubeCubeLS {
     // Pose2d cubeNodePose = new Pose2d(1.9, 4.42, Rotation2d.fromDegrees(180.0));
     Pose2d cubeNodePose =
         LocationHelper.transformYAxisForAllianceColor(
-            new Pose2d(6.0, 4.50, Rotation2d.fromDegrees(-45.0)));
+            new Pose2d(5.8, 4.70, Rotation2d.fromDegrees(-45.0)));
     //            new Pose2d(6.27, 4.21, Rotation2d.fromDegrees(-45.0)));
     // Pose2d entryPose =
     //     LocationHelper.transformYAxisForAllianceColor(

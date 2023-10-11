@@ -64,6 +64,9 @@ public class WristSubsystem extends SubsystemBase {
         .addNumber(String.format("%s Amps", name), this.motor::getOutputCurrent)
         .withSize(1, 1);
     shuffleboardTab.addNumber(String.format("%s setpoint", name), this::getPosition).withSize(1, 1);
+    shuffleboardTab
+        .addNumber(String.format("%s Temp", name), this.motor::getMotorTemperature)
+        .withSize(1, 1);
   }
 
   public void set(WristPositions position) {

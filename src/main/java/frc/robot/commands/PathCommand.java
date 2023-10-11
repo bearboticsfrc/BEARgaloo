@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.constants.AutoConstants;
+import frc.robot.constants.DriveConstants.SpeedMode;
 import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision.StringFormatting;
@@ -66,6 +67,7 @@ public class PathCommand extends SequentialCommandGroup {
                       + StringFormatting.poseToString(
                           pathPlannerTrajectory.getEndState().poseMeters));
               if (isFirstPath) {
+                driveSubsystem.setSpeedMode(SpeedMode.TURBO);
                 PathPlannerTrajectory transformedTrajectory =
                     PathPlannerTrajectory.transformTrajectoryForAlliance(
                         pathPlannerTrajectory, DriverStation.getAlliance());
