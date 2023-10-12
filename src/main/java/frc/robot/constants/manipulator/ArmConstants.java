@@ -7,6 +7,7 @@ public class ArmConstants {
     public static final int CURRENT_LIMT = 60;
     public static final boolean INVERTED = false;
     public static final boolean ENCODER_INVERTED = true;
+    public static final double shootSpeed = 2;
 
     /*
      * Pid dataclass for raising arm
