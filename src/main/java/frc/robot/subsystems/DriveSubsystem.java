@@ -406,9 +406,7 @@ public class DriveSubsystem extends SubsystemBase {
       rot /= 18;
     } else if (maxSpeed == SpeedMode.TURBO.getMaxSpeed()) {
       rot /= 4;
-    }
-
-    System.out.println("xSpeed = " + xSpeed + "\nrot = " + rot);
+    } // TODO: refactor
 
     SwerveModuleState[] swerveModuleStates =
         RobotConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
