@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -13,8 +14,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CubeHuntCommand;
+import frc.robot.commands.auto.BumpTwoCube;
 import frc.robot.commands.auto.CubeCubeLS;
 import frc.robot.commands.auto.DropCubeBottomExitCommunity;
 import frc.robot.commands.auto.DropCubeTopExitCommunity;
@@ -48,6 +52,8 @@ public class RobotContainer {
 
   private SendableChooser<Command> chooser = new SendableChooser<>();
 
+  private boolean isTeleop = false;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driveSubsystem.setDefaultCommand(getDefaultCommand());
@@ -65,6 +71,10 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(driverController.getLeftX(), 0.1),
                 -MathUtil.applyDeadband(driverController.getRightX(), 0.1)),
         driveSubsystem);
+  }
+
+  public void setTeleop(boolean mode) {
+    isTeleop = mode;
   }
 
   private void setManipulatorDefaultCommand() {
@@ -114,12 +124,22 @@ public class RobotContainer {
         .rightTrigger(0.1)
         .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURTLE)))
         .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURBO))));
+
+    new Trigger(() -> manipulatorSubsystem.hasCube() && isTeleop)
+        .onTrue(
+            new InstantCommand(
+                    () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 1.0))
+                .andThen(new WaitCommand(1.0))
+                .andThen(
+                    new InstantCommand(
+                        () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0.0))));
   }
 
   public void configureOperatorController() {
     operatorController.a().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
     operatorController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
-    operatorController.x().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
+    operatorController.x().onTrue(manipulatorSubsystem.getShelfScoreCommand(ScorePosition.HIGH));
+    operatorController.b().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
 
     operatorController
         .leftTrigger(0.1)
@@ -170,6 +190,7 @@ public class RobotContainer {
         "3-LeaveCommunityBottom", LeaveCommunityBottom.get(driveSubsystem)); // TODO: remove maybe
     addToAutoList("4-LeaveCommunityTop", LeaveCommunityTop.get(driveSubsystem)); // ^
     addToAutoList("5-CubeCubeLS", CubeCubeLS.get(driveSubsystem, manipulatorSubsystem));
+    addToAutoList("6-2CubeBump", BumpTwoCube.get(driveSubsystem, manipulatorSubsystem));
   }
 
   public Command getAutonomousCommand() {

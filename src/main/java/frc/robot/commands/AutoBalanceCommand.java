@@ -8,7 +8,6 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AutoBalanceCommand extends CommandBase {
@@ -19,12 +18,8 @@ public class AutoBalanceCommand extends CommandBase {
   private static final double pitchSpeedControllerD = 0.0006;
   private static final double pitchSpeedControllerPositionTolerance = 2.1;
 
-
   private final PIDController pitchSpeedController =
-      new PIDController(
-          pitchSpeedControllerP,
-          pitchSpeedControllerI,
-          pitchSpeedControllerD);
+      new PIDController(pitchSpeedControllerP, pitchSpeedControllerI, pitchSpeedControllerD);
   private final Debouncer setpointDebouncer = new Debouncer(0.1);
 
   private BooleanLogEntry booleanLog;
