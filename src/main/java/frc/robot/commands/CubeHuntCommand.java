@@ -41,8 +41,8 @@ public class CubeHuntCommand extends CommandBase {
     double xSpeed = -xSpeedController.calculate(targetY, 0);
     double rot = rotSpeedController.calculate(targetX, 0);
 
-    if (targetY < 2) {
-      xSpeed += 2;
+    if (xSpeedController.atSetpoint()) {
+      xSpeed += 1;
     }
 
     driveSubsystem.drive(xSpeed, 0, rot, false);
@@ -50,12 +50,6 @@ public class CubeHuntCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    System.out.println(
-        "hasCube = "
-            + hasCube.getAsBoolean()
-            + "\nsetPoint = "
-            + (rotSpeedController.atSetpoint() && xSpeedController.atSetpoint()));
-    return hasCube.getAsBoolean()
-        && (rotSpeedController.atSetpoint() && xSpeedController.atSetpoint());
+    return hasCube.getAsBoolean();
   }
 }

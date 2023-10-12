@@ -403,8 +403,12 @@ public class DriveSubsystem extends SubsystemBase {
             * DriveConstants.MAX_ANGULAR_ACCELERATION_PER_SECOND;
 
     if (maxSpeed == SpeedMode.TURTLE.getMaxSpeed()) {
-      rot /= 6.0;
+      rot /= 18;
+    } else if (maxSpeed == SpeedMode.TURBO.getMaxSpeed()) {
+      rot /= 4;
     }
+
+    System.out.println("xSpeed = " + xSpeed + "\nrot = " + rot);
 
     SwerveModuleState[] swerveModuleStates =
         RobotConstants.DRIVE_KINEMATICS.toSwerveModuleStates(

@@ -12,7 +12,7 @@ import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
 
 public class RollerSubsystem extends SubsystemBase {
-  private MedianFilter medianFilter = new MedianFilter(5);
+  private MedianFilter medianFilter = new MedianFilter(10);
   private String name;
   private RelativeEncoder motorEncoder;
   private CANSparkMax motor;
@@ -51,20 +51,12 @@ public class RollerSubsystem extends SubsystemBase {
         .withSize(2, 1);
   }
 
-  public boolean inMotionGrab() {
-    return (this.motorEncoder.getVelocity() > 1);
-  }
-
-  public boolean inMotionDrop() {
-    return (this.motorEncoder.getVelocity() < -1);
-  }
-
   public boolean hasCube() {
-
     double adjustedOutput = medianFilter.calculate(motor.getOutputCurrent());
 
-    return (!inMotionGrab()) & (adjustedOutput > 40);
+    return motorEncoder.getVelocity() < 0 && (adjustedOutput > 40);
   }
+
   /**
    * Sets the roller speed.
    *
@@ -76,7 +68,7 @@ public class RollerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (motor.get() < 0 & hasCube()) {
+    if (motor.get() < 0 && hasCube()) {
       motor.set(0);
     } // intake
   }

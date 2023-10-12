@@ -90,11 +90,15 @@ public class RobotContainer {
 
   private void configureDriverController() {
     driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
-
+    driverController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
     driverController
         .b()
-        .onTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
-        .onFalse(new InstantCommand(() -> driveSubsystem.setParkMode(false)));
+        .whileTrue(
+            new SequentialCommandGroup(
+                manipulatorSubsystem.getRollerRunCommand(RollerSpeed.INTAKE),
+                new CubeHuntCommand(driveSubsystem, manipulatorSubsystem::hasCube),
+                manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF)))
+        .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
 
     driverController
         .leftBumper()
@@ -114,14 +118,6 @@ public class RobotContainer {
 
   public void configureOperatorController() {
     operatorController.a().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
-    operatorController
-        .b()
-        .whileTrue(
-            new SequentialCommandGroup(
-                manipulatorSubsystem.getRollerRunCommand(RollerSpeed.INTAKE),
-                new CubeHuntCommand(driveSubsystem, manipulatorSubsystem::hasCube),
-                manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF)));
-
     operatorController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
     operatorController.x().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
 
