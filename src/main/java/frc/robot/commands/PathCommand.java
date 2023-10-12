@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,24 +31,12 @@ public class PathCommand extends SequentialCommandGroup {
 
     if (DEBUG_MODE) {
       double trajectoryLength = pathPlannerTrajectory.getTotalTimeSeconds();
-      System.out.println("%%%%%%%%%% Trajectory total time = " + trajectoryLength);
-      System.out.println(
+      DataLogManager.log("%%%%%%%%%% Trajectory total time = " + trajectoryLength);
+      DataLogManager.log(
           "%%%%%%%%%% Trajectory states size = " + pathPlannerTrajectory.getStates().size());
-      /* List<State> states = pathPlannerTrajectory.getStates();
-      for (State state : states) {
-        PathPlannerState pState = (PathPlannerState) state;
-        System.out.println(
-            "%%%%%%% holonomicRotation: "
-                + pState.holonomicRotation
-                + " state: "
-                + pState.toString());
-      } */
     }
 
-    PIDController xController = new PIDController(AutoConstants.PX_CONTROLLER, 0, 0);
-    PIDController yController = new PIDController(AutoConstants.PY_CONTROLLER, 0, 0);
-    PIDController thetaController = new PIDController(AutoConstants.PTHETA_CONTROLLER, 0, 0);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    AutoConstants.THETA_SPEED_CONTROLLER.enableContinuousInput(-Math.PI, Math.PI);
 
     addCommands(
         new LogCommand(
@@ -60,33 +47,35 @@ public class PathCommand extends SequentialCommandGroup {
         new InstantCommand(
             () -> {
               DataLogManager.log(
-                  "Starting trajectory from "
-                      + StringFormatting.poseToString(
-                          pathPlannerTrajectory.getInitialHolonomicPose())
-                      + " to "
-                      + StringFormatting.poseToString(
-                          pathPlannerTrajectory.getEndState().poseMeters));
+                  String.format(
+                      "Starting trajectory from %s to %s",
+                      StringFormatting.poseToString(
+                          pathPlannerTrajectory.getInitialHolonomicPose()),
+                      StringFormatting.poseToString(
+                          pathPlannerTrajectory.getEndState().poseMeters)));
               if (isFirstPath) {
                 driveSubsystem.setSpeedMode(SpeedMode.TURBO);
                 PathPlannerTrajectory transformedTrajectory =
                     PathPlannerTrajectory.transformTrajectoryForAlliance(
                         pathPlannerTrajectory, DriverStation.getAlliance());
                 Pose2d pose = transformedTrajectory.getInitialHolonomicPose();
-                // AllianceFlipUtil.apply(transformedTrajectory.getInitialHolonomicPose());
                 DataLogManager.log(
-                    "Setting initial pose to " + StringFormatting.poseToString(pose));
+                    String.format(
+                        "Setting initial pose to %s", StringFormatting.poseToString(pose)));
                 driveSubsystem.resetOdometry(pose);
                 DataLogManager.log(
-                    "Initial pose to " + StringFormatting.poseToString(driveSubsystem.getPose()));
+                    String.format(
+                        "Initial pose to %s",
+                        StringFormatting.poseToString(driveSubsystem.getPose())));
               }
             }),
         new PPSwerveControllerCommand(
                 pathPlannerTrajectory,
                 driveSubsystem::getPose,
                 RobotConstants.DRIVE_KINEMATICS,
-                xController,
-                yController,
-                thetaController,
+                AutoConstants.X_SPEED_CONTROLLER,
+                AutoConstants.Y_SPEED_CONTROLLER,
+                AutoConstants.THETA_SPEED_CONTROLLER,
                 driveSubsystem::setModuleStates,
                 true)
             .alongWith(

@@ -5,71 +5,64 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DataLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
+import java.util.HashMap;
 
 public class AutoBalanceCommand extends CommandBase {
-  private DriveSubsystem driveSubsystem;
-  private static final double maxSpeed = 0.3;
-  private static final double pitchSpeedControllerP = 0.015;
-  private static final double pitchSpeedControllerI = 0;
-  private static final double pitchSpeedControllerD = 0.0006;
-  private static final double pitchSpeedControllerPositionTolerance = 2.1;
+  private final double MAX_SPEED = 0.3;
 
-  private final PIDController pitchSpeedController =
-      new PIDController(pitchSpeedControllerP, pitchSpeedControllerI, pitchSpeedControllerD);
+  private final DriveSubsystem driveSubsystem;
+  private final PIDController pitchSpeedController = new PIDController(0.015, 0, 0.0006);
   private final Debouncer setpointDebouncer = new Debouncer(0.1);
 
-  private BooleanLogEntry booleanLog;
-  private BooleanLogEntry setpointLog;
-  private DoubleLogEntry speedLog;
+  private HashMap<String, DataLogEntry> dataLogs = new HashMap<String, DataLogEntry>();
 
   public AutoBalanceCommand(DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
+
+    pitchSpeedController.setTolerance(2.1);
+
+    setupDataLogging(DataLogManager.getLog());
     addRequirements(driveSubsystem);
-
-    DataLog log = DataLogManager.getLog();
-    booleanLog = new BooleanLogEntry(log, "autobalance/active");
-    setpointLog = new BooleanLogEntry(log, "autobalance/setpoint");
-    speedLog = new DoubleLogEntry(log, "autobalance/speed");
-    booleanLog.append(false);
-    setpointLog.append(false);
-    speedLog.append(0.0);
-
-    setupPitchController();
   }
 
-  @Override
-  public void initialize() {
-    booleanLog.append(true);
+  private void setupDataLogging(DataLog log) {
+    dataLogs.put("AUTO_BALANCE/ACTIVE", new BooleanLogEntry(log, "AUTO_BALANCE/ACTIVE"));
+    dataLogs.put(
+        "AUTO_BALANCE/PITCH_SETPOINT", new BooleanLogEntry(log, "AUTO_BALANCE/PITCH_SETPOINT"));
+    dataLogs.put("AUTO_BALANCE/SPEED", new DoubleLogEntry(log, "AUTO_BALANCE/SPEED"));
   }
 
-  private void setupPitchController() {
-    pitchSpeedController.setTolerance(pitchSpeedControllerPositionTolerance);
+  private void updateDataLogs(double xSpeed) {
+    ((BooleanLogEntry) dataLogs.get("AUTO_BALANCE/ACTIVE")).append(!this.isFinished());
+    ((BooleanLogEntry) dataLogs.get("AUTO_BALANCE/PITCH_SETPOINT"))
+        .append(pitchSpeedController.atSetpoint());
+    ((DoubleLogEntry) dataLogs.get("AUTO_BALANCE/SPEED")).append(xSpeed);
   }
-  // 14 *
+
   @Override
   public void execute() {
-    // drive forward
-    // until pitch < 2
-    // Pitch and roll got reversed somehow
+    double xSpeed =
+        MathUtil.clamp(
+            pitchSpeedController.calculate(driveSubsystem.getPitch(), 0), -MAX_SPEED, MAX_SPEED);
 
-    double pitch = driveSubsystem.getPitch();
-    double xSpeed = MathUtil.clamp(pitchSpeedController.calculate(pitch, 0), -maxSpeed, maxSpeed);
+    updateDataLogs(xSpeed);
 
-    speedLog.append(xSpeed);
     driveSubsystem.drive(-xSpeed, 0, 0, false);
   }
 
   @Override
   public boolean isFinished() {
-    boolean setpointDebounced = setpointDebouncer.calculate(pitchSpeedController.atSetpoint());
+    boolean atPitchSetpoint = setpointDebouncer.calculate(pitchSpeedController.atSetpoint());
 
-    driveSubsystem.setParkMode(setpointDebounced);
-    setpointLog.append(pitchSpeedController.atSetpoint());
-    booleanLog.append(setpointDebounced);
-    return setpointDebounced;
+    if (atPitchSetpoint) {
+      driveSubsystem.setParkMode(atPitchSetpoint);
+    }
+
+    return atPitchSetpoint;
   }
 }
