@@ -352,12 +352,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param mode The specified speed mode set by {@link SpeedMode}.
    */
   public void setSpeedMode(SpeedMode mode) {
-    maxSpeed =
-        Math.max(
-            Math.min(maxSpeed * mode.getMaxSpeedMultiplier(), DriveConstants.MAX_VELOCITY),
-            SpeedMode.TURTLE.getMaxSpeed());
-
-    competitionTabMaxSpeedEntry.setDouble(maxSpeed);
+    competitionTabMaxSpeedEntry.setDouble(mode.getMaxSpeed());
   }
 
   /**
