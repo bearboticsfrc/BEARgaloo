@@ -191,6 +191,7 @@ public class RobotContainer {
     addToAutoList("4-LeaveCommunityTop", LeaveCommunityTop.get(driveSubsystem)); // ^
     addToAutoList("5-CubeCubeLS", CubeCubeLS.get(driveSubsystem, manipulatorSubsystem));
     addToAutoList("6-2CubeBump", BumpTwoCube.get(driveSubsystem, manipulatorSubsystem));
+    addToAutoList("7-MiddleCubeEngageCS", getAutonomousCommand());
   }
 
   public Command getAutonomousCommand() {
