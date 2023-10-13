@@ -11,12 +11,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.AutoBalanceCommand;
-import frc.robot.commands.CubeHuntCommand;
 import frc.robot.commands.auto.BumpTwoCube;
 import frc.robot.commands.auto.CubeCubeLS;
 import frc.robot.commands.auto.DropCubeBottomExitCommunity;
@@ -80,12 +77,6 @@ public class RobotContainer {
     manipulatorSubsystem.setDefaultCommand(
         new RunCommand(
             () -> {
-              // manipulator.runRollerDefault(
-              //    MathUtil.applyDeadband(
-              //        squareWithSign(operatorXboxController.getLeftTriggerAxis()), 0.1),
-              //    MathUtil.applyDeadband(
-              //        squareWithSign(operatorXboxController.getRightTriggerAxis()), 0.1));
-
               manipulatorSubsystem.adjustWristHeight(
                   MathUtil.applyDeadband(operatorController.getRightY(), 0.2));
             },
@@ -99,16 +90,15 @@ public class RobotContainer {
 
   private void configureDriverController() {
     driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
-    driverController.x().whileTrue(new AutoBalanceCommand(driveSubsystem));
-    driverController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
 
     driverController
         .b()
-        .whileTrue(
-            new SequentialCommandGroup(
-                manipulatorSubsystem.getRollerRunCommand(RollerSpeed.INTAKE),
-                new CubeHuntCommand(driveSubsystem, manipulatorSubsystem::hasCube),
-                manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF)))
+        .whileTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setParkMode(false)));
+
+    driverController
+        .x()
+        .whileTrue(manipulatorSubsystem.getCubeHuntCommand(driveSubsystem))
         .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
 
     driverController
@@ -140,10 +130,6 @@ public class RobotContainer {
     operatorController.a().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
     operatorController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
     operatorController.x().onTrue(manipulatorSubsystem.getShelfScoreCommand(ScorePosition.HIGH));
-    operatorController
-        .b()
-        .whileTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
-        .onFalse(new InstantCommand(() -> driveSubsystem.setParkMode(false)));
 
     operatorController
         .leftTrigger(0.1)

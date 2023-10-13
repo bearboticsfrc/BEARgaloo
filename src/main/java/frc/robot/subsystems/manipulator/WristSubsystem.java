@@ -42,46 +42,50 @@ public class WristSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (limitSwitch.get()) {
-      motorEncoder.setPosition(0.0);
+    if (isHome() && motorEncoder.getPosition() != 0) {
+      motorEncoder.setPosition(0);
     }
   }
 
-  public boolean isLimitSwitchActive() {
-    return limitSwitch.get();
-  }
   /**
    * @param shuffleboardTab The shuffleboard tab to use
    */
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
-    shuffleboardTab
-        .addBoolean(String.format("%s Limit SW", name), this::isLimitSwitchActive)
-        .withSize(1, 1);
+    shuffleboardTab.addBoolean(String.format("%s Home?", name), this::isHome).withSize(1, 1);
     shuffleboardTab
         .addNumber(String.format("%s Pos", name), this.motorEncoder::getPosition)
         .withSize(1, 1);
     shuffleboardTab
         .addNumber(String.format("%s Amps", name), this.motor::getOutputCurrent)
         .withSize(1, 1);
-    shuffleboardTab.addNumber(String.format("%s setpoint", name), this::getPosition).withSize(1, 1);
+    shuffleboardTab
+        .addNumber(String.format("%s Setpoint", name), this::getTargetPosition)
+        .withSize(1, 1);
     shuffleboardTab
         .addNumber(String.format("%s Temp", name), this.motor::getMotorTemperature)
         .withSize(1, 1);
   }
 
   public void set(WristPositions position) {
-    this.targetPosition = position.getPosition();
+    targetPosition = position.getPosition();
     motorPid.setReference(position.getPosition(), ControlType.kPosition);
   }
 
   public void set(double position) {
     if (position < WristPositions.HOME.getPosition()
-        || position > WristPositions.BOTTOM.getPosition()) return;
-    this.targetPosition = position;
+        || position > WristPositions.BOTTOM.getPosition()) {
+      return;
+    }
+
+    targetPosition = position;
     motorPid.setReference(position, ControlType.kPosition);
   }
 
-  public double getPosition() {
+  public double getTargetPosition() {
     return targetPosition;
+  }
+
+  public boolean isHome() {
+    return limitSwitch.get();
   }
 }

@@ -59,7 +59,7 @@ public class AutoBalanceCommand extends CommandBase {
     boolean atPitchSetpoint = setpointDebouncer.calculate(pitchSpeedController.atSetpoint());
 
     if (atPitchSetpoint) {
-      // driveSubsystem.setParkMode(atPitchSetpoint);
+      driveSubsystem.setParkMode(atPitchSetpoint);
     }
 
     return atPitchSetpoint;

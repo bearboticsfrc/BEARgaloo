@@ -32,7 +32,7 @@ public class PathPlannerDebugCommand extends CommandBase {
   public void execute() {
     double curTime = timer.get();
 
-    var desiredState = (PathPlannerState) trajectory.sample(curTime);
+    PathPlannerState desiredState = (PathPlannerState) trajectory.sample(curTime);
     Pose2d pose = poseSupplier.get();
 
     System.out.println(

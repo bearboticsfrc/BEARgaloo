@@ -12,7 +12,6 @@ import frc.robot.constants.AutoConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
 import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.vision.StringFormatting;
 
 /** A command to run a given trajectory with support for debug output about trajectory accuracy */
 public class PathCommand extends SequentialCommandGroup {
@@ -30,8 +29,8 @@ public class PathCommand extends SequentialCommandGroup {
       boolean isFirstPath) {
 
     if (DEBUG_MODE) {
-      double trajectoryLength = pathPlannerTrajectory.getTotalTimeSeconds();
-      DataLogManager.log("%%%%%%%%%% Trajectory total time = " + trajectoryLength);
+      DataLogManager.log(
+          "%%%%%%%%%% Trajectory total time = " + pathPlannerTrajectory.getTotalTimeSeconds());
       DataLogManager.log(
           "%%%%%%%%%% Trajectory states size = " + pathPlannerTrajectory.getStates().size());
     }
@@ -39,34 +38,17 @@ public class PathCommand extends SequentialCommandGroup {
     AutoConstants.THETA_SPEED_CONTROLLER.enableContinuousInput(-Math.PI, Math.PI);
 
     addCommands(
-        new LogCommand(
-            "Starting path from "
-                + StringFormatting.poseToString(pathPlannerTrajectory.getInitialHolonomicPose())
-                + " to "
-                + StringFormatting.poseToString(pathPlannerTrajectory.getEndState().poseMeters)),
         new InstantCommand(
             () -> {
-              DataLogManager.log(
-                  String.format(
-                      "Starting trajectory from %s to %s",
-                      StringFormatting.poseToString(
-                          pathPlannerTrajectory.getInitialHolonomicPose()),
-                      StringFormatting.poseToString(
-                          pathPlannerTrajectory.getEndState().poseMeters)));
               if (isFirstPath) {
                 driveSubsystem.setSpeedMode(SpeedMode.TURBO);
+
                 PathPlannerTrajectory transformedTrajectory =
                     PathPlannerTrajectory.transformTrajectoryForAlliance(
                         pathPlannerTrajectory, DriverStation.getAlliance());
+
                 Pose2d pose = transformedTrajectory.getInitialHolonomicPose();
-                DataLogManager.log(
-                    String.format(
-                        "Setting initial pose to %s", StringFormatting.poseToString(pose)));
                 driveSubsystem.resetOdometry(pose);
-                DataLogManager.log(
-                    String.format(
-                        "Initial pose to %s",
-                        StringFormatting.poseToString(driveSubsystem.getPose())));
               }
             }),
         new PPSwerveControllerCommand(
@@ -82,8 +64,8 @@ public class PathCommand extends SequentialCommandGroup {
                 new ConditionalCommand(
                     new PathPlannerDebugCommand(pathPlannerTrajectory, driveSubsystem::getPose),
                     new InstantCommand(),
-                    () -> DEBUG_MODE)),
-        new LogCommand("Finished Path."));
+                    () -> DEBUG_MODE)));
+
     if (withRequirements) {
       addRequirements(driveSubsystem);
     }

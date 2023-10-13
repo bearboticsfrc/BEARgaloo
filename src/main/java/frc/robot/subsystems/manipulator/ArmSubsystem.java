@@ -57,15 +57,23 @@ public class ArmSubsystem extends SubsystemBase {
         .withSize(1, 1);
 
     shuffleboardTab
-        .addNumber(String.format("%s m Amps", name), this.motor::getAppliedOutput)
+        .addNumber(String.format("%s M Amps", name), this.motor::getAppliedOutput)
         .withSize(1, 1);
     shuffleboardTab
-        .addNumber(String.format("%s f Amps", name), this.followerMotor::getAppliedOutput)
+        .addNumber(String.format("%s F Amps", name), this.followerMotor::getAppliedOutput)
         .withSize(1, 1);
   }
 
   public void set(ArmPositions position) {
     int slot = position == ArmPositions.HIGH ? 0 : 1;
+    set(position, slot);
+  }
+
+  public void set(ArmPositions position, int slot) {
     motorPid.setReference(position.getPosition(), ControlType.kPosition, slot);
+  }
+
+  public boolean isHome() {
+    return motorEncoder.getPosition() < .3;
   }
 }

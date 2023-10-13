@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.commands.CubeHuntCommand;
 import frc.robot.constants.AutoConstants.ScorePosition;
 import frc.robot.constants.manipulator.ArmConstants;
 import frc.robot.constants.manipulator.ArmConstants.ArmPositions;
@@ -14,6 +16,7 @@ import frc.robot.constants.manipulator.RollerConstants;
 import frc.robot.constants.manipulator.RollerConstants.RollerSpeed;
 import frc.robot.constants.manipulator.WristConstants;
 import frc.robot.constants.manipulator.WristConstants.WristPositions;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import frc.robot.util.MotorConfig.MotorPIDBuilder;
 import java.util.HashMap;
@@ -100,13 +103,17 @@ public class ManipulatorSubsystem extends SubsystemBase {
       return;
     }
 
-    double position = wristSubsystem.getPosition() + (direction * 0.1);
+    double position = wristSubsystem.getTargetPosition() + (direction * 0.1);
     wristSubsystem.set(position);
   }
 
   public CommandBase getHomeAllCommand() {
     return new ParallelCommandGroup(
-        getWristRunCommand(WristPositions.HOME), getArmRunCommand(ArmPositions.HOME));
+        getWristRunCommand(WristPositions.HOME),
+        getArmRunCommand(ArmPositions.HOME),
+        getRollerRunCommand(RollerSpeed.OFF),
+        new WaitUntilCommand(armSubsystem::isHome),
+        new InstantCommand(() -> armSubsystem.set(ArmPositions.HOME, 0)));
   }
 
   public CommandBase getShelfScoreCommand(ScorePosition position) {
@@ -124,16 +131,14 @@ public class ManipulatorSubsystem extends SubsystemBase {
         getRollerRunCommand(RollerSpeed.OFF));
   }
 
-  public Command getPickupCubeCommand() {
-    SequentialCommandGroup command =
-        new SequentialCommandGroup(
-            getWristRunCommand(WristPositions.BOTTOM),
-            getRollerRunCommand(RollerSpeed.INTAKE),
-            new WaitCommand(1),
-            getRollerRunCommand(RollerSpeed.OFF),
-            getWristRunCommand(WristPositions.HOME));
-    command.addRequirements(this);
-    return command;
+  public Command getPickupPositionCommand() {
+    return new SequentialCommandGroup(
+        getWristRunCommand(WristPositions.BOTTOM), getRollerRunCommand(RollerSpeed.INTAKE));
+  }
+
+  public Command getCubeHuntCommand(DriveSubsystem driveSubsystem) {
+    return new SequentialCommandGroup(
+        getPickupPositionCommand(), new CubeHuntCommand(driveSubsystem, this::hasCube));
   }
 
   public boolean hasCube() {
