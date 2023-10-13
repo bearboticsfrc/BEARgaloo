@@ -18,7 +18,7 @@ public class MiddleCubeEngageCS {
         return new SequentialCommandGroup(
                 manipulator.getShootCubeCommand(),
                 new ProxyCommand(
-                    () -> new InstantCommand()),
+                    () -> StraightToChargeStationFromMiddle.get(driveSubsystem)),
                 new AutoBalanceCommand(driveSubsystem)
                     .alongWith(
                         new WaitUntilCommand(14.9)
