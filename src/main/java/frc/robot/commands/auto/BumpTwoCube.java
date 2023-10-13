@@ -75,9 +75,11 @@ public class BumpTwoCube {
 
   public static Command getDynamicPathToCubeNode(DriveSubsystem driveSubsystem) {
     Pose2d cubeNodePose =
-        LocationHelper.getTransformedYAxisForAllianceColor(
-            new Pose2d(2.1, .95, Rotation2d.fromDegrees(180)));
-
+        LocationHelper.transformYAxisForAllianceColor(
+            new Pose2d(2.1, .95, Rotation2d.fromDegrees(180.0)));
+    Pose2d entryCubeNodePose =
+        LocationHelper.transformYAxisForAllianceColor(
+            new Pose2d(3.7, .77, Rotation2d.fromDegrees(180.0)));
     PathPlannerTrajectory trajectory =
         PathPlanner.generatePath(
             new PathConstraints(3.0, 5),
@@ -86,6 +88,11 @@ public class BumpTwoCube {
                     LocationHelper.getTransformedHeadingForAllianceColor(Rotation2d.fromDegrees(0)),
                     driveSubsystem.getPose().getRotation())
                 .withNextControlLength(1),
+            new PathPoint(
+                    entryCubeNodePose.getTranslation(),
+                    entryCubeNodePose.getRotation(),
+                    Rotation2d.fromDegrees(0.0))
+                .withPrevControlLength(1.0),
             new PathPoint(
                     cubeNodePose.getTranslation(),
                     cubeNodePose.getRotation(),
@@ -99,8 +106,8 @@ public class BumpTwoCube {
   public static Command getDynamicPathToSecondCube(
       DriveSubsystem driveSubsystem, ManipulatorSubsystem manipulatorSubsystem) {
     Pose2d cubeNodePose =
-        LocationHelper.getTransformedYAxisForAllianceColor(
-            new Pose2d(6.15, 1.5, Rotation2d.fromDegrees(35)));
+        LocationHelper.transformYAxisForAllianceColor(
+            new Pose2d(6.0, 1.2, Rotation2d.fromDegrees(45.0)));
 
     List<PathPoint> points =
         Arrays.asList(
