@@ -23,6 +23,7 @@ import frc.robot.commands.auto.DropCubeBottomExitCommunity;
 import frc.robot.commands.auto.DropCubeTopExitCommunity;
 import frc.robot.commands.auto.LeaveCommunityBottom;
 import frc.robot.commands.auto.LeaveCommunityTop;
+import frc.robot.commands.auto.MiddleCubeEngageCS;
 import frc.robot.constants.AutoConstants.ScorePosition;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
@@ -194,7 +195,7 @@ public class RobotContainer {
     addToAutoList("4-LeaveCommunityTop", LeaveCommunityTop.get(driveSubsystem)); // ^
     addToAutoList("5-CubeCubeLS", CubeCubeLS.get(driveSubsystem, manipulatorSubsystem));
     addToAutoList("6-2CubeBump", BumpTwoCube.get(driveSubsystem, manipulatorSubsystem));
-    addToAutoList("7-MiddleCubeEngageCS", getAutonomousCommand());
+    addToAutoList("7-MiddleCubeEngageCS", MiddleCubeEngageCS.get(driveSubsystem, manipulatorSubsystem));
   }
 
   public Command getAutonomousCommand() {
