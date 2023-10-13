@@ -5,7 +5,6 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -70,9 +69,9 @@ public class LocationHelper {
             trajectory,
             driveSubsystem::getPose,
             RobotConstants.DRIVE_KINEMATICS,
-            new PIDController(AutoConstants.PX_CONTROLLER, 0, 0),
-            new PIDController(AutoConstants.PY_CONTROLLER, 0, 0),
-            new PIDController(AutoConstants.PTHETA_CONTROLLER, 0, 0),
+            AutoConstants.X_SPEED_CONTROLLER,
+            AutoConstants.Y_SPEED_CONTROLLER,
+            AutoConstants.THETA_SPEED_CONTROLLER,
             driveSubsystem::setModuleStates,
             false,
             driveSubsystem),

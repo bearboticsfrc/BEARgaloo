@@ -24,6 +24,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    robotContainer.setTeleop(false);
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -34,8 +35,15 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    robotContainer.setTeleop(true);
+
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+  }
+
+  @Override
+  public void disabledInit() {
+    robotContainer.setTeleop(false);
   }
 }

@@ -114,7 +114,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
         position == ScorePosition.HIGH ? ArmPositions.HIGH : ArmPositions.HOME;
 
     return new ParallelCommandGroup(
-        getWristRunCommand(WristPositions.HOME), getArmRunCommand(armPosition));
+        getWristRunCommand(WristPositions.HIGH), getArmRunCommand(armPosition));
   }
 
   public Command getShootCubeCommand() {
