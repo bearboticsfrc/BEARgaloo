@@ -7,8 +7,6 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -17,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.CubeHuntCommand;
 import frc.robot.commands.auto.BumpTwoCube;
 import frc.robot.commands.auto.CubeCubeLS;
@@ -100,7 +99,9 @@ public class RobotContainer {
 
   private void configureDriverController() {
     driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
+    driverController.x().whileTrue(new AutoBalanceCommand(driveSubsystem));
     driverController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
+
     driverController
         .b()
         .whileTrue(
@@ -118,12 +119,12 @@ public class RobotContainer {
     driverController
         .leftTrigger(0.1)
         .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURBO)))
-        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURTLE))));
+        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.NORMAL))));
 
     driverController
         .rightTrigger(0.1)
         .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURTLE)))
-        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.TURBO))));
+        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.NORMAL))));
 
     new Trigger(() -> manipulatorSubsystem.hasCube() && isTeleop)
         .onTrue(
@@ -139,7 +140,10 @@ public class RobotContainer {
     operatorController.a().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
     operatorController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
     operatorController.x().onTrue(manipulatorSubsystem.getShelfScoreCommand(ScorePosition.HIGH));
-    operatorController.b().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
+    operatorController
+        .b()
+        .whileTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
+        .onFalse(new InstantCommand(() -> driveSubsystem.setParkMode(false)));
 
     operatorController
         .leftTrigger(0.1)
@@ -169,13 +173,12 @@ public class RobotContainer {
   }
 
   private void setupShuffleboardTab() {
-    ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
     for (Pair<String, Command> command : autoList) {
       chooser.addOption(command.getFirst(), command.getSecond());
     }
 
     chooser.setDefaultOption(autoList.get(0).getFirst(), autoList.get(0).getSecond());
-    compTab.add("Auto Command", chooser).withSize(4, 1).withPosition(0, 1);
+    DriveConstants.COMPETITION_TAB.add("Auto Command", chooser).withSize(4, 1).withPosition(0, 1);
   }
 
   private void addToAutoList(String name, Command command) {

@@ -16,7 +16,7 @@ public class AutoBalanceCommand extends CommandBase {
   private final double MAX_SPEED = 0.3;
 
   private final DriveSubsystem driveSubsystem;
-  private final PIDController pitchSpeedController = new PIDController(0.015, 0, 0.0006);
+  private final PIDController pitchSpeedController = new PIDController(0.015, 0.005, 0.003);
   private final Debouncer setpointDebouncer = new Debouncer(0.1);
 
   private HashMap<String, DataLogEntry> dataLogs = new HashMap<String, DataLogEntry>();
@@ -24,7 +24,7 @@ public class AutoBalanceCommand extends CommandBase {
   public AutoBalanceCommand(DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
 
-    pitchSpeedController.setTolerance(2.1);
+    pitchSpeedController.setTolerance(2);
 
     setupDataLogging(DataLogManager.getLog());
     addRequirements(driveSubsystem);
@@ -48,11 +48,10 @@ public class AutoBalanceCommand extends CommandBase {
   public void execute() {
     double xSpeed =
         MathUtil.clamp(
-            pitchSpeedController.calculate(driveSubsystem.getPitch(), 0), -MAX_SPEED, MAX_SPEED);
+            pitchSpeedController.calculate(driveSubsystem.getRoll(), 0), -MAX_SPEED, MAX_SPEED);
 
     updateDataLogs(xSpeed);
-
-    driveSubsystem.drive(-xSpeed, 0, 0, false);
+    driveSubsystem.drive(xSpeed, 0, 0);
   }
 
   @Override
@@ -60,7 +59,7 @@ public class AutoBalanceCommand extends CommandBase {
     boolean atPitchSetpoint = setpointDebouncer.calculate(pitchSpeedController.atSetpoint());
 
     if (atPitchSetpoint) {
-      driveSubsystem.setParkMode(atPitchSetpoint);
+      // driveSubsystem.setParkMode(atPitchSetpoint);
     }
 
     return atPitchSetpoint;
