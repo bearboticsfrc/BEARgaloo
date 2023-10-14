@@ -24,15 +24,15 @@
     },
     {
       "anchorPoint": {
-        "x": 7.012356164512615,
-        "y": 4.585618643419883
+        "x": 7.263936239712709,
+        "y": 4.722844138983571
       },
       "prevControl": {
-        "x": 6.012356164512615,
-        "y": 4.585618643419883
+        "x": 6.263936239712709,
+        "y": 4.722844138983571
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": -5.856013585429119,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -47,13 +47,13 @@
   ],
   "markers": [
     {
-      "position": 0.6545454545454525,
+      "position": 0.5309090909090957,
       "names": [
         "lowerWrist"
       ]
     },
     {
-      "position": 0.778181818181785,
+      "position": 0.625454545454555,
       "names": [
         "startRollers"
       ]

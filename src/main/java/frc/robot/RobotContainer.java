@@ -74,6 +74,11 @@ public class RobotContainer {
     isTeleop = mode;
   }
 
+  public void teleopInit() {
+    driveSubsystem.setParkMode(false);
+    driveSubsystem.setSpeedMode(SpeedMode.NORMAL);
+  }
+
   private void setManipulatorDefaultCommand() {
     manipulatorSubsystem.setDefaultCommand(
         new RunCommand(
@@ -94,7 +99,7 @@ public class RobotContainer {
 
     driverController
         .b()
-        .whileTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
+        .onTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
         .onFalse(new InstantCommand(() -> driveSubsystem.setParkMode(false)));
 
     driverController

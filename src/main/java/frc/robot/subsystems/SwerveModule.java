@@ -38,6 +38,8 @@ public class SwerveModule {
 
   private boolean parked = false;
 
+  private final boolean SHUFFLEBOARD_ENABLED = false;
+
   private HashMap<String, DoubleLogEntry> dataLogs = new HashMap<String, DoubleLogEntry>();
 
   public SwerveModule(SwerveModuleBuilder swerveModule, ShuffleboardTab shuffleboardTab) {
@@ -77,24 +79,26 @@ public class SwerveModule {
    * @param shuffleboardTab The shuffleboard tab to use
    */
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
-    shuffleboardTab
-        .addNumber(String.format("%s Vel", moduleName), this::getDriveVelocity)
-        .withSize(1, 1);
-    shuffleboardTab
-        .addNumber(String.format("%s Drive Out", moduleName), driveMotor::getAppliedOutput)
-        .withSize(1, 1);
-    shuffleboardTab
-        .addNumber(String.format("%s Pos", moduleName), this::getDistance)
-        .withSize(1, 1);
-    shuffleboardTab
-        .addNumber(String.format("%s Steer Deg", moduleName), () -> getSteerAngle().getDegrees())
-        .withSize(1, 1);
-    shuffleboardTab
-        .addNumber(String.format("%s AE Deg", moduleName), () -> getAbsoluteAngle().getDegrees())
-        .withSize(1, 1);
-    shuffleboardTab
-        .addNumber(String.format("%s Ref Deg", moduleName), () -> referenceAngle.getDegrees())
-        .withSize(1, 1);
+    if (SHUFFLEBOARD_ENABLED) {
+      shuffleboardTab
+          .addNumber(String.format("%s Vel", moduleName), this::getDriveVelocity)
+          .withSize(1, 1);
+      shuffleboardTab
+          .addNumber(String.format("%s Drive Out", moduleName), driveMotor::getAppliedOutput)
+          .withSize(1, 1);
+      shuffleboardTab
+          .addNumber(String.format("%s Pos", moduleName), this::getDistance)
+          .withSize(1, 1);
+      shuffleboardTab
+          .addNumber(String.format("%s Steer Deg", moduleName), () -> getSteerAngle().getDegrees())
+          .withSize(1, 1);
+      shuffleboardTab
+          .addNumber(String.format("%s AE Deg", moduleName), () -> getAbsoluteAngle().getDegrees())
+          .withSize(1, 1);
+      shuffleboardTab
+          .addNumber(String.format("%s Ref Deg", moduleName), () -> referenceAngle.getDegrees())
+          .withSize(1, 1);
+    }
   }
 
   private void setupDataLogging(DataLog log) {

@@ -18,7 +18,7 @@ public class WristConstants {
   public enum WristPositions {
     HOME(0),
     TOP(10),
-    HIGH(13),
+    HIGH(17),
     MIDDLE(24),
     BOTTOM(33.5);
 
