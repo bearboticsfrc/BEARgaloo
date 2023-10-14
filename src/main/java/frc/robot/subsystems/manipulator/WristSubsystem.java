@@ -88,4 +88,8 @@ public class WristSubsystem extends SubsystemBase {
   public boolean isHome() {
     return limitSwitch.get();
   }
+
+  public void calibrate() {
+    motorEncoder.setPosition(0);
+  }
 }

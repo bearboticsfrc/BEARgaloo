@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.CalibrateCommand;
 import frc.robot.commands.auto.BumpTwoCube;
 import frc.robot.commands.auto.CubeCubeLS;
 import frc.robot.commands.auto.DropCubeBottomExitCommunity;
@@ -166,6 +167,10 @@ public class RobotContainer {
 
     chooser.setDefaultOption(autoList.get(0).getFirst(), autoList.get(0).getSecond());
     DriveConstants.COMPETITION_TAB.add("Auto Command", chooser).withSize(4, 1).withPosition(0, 1);
+    DriveConstants.COMPETITION_TAB
+        .add("Wrist Calibrate Command", new CalibrateCommand(manipulatorSubsystem))
+        .withSize(5, 1)
+        .withPosition(0, 2);
   }
 
   private void addToAutoList(String name, Command command) {

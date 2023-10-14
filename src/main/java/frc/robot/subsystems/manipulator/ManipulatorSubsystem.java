@@ -145,6 +145,14 @@ public class ManipulatorSubsystem extends SubsystemBase {
     return rollerSubsystem.hasCube();
   }
 
+  public boolean isWristHome() {
+    return wristSubsystem.isHome();
+  }
+
+  public void calibrateWrist() {
+    wristSubsystem.calibrate();
+  }
+
   public HashMap<String, Command> getEventMap() {
     // TODO: see if can be refactored
     HashMap<String, Command> eventMap = new HashMap<>();
