@@ -13,6 +13,7 @@ public class RollerConstants {
     INTAKE(-0.5),
     MEDIUM(0.5),
     OFF(0),
+    RELEASE_SLOW(0.7),
     RELEASE(1);
 
     private final double speed;

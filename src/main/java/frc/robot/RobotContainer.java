@@ -85,6 +85,15 @@ public class RobotContainer {
             () -> {
               manipulatorSubsystem.adjustWristHeight(
                   MathUtil.applyDeadband(operatorController.getRightY(), 0.2));
+              /*  manipulatorSubsystem.setDefaultCommand(
+              new RunCommand(
+                  () ->
+                      manipulatorSubsystem.runRollerDefault(
+                          MathUtil.applyDeadband(operatorController.getLeftTriggerAxis(), 0.1),
+                          MathUtil.applyDeadband(
+                              operatorController.getRightTriggerAxis(), 0.1)),
+                  manipulatorSubsystem));
+                  */
             },
             manipulatorSubsystem));
   }
@@ -139,7 +148,7 @@ public class RobotContainer {
 
     operatorController
         .leftTrigger(0.1)
-        .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.RELEASE))
+        .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.RELEASE_SLOW))
         .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
 
     operatorController
@@ -162,6 +171,8 @@ public class RobotContainer {
     operatorController
         .povRight()
         .onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
+
+    operatorController.leftBumper().onTrue(manipulatorSubsystem.getShootCubeCommand());
   }
 
   private void setupShuffleboardTab() {

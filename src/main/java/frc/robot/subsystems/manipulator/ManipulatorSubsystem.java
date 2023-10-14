@@ -126,7 +126,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
   public Command getShootCubeCommand() {
     return new SequentialCommandGroup(
-        getRollerRunCommand(RollerSpeed.RELEASE),
+        getRollerRunCommand(RollerSpeed.RELEASE_SLOW),
         new WaitCommand(.2),
         getRollerRunCommand(RollerSpeed.OFF));
   }
@@ -146,6 +146,22 @@ public class ManipulatorSubsystem extends SubsystemBase {
   public boolean hasCube() {
     return rollerSubsystem.hasCube();
   }
+
+  /*
+
+  private static double NOMINAL_VOLTAGE = 12.0;
+  public void runRollerDefault(double speedIn, double speedOut) {
+    double factor = 1.0;
+    if (speedIn > 0 && speedOut == 0) {
+      rollerSubsystem.setVoltage(speedIn * factor * NOMINAL_VOLTAGE);
+    } else if (speedIn == 0 && speedOut > 0) {
+
+      rollerSubsystem.setVoltage(-speedOut * factor * NOMINAL_VOLTAGE);
+    } else {
+      rollerSubsystem.setVoltage(0.0);
+    }
+  }
+  */
 
   public HashMap<String, Command> getEventMap() {
     // TODO: see if can be refactored
