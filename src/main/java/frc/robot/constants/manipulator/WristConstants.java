@@ -9,14 +9,14 @@ public class WristConstants {
     public static final boolean ENCODER_INVERTED = true;
 
     public static class MotorPid {
-      public static final double P = 0.02;
+      public static final double P = 0.025;
     }
   }
 
   public static int WRIST_LIMIT_SWITCH_PORT = 9;
 
   public enum WristPositions {
-    HOME(0),
+    HOME(-2),
     TOP(10),
     HIGH(17),
     MIDDLE(24),

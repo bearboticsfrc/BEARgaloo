@@ -178,6 +178,7 @@ public class RobotContainer {
   }
 
   private void buildAutoList() {
+    addToAutoList("0-Nothing", new InstantCommand());
     addToAutoList("1-DropCubeBottomExitCommunity", DropCubeBottomExitCommunity.get(driveSubsystem));
     addToAutoList(
         "2-DropCubeTopmmunity", DropCubeTopExitCommunity.get(driveSubsystem, manipulatorSubsystem));

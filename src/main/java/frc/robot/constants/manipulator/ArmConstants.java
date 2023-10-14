@@ -32,7 +32,7 @@ public class ArmConstants {
     public static final boolean ENCODER_INVERTED = true;
 
     public static class MotorPid {
-      public static final double P = 0.001;
+      public static final double P = 0.0005;
     }
   }
 
