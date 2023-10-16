@@ -98,18 +98,22 @@ public class SwerveModule {
         .withSize(1, 1);
   }
 
+  /**
+   * Setup data logging
+   *
+   * @param log The log to use
+   */
   private void setupDataLogging(DataLog log) {
     for (String motorType : new String[] {"DRIVE", "PIVOT"}) {
+      String pathMotorType = motorType.toLowerCase();
+
       if (motorType.equals("PIVOT")) {
         dataLogs.put(
             String.format("%s_MOTOR_POSITION", motorType),
             new DoubleLogEntry(
-                log,
-                String.format("/drive/%s/%s_motor/current", moduleName, motorType.toLowerCase())));
+                log, String.format("/drive/%s/%s_motor/position", moduleName, pathMotorType)));
       }
 
-      String pathMotorType = motorType.toLowerCase();
-
       dataLogs.put(
           String.format("%s_MOTOR_CURRENT", motorType),
           new DoubleLogEntry(
@@ -118,35 +122,17 @@ public class SwerveModule {
       dataLogs.put(
           String.format("%s_MOTOR_VELOCITY", motorType),
           new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
+              log, String.format("/drive/%s/%s_motor/velocity", moduleName, pathMotorType)));
+
       dataLogs.put(
           String.format("%s_MOTOR_APPLIED_OUTPUT", motorType),
           new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
+              log, String.format("/drive/%s/%s_motor/applied_output", moduleName, pathMotorType)));
+
       dataLogs.put(
           String.format("%s_MOTOR_TEMPERATURE", motorType),
           new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_CURRENT", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_POSITION", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_VELOCITY", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_APPLIED_OUTPUT", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_TEMPERATURE", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
+              log, String.format("/drive/%s/%s_motor/temperature", moduleName, pathMotorType)));
     }
   }
 
