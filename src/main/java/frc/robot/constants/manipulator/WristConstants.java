@@ -13,7 +13,7 @@ public class WristConstants {
     }
   }
 
-  public static int WRIST_LIMIT_SWITCH_PORT = 9;
+  public static final int LIMIT_SWITCH_PORT = 9;
 
   public enum WristPositions {
     HOME(0),

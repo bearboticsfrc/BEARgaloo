@@ -5,6 +5,9 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,14 +16,20 @@ import frc.robot.constants.manipulator.WristConstants;
 import frc.robot.constants.manipulator.WristConstants.WristPositions;
 import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.function.DoubleSupplier;
 
 public class WristSubsystem extends SubsystemBase {
   private String name;
   private RelativeEncoder motorEncoder;
   private SparkMaxPIDController motorPid;
   private CANSparkMax motor;
-  private double targetPosition = 0.0;
-  private final DigitalInput limitSwitch = new DigitalInput(WristConstants.WRIST_LIMIT_SWITCH_PORT);
+
+  private double targetPosition = 0;
+  private final DigitalInput limitSwitch = new DigitalInput(WristConstants.LIMIT_SWITCH_PORT);
+
+  private HashMap<String, DoubleLogEntry> dataLogs = new HashMap<String, DoubleLogEntry>();
 
   public WristSubsystem(MotorBuilder motorConstants) {
     this.name = motorConstants.getName(); // TODO: Use name AND moduleName
@@ -37,14 +46,7 @@ public class WristSubsystem extends SubsystemBase {
         .burnFlash();
 
     setupShuffleboardTab(RobotConstants.MANIPULATOR_SYSTEM_TAB);
-    // setupDataLogging(DataLogManager.getLog()); TODO: impl
-  }
-
-  @Override
-  public void periodic() {
-    if (isHome() && motorEncoder.getPosition() != 0) {
-      motorEncoder.setPosition(0);
-    }
+    setupDataLogging(DataLogManager.getLog());
   }
 
   /**
@@ -64,6 +66,24 @@ public class WristSubsystem extends SubsystemBase {
     shuffleboardTab
         .addNumber(String.format("%s Temp", name), this.motor::getMotorTemperature)
         .withSize(1, 1);
+  }
+
+  /**
+   * Setup the data logging for this manipulator
+   *
+   * @param log Which log to append to
+   */
+  private void setupDataLogging(DataLog log) { // TODO: Abstract into own lib
+    final String LOG_PATH_BASE = "/%s/motor/%s".formatted(name, "%s"); // "/wrist/%s"
+    final String LOG_NAME_BASE = "%s_MOTOR_%s".formatted(name, "%s"); // "wrist_%s"
+    final String[] LOGS =
+        new String[] {"POSITION", "CURRENT", "VELOCITY", "APPLIED_OUTPUT", "TEMPERATURE"};
+
+    for (String logName : LOGS) {
+      dataLogs.put(
+          LOG_NAME_BASE.formatted(logName),
+          new DoubleLogEntry(log, LOG_PATH_BASE.formatted(logName)));
+    }
   }
 
   public void set(WristPositions position) {
@@ -87,5 +107,43 @@ public class WristSubsystem extends SubsystemBase {
 
   public boolean isHome() {
     return limitSwitch.get();
+  }
+
+  @Override
+  public void periodic() {
+    if (isHome() && motorEncoder.getPosition() != 0) {
+      motorEncoder.setPosition(0);
+    }
+
+    updateDataLogs();
+  }
+
+  /** Updates the data logs */
+  public void updateDataLogs() {
+    for (Entry<String, DoubleLogEntry> entry : dataLogs.entrySet()) {
+      DoubleSupplier propertySupplier = getPropertySupplier(entry.getKey());
+      entry.getValue().append(propertySupplier.getAsDouble());
+    }
+  }
+
+  /**
+   * Returns the respective getter for <b>property</b>
+   *
+   * @param property The property
+   * @return The getter, wrapped as a DoubleSupplier
+   */
+  public DoubleSupplier getPropertySupplier(String property) {
+    switch (property) {
+      case "CURRENT":
+        return motor::getOutputCurrent;
+      case "VELOCITY":
+        return motor.getEncoder()::getVelocity;
+      case "APPLIED_OUTPUT":
+        return motor::getAppliedOutput;
+      case "TEMPERATURE":
+        return motor::getMotorTemperature;
+      default:
+        throw new IllegalArgumentException("Unknown motor property: " + property);
+    }
   }
 }
