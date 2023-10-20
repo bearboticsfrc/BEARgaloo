@@ -16,7 +16,7 @@ public class WristConstants {
   public static int WRIST_LIMIT_SWITCH_PORT = 9;
 
   public enum WristPositions {
-    HOME(-2),
+    HOME(-2), // TODO: hack, fix it
     TOP(10),
     HIGH(17),
     MIDDLE(24),

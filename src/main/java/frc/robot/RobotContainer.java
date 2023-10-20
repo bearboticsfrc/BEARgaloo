@@ -133,12 +133,11 @@ public class RobotContainer {
 
     new Trigger(() -> manipulatorSubsystem.hasCube() && isTeleop)
         .onTrue(
-            new InstantCommand(
-                    () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 1.0))
-                .andThen(new WaitCommand(1.0))
+            new InstantCommand(() -> driverController.getHID().setRumble(RumbleType.kBothRumble, 1))
+                .andThen(new WaitCommand(1))
                 .andThen(
                     new InstantCommand(
-                        () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0.0))));
+                        () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0))));
   }
 
   public void configureOperatorController() {
@@ -148,7 +147,7 @@ public class RobotContainer {
 
     operatorController
         .leftTrigger(0.1)
-        .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.RELEASE_SLOW))
+        .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.RELEASE))
         .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
 
     operatorController

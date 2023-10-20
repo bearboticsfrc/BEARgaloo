@@ -52,19 +52,19 @@ public class CubeCubeLS {
   public static Command getDynamicPathToCommunityZone1(DriveSubsystem driveSubsystem) {
     Pose2d endPose =
         LocationHelper.getTransformedYAxisForAllianceColor(
-            new Pose2d(5.07, .93, Rotation2d.fromDegrees(180.0)));
+            new Pose2d(5.07, .93, Rotation2d.fromDegrees(180)));
 
     PathPlannerTrajectory trajectory =
         PathPlanner.generatePath(
             new PathConstraints(2.0, 4),
             new PathPoint(
                     driveSubsystem.getPose().getTranslation(),
-                    Rotation2d.fromDegrees(0.0),
+                    Rotation2d.fromDegrees(0),
                     driveSubsystem.getPose().getRotation())
                 .withNextControlLength(0.1),
             new PathPoint(
-                    endPose.getTranslation(), endPose.getRotation(), Rotation2d.fromDegrees(0.0))
-                .withPrevControlLength(1.0));
+                    endPose.getTranslation(), endPose.getRotation(), Rotation2d.fromDegrees(0))
+                .withPrevControlLength(1));
 
     return new PathCommand(driveSubsystem, trajectory, false, false)
         .andThen(driveSubsystem.getDriveStopCommand());
@@ -73,10 +73,10 @@ public class CubeCubeLS {
   public static Command getDynamicPathToCubeNode(DriveSubsystem driveSubsystem) {
     Pose2d cubeNodePose =
         LocationHelper.getTransformedYAxisForAllianceColor(
-            new Pose2d(2.1, 4.52, Rotation2d.fromDegrees(180.0)));
+            new Pose2d(2.1, 4.52, Rotation2d.fromDegrees(180)));
     Pose2d entryPose =
         LocationHelper.getTransformedYAxisForAllianceColor(
-            new Pose2d(4.5, 4.85, Rotation2d.fromDegrees(180.0)));
+            new Pose2d(4.5, 4.85, Rotation2d.fromDegrees(180)));
 
     PathPlannerTrajectory trajectory =
         PathPlanner.generatePath(
@@ -84,19 +84,17 @@ public class CubeCubeLS {
             new PathPoint(
                     driveSubsystem.getPose().getTranslation(),
                     LocationHelper.getTransformedHeadingForAllianceColor(
-                        Rotation2d.fromDegrees(155.0)),
+                        Rotation2d.fromDegrees(155)),
                     driveSubsystem.getPose().getRotation())
-                .withNextControlLength(1.0),
+                .withNextControlLength(1),
             new PathPoint(
-                    entryPose.getTranslation(),
-                    entryPose.getRotation(),
-                    Rotation2d.fromDegrees(0.0))
-                .withPrevControlLength(1.0),
+                    entryPose.getTranslation(), entryPose.getRotation(), Rotation2d.fromDegrees(0))
+                .withPrevControlLength(1),
             new PathPoint(
                     cubeNodePose.getTranslation(),
                     cubeNodePose.getRotation(),
-                    Rotation2d.fromDegrees(0.0))
-                .withPrevControlLength(1.0));
+                    Rotation2d.fromDegrees(0))
+                .withPrevControlLength(1));
 
     return new PathCommand(driveSubsystem, trajectory, false, false)
         .andThen(driveSubsystem.getDriveStopCommand());
@@ -106,7 +104,7 @@ public class CubeCubeLS {
       DriveSubsystem driveSubsystem, ManipulatorSubsystem manipulatorSubsystem) {
     Pose2d cubeNodePose =
         LocationHelper.getTransformedYAxisForAllianceColor(
-            new Pose2d(5.8, 4.70, Rotation2d.fromDegrees(-45.0)));
+            new Pose2d(5.8, 4.70, Rotation2d.fromDegrees(-45)));
 
     List<PathPoint> points =
         Arrays.asList(
@@ -136,7 +134,7 @@ public class CubeCubeLS {
   public static Command getDynamicPathToLeaveCZ(DriveSubsystem driveSubsystem) {
     Pose2d cubeNodePose =
         LocationHelper.getTransformedYAxisForAllianceColor(
-            new Pose2d(6.1, 4.8, Rotation2d.fromDegrees(180.0)));
+            new Pose2d(6.1, 4.8, Rotation2d.fromDegrees(180)));
 
     PathPlannerTrajectory trajectory =
         PathPlanner.generatePath(
@@ -144,14 +142,14 @@ public class CubeCubeLS {
             new PathPoint(
                     driveSubsystem.getPose().getTranslation(),
                     LocationHelper.getTransformedHeadingForAllianceColor(
-                        Rotation2d.fromDegrees(155.0)),
+                        Rotation2d.fromDegrees(155)),
                     driveSubsystem.getPose().getRotation())
-                .withNextControlLength(1.0),
+                .withNextControlLength(1),
             new PathPoint(
                     cubeNodePose.getTranslation(),
                     cubeNodePose.getRotation(),
-                    Rotation2d.fromDegrees(0.0))
-                .withPrevControlLength(1.0));
+                    Rotation2d.fromDegrees(0))
+                .withPrevControlLength(1));
 
     return new PathCommand(driveSubsystem, trajectory, false, false)
         .andThen(driveSubsystem.getDriveStopCommand());

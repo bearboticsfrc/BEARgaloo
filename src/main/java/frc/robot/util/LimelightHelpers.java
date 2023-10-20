@@ -400,7 +400,7 @@ public class LimelightHelpers {
   }
 
   public static double getLimelightNTDouble(String tableName, String entryName) {
-    return getLimelightNTTableEntry(tableName, entryName).getDouble(0.0);
+    return getLimelightNTTableEntry(tableName, entryName).getDouble(0);
   }
 
   public static void setLimelightNTDouble(String tableName, String entryName, double val) {

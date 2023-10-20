@@ -40,7 +40,7 @@ public class DriveConstants {
 
   /** The max drive angular velocity in radians/sec */
   public static final double MAX_ANGULAR_VELOCITY =
-      MAX_VELOCITY / Math.hypot(RobotConstants.TRACK_WIDTH / 2.0, RobotConstants.WHEEL_BASE / 2.0);
+      MAX_VELOCITY / Math.hypot(RobotConstants.TRACK_WIDTH / 2.0, RobotConstants.WHEEL_BASE / 2);
 
   /** The drive motor encoder position conversion factor in meters */
   public static final double ENCODER_POSITION_FACTOR =
@@ -74,8 +74,8 @@ public class DriveConstants {
       new RateLimiter(MAX_ANGULAR_ACCELERATION_PER_SECOND, MAX_ANGULAR_DECELERATION_PER_SECOND);
 
   public enum SpeedMode {
-    TURBO(2.0),
-    NORMAL(1.0),
+    TURBO(2),
+    NORMAL(1),
     TURTLE(0.5);
 
     private final double maxSpeedMultiplier;

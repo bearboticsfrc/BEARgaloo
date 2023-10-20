@@ -16,8 +16,7 @@ public class AutoBalanceCommand extends CommandBase {
   private final double MAX_SPEED = 0.3;
 
   private final DriveSubsystem driveSubsystem;
-  // private final PIDController pitchSpeedController = new PIDController(0.015, 0.005, 0.003);
-  private final PIDController pitchSpeedController = new PIDController(0.010, 0.0, 0.0);
+  private final PIDController pitchSpeedController = new PIDController(0.010, 0.0, 0);
   private final Debouncer setpointDebouncer = new Debouncer(0.1);
 
   private HashMap<String, DataLogEntry> dataLogs = new HashMap<String, DataLogEntry>();

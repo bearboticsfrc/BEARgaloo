@@ -20,6 +20,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import frc.robot.util.MotorConfig.MotorPIDBuilder;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ManipulatorSubsystem extends SubsystemBase {
   private final ArmSubsystem armSubsystem;
@@ -126,7 +127,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
   public Command getShootCubeCommand() {
     return new SequentialCommandGroup(
-        getRollerRunCommand(RollerSpeed.RELEASE_SLOW),
+        getRollerRunCommand(RollerSpeed.RELEASE),
         new WaitCommand(.2),
         getRollerRunCommand(RollerSpeed.OFF));
   }
@@ -140,36 +141,17 @@ public class ManipulatorSubsystem extends SubsystemBase {
     return new SequentialCommandGroup(
         getPickupPositionCommand(),
         new WaitCommand(0.04),
-        new CubeHuntCommand(driveSubsystem, this::hasCube).withTimeout(2.0));
+        new CubeHuntCommand(driveSubsystem, this::hasCube).withTimeout(2));
   }
 
   public boolean hasCube() {
     return rollerSubsystem.hasCube();
   }
 
-  /*
-
-  private static double NOMINAL_VOLTAGE = 12.0;
-  public void runRollerDefault(double speedIn, double speedOut) {
-    double factor = 1.0;
-    if (speedIn > 0 && speedOut == 0) {
-      rollerSubsystem.setVoltage(speedIn * factor * NOMINAL_VOLTAGE);
-    } else if (speedIn == 0 && speedOut > 0) {
-
-      rollerSubsystem.setVoltage(-speedOut * factor * NOMINAL_VOLTAGE);
-    } else {
-      rollerSubsystem.setVoltage(0.0);
-    }
-  }
-  */
-
   public HashMap<String, Command> getEventMap() {
-    // TODO: see if can be refactored
-    HashMap<String, Command> eventMap = new HashMap<>();
-
-    eventMap.put("lowerWrist", getWristRunCommand(WristPositions.BOTTOM));
-    eventMap.put("startRollers", getRollerRunCommand(RollerSpeed.INTAKE));
-
-    return eventMap;
+    return new HashMap<>(
+        Map.of(
+            "lowerWrist", getWristRunCommand(WristPositions.BOTTOM),
+            "startRollers", getRollerRunCommand(RollerSpeed.INTAKE)));
   }
 }

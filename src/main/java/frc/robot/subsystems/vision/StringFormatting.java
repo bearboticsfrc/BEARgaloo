@@ -23,7 +23,7 @@ public class StringFormatting {
     sb.append(" ");
     sb.append("timestamp_age=");
     sb.append(
-        df_millis.format((RobotController.getFPGATime() * 1000000.0) - robotPose.timestampSeconds));
+        df_millis.format((RobotController.getFPGATime() * 1000000) - robotPose.timestampSeconds));
     sb.append(" ");
     sb.append(tagsToString(robotPose.targetsUsed));
     return sb.toString();

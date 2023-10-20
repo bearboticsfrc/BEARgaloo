@@ -96,7 +96,7 @@ public class LocationHelper {
       return rotation;
     }
 
-    return rotation.times(-1.0);
+    return rotation.times(-1);
   }
 
   public static Pose2d getPoseByDistanceAndAngleToPose(
