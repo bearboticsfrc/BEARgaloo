@@ -38,6 +38,8 @@ public class SwerveModule {
 
   private boolean parked = false;
 
+  private final boolean SHUFFLEBOARD_ENABLED = false;
+
   private HashMap<String, DoubleLogEntry> dataLogs = new HashMap<String, DoubleLogEntry>();
 
   public SwerveModule(SwerveModuleBuilder swerveModule, ShuffleboardTab shuffleboardTab) {
@@ -69,7 +71,10 @@ public class SwerveModule {
     this.driveMotorPIDController = driveMotor.getPIDController();
     this.pivotMotorPIDController = pivotMotor.getPIDController();
 
-    setupShuffleboardTab(shuffleboardTab);
+    if (SHUFFLEBOARD_ENABLED) {
+      setupShuffleboardTab(shuffleboardTab);
+    }
+
     setupDataLogging(DataLogManager.getLog());
   }
 
@@ -159,20 +164,14 @@ public class SwerveModule {
 
       if (motorType == "PIVOT") {
         dataLogs
-            .get(String.format("%s_MOTOR_POSITION", motorType))
+            .get(motorType + "_MOTOR_POSITION")
             .append(((AbsoluteEncoder) motorEncoder).getPosition());
       }
 
-      dataLogs.get(String.format("%s_MOTOR_CURRENT", motorType)).append(motor.getOutputCurrent());
-      dataLogs
-          .get(String.format("%s_MOTOR_VELOCITY", motorType))
-          .append(motor.getEncoder().getVelocity());
-      dataLogs
-          .get(String.format("%s_MOTOR_APPLIED_OUTPUT", motorType))
-          .append(motor.getAppliedOutput());
-      dataLogs
-          .get(String.format("%s_MOTOR_TEMPERATURE", motorType))
-          .append(motor.getMotorTemperature());
+      dataLogs.get(motorType + "_MOTOR_CURRENT").append(motor.getOutputCurrent());
+      dataLogs.get(motorType + "_MOTOR_VELOCITY").append(motor.getEncoder().getVelocity());
+      dataLogs.get(motorType + "_MOTOR_APPLIED_OUTPUT").append(motor.getAppliedOutput());
+      dataLogs.get(motorType + "_MOTOR_TEMPERATURE").append(motor.getMotorTemperature());
     }
   }
 
@@ -229,6 +228,10 @@ public class SwerveModule {
 
   public void setParked(boolean mode) {
     parked = mode;
+  }
+
+  public SwerveModuleState getState() {
+    return new SwerveModuleState(getDriveVelocity(), getSteerAngle());
   }
 
   /**

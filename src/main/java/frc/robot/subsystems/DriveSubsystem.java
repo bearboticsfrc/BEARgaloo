@@ -5,7 +5,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -14,6 +16,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
@@ -130,6 +134,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
             .setMotorInverted(FrontLeftConstants.DriveMotor.INVERTED)
             .setEncoderInverted(FrontLeftConstants.DriveMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(FrontLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(FrontLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
@@ -139,6 +145,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
             .setMotorInverted(FrontLeftConstants.PivotMotor.INVERTED)
             .setEncoderInverted(FrontLeftConstants.PivotMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(FrontLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(FrontLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -175,6 +183,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(BackLeftConstants.DriveMotor.CURRENT_LIMT)
             .setMotorInverted(BackLeftConstants.DriveMotor.INVERTED)
             .setEncoderInverted(BackLeftConstants.DriveMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(BackLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(BackLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
@@ -184,6 +194,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(BackLeftConstants.PivotMotor.CURRENT_LIMT)
             .setMotorInverted(BackLeftConstants.PivotMotor.INVERTED)
             .setEncoderInverted(BackLeftConstants.PivotMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(BackLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(BackLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -220,6 +232,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(FrontRightConstants.DriveMotor.CURRENT_LIMT)
             .setMotorInverted(FrontRightConstants.DriveMotor.INVERTED)
             .setEncoderInverted(FrontRightConstants.DriveMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(FrontRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(FrontRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
@@ -229,6 +243,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(FrontRightConstants.PivotMotor.CURRENT_LIMT)
             .setMotorInverted(FrontRightConstants.PivotMotor.INVERTED)
             .setEncoderInverted(FrontRightConstants.PivotMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(FrontRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(FrontRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -265,6 +281,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(BackRightConstants.DriveMotor.CURRENT_LIMT)
             .setMotorInverted(BackRightConstants.DriveMotor.INVERTED)
             .setEncoderInverted(BackRightConstants.DriveMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(BackRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(BackRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(driveMotorPid);
 
     MotorBuilder pivotConfig =
@@ -274,6 +292,8 @@ public class DriveSubsystem extends SubsystemBase {
             .setCurrentLimit(BackRightConstants.PivotMotor.CURRENT_LIMT)
             .setMotorInverted(BackRightConstants.PivotMotor.INVERTED)
             .setEncoderInverted(BackRightConstants.PivotMotor.ENCODER_INVERTED)
+            .setPositionConversionFactor(BackRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setVelocityConversionFactor(BackRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
             .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
@@ -334,12 +354,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param mode The specified speed mode set by {@link SpeedMode}.
    */
   public void setSpeedMode(SpeedMode mode) {
-    maxSpeed =
-        Math.max(
-            Math.min(maxSpeed * mode.getMaxSpeedMultiplier(), DriveConstants.MAX_VELOCITY),
-            SpeedMode.TURTLE.getMaxSpeed());
-
-    competitionTabMaxSpeedEntry.setDouble(maxSpeed);
+    competitionTabMaxSpeedEntry.setDouble(mode.getMaxSpeed());
   }
 
   /**
@@ -385,8 +400,10 @@ public class DriveSubsystem extends SubsystemBase {
             * DriveConstants.MAX_ANGULAR_ACCELERATION_PER_SECOND;
 
     if (maxSpeed == SpeedMode.TURTLE.getMaxSpeed()) {
-      rot /= 4.0;
-    }
+      rot /= 18;
+    } else if (maxSpeed == SpeedMode.TURBO.getMaxSpeed()) {
+      rot /= 4;
+    } // TODO: refactor
 
     SwerveModuleState[] swerveModuleStates =
         RobotConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
@@ -397,15 +414,15 @@ public class DriveSubsystem extends SubsystemBase {
     setModuleStates(swerveModuleStates);
   }
 
-  /** Turn off the drive motors */
-  public void stop() {
-    drive(0, 0, 0);
+  /** Stops all drive motors. */
+  public Command getDriveStopCommand() {
+    return new InstantCommand(() -> drive(0, 0, 0));
   }
 
   /**
    * Sets the swerve ModuleStates.
    *
-   * @param swerveModuleStates The desired swerve module states.
+   * @param swerveModuleStates The desired swerve module states, ordered.
    */
   public void setModuleStates(SwerveModuleState[] swerveModuleStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, maxSpeed);
@@ -414,6 +431,20 @@ public class DriveSubsystem extends SubsystemBase {
     for (SwerveModule module : swerveModules.values()) {
       module.set(stateIterator.next());
     }
+  }
+
+  /**
+   * Returns the state of every swerve module.
+   *
+   * @return The states.
+   */
+  public SwerveModuleState[] getModuleStates() {
+    SwerveModuleState[] states = new SwerveModuleState[4];
+    int index = 0;
+    for (SwerveModule module : swerveModules.values()) {
+      states[index++] = module.getState();
+    }
+    return states;
   }
 
   /**
@@ -436,5 +467,33 @@ public class DriveSubsystem extends SubsystemBase {
         Arrays.stream(getSwerveModules())
             .map(module -> module.getPosition())
             .toArray(SwerveModulePosition[]::new);
+  }
+
+  /**
+   * Returns the currently-estimated pose of the robot.
+   *
+   * @return The pose.
+   */
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  /**
+   * Resets the odometry to the specified pose.
+   *
+   * @param pose The pose to which to set the odometry.
+   */
+  public void resetOdometry(Pose2d pose) {
+    odometry.resetPosition(getHeading(), getModulePositions(), pose);
+    // pigeon2.addYaw(pose.getRotation().getDegrees());
+  }
+
+  /**
+   * Resets the odometry to the specified pose of a state in a PathPlanner trajectory.
+   *
+   * @param state The state of the PathPlanner trajectory to contstruct a pose.
+   */
+  public void resetOdometry(PathPlannerState state) {
+    resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
   }
 }

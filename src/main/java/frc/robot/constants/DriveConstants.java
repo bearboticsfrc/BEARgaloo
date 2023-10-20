@@ -31,15 +31,6 @@ public class DriveConstants {
   public static final double DRIVE_WHEEL_FREE_SPEED_RPS =
       (DRIVE_MOTOR_FREE_SPEED_RPS * WHEEL_CIRUM) / DRIVE_GEAR_REDUCTION;
 
-  public static final double DRIVING_POSITION_CONVERSION_FACTOR =
-      (RobotConstants.WHEEL_DIAMETER * Math.PI) / DRIVE_GEAR_REDUCTION; // meters
-  public static final double DRIVING_VELOCITY_CONVERSION_FACTOR =
-      ((RobotConstants.WHEEL_DIAMETER * Math.PI) / DRIVE_GEAR_REDUCTION)
-          / 60.0; // meters per second
-
-  public static final double PIVOT_POSITION_CONVERSION_FACTOR = 2 * Math.PI;
-  public static final double PIVOT_VELOCITY_CONVERSION_FACTOR = (2 * Math.PI) / 60;
-
   /** Max drive velocity in meters/sec */
   public static final double MAX_VELOCITY =
       (MAX_MOTOR_FREE_SPEED_RPM / 60.0 * RobotConstants.WHEEL_DIAMETER * Math.PI)
@@ -49,7 +40,7 @@ public class DriveConstants {
 
   /** The max drive angular velocity in radians/sec */
   public static final double MAX_ANGULAR_VELOCITY =
-      MAX_VELOCITY / Math.hypot(RobotConstants.TRACK_WIDTH / 2.0, RobotConstants.WHEEL_BASE / 2.0);
+      MAX_VELOCITY / Math.hypot(RobotConstants.TRACK_WIDTH / 2.0, RobotConstants.WHEEL_BASE / 2);
 
   /** The drive motor encoder position conversion factor in meters */
   public static final double ENCODER_POSITION_FACTOR =
@@ -70,7 +61,7 @@ public class DriveConstants {
 
   public static final double MAX_ACCELERATION_PER_SECOND = 4;
   public static final double MAX_DECELERATION_PER_SECOND = 4;
-  public static final double MAX_ANGULAR_ACCELERATION_PER_SECOND = 8 * (Math.PI * 2);
+  public static final double MAX_ANGULAR_ACCELERATION_PER_SECOND = 6 * (Math.PI * 2);
   public static final double MAX_ANGULAR_DECELERATION_PER_SECOND = 20;
 
   public static final RateLimiter X_ACCELERATION_LIMITER =
@@ -83,8 +74,8 @@ public class DriveConstants {
       new RateLimiter(MAX_ANGULAR_ACCELERATION_PER_SECOND, MAX_ANGULAR_DECELERATION_PER_SECOND);
 
   public enum SpeedMode {
-    TURBO(2.0),
-    NORMAL(1.0),
+    TURBO(2),
+    NORMAL(1),
     TURTLE(0.5);
 
     private final double maxSpeedMultiplier;
@@ -98,7 +89,7 @@ public class DriveConstants {
     }
 
     public double getMaxSpeed() {
-      return DRIVE_VELOCITY * SpeedMode.TURTLE.getMaxSpeedMultiplier();
+      return DRIVE_VELOCITY * getMaxSpeedMultiplier();
     }
   }
 }

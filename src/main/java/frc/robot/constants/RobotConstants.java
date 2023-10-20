@@ -2,12 +2,17 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class RobotConstants {
   public static final double TRACK_WIDTH = 0.521;
   public static final double WHEEL_BASE = 0.521;
   public static final double WHEEL_DIAMETER = 0.07691;
   public static final int PIGEON_CAN_ID = 24;
+
+  public static final ShuffleboardTab MANIPULATOR_SYSTEM_TAB =
+      Shuffleboard.getTab("Manipulator System");
 
   // Order here must line-up with SwerveCorner order!!
   public static final SwerveDriveKinematics DRIVE_KINEMATICS =
