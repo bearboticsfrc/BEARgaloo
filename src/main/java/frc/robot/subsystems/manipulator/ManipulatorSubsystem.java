@@ -20,6 +20,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import frc.robot.util.MotorConfig.MotorPIDBuilder;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ManipulatorSubsystem extends SubsystemBase {
   private final ArmSubsystem armSubsystem;
@@ -146,12 +147,9 @@ public class ManipulatorSubsystem extends SubsystemBase {
   }
 
   public HashMap<String, Command> getEventMap() {
-    // TODO: see if can be refactored
-    HashMap<String, Command> eventMap = new HashMap<>();
-
-    eventMap.put("lowerWrist", getWristRunCommand(WristPositions.BOTTOM));
-    eventMap.put("startRollers", getRollerRunCommand(RollerSpeed.INTAKE));
-
-    return eventMap;
+    return new HashMap<>(
+        Map.of(
+            "lowerWrist", getWristRunCommand(WristPositions.BOTTOM),
+            "startRollers", getRollerRunCommand(RollerSpeed.INTAKE)));
   }
 }

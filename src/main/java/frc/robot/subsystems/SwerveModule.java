@@ -22,6 +22,8 @@ import java.util.function.DoubleSupplier;
 
 /** A SwerveModules consists of a drive motor and a steer motor */
 public class SwerveModule {
+  private final boolean SHUFFLEBOARD_ENABLED = false;
+
   private String moduleName;
 
   private CANSparkMax driveMotor;
@@ -70,7 +72,10 @@ public class SwerveModule {
     this.driveMotorPIDController = driveMotor.getPIDController();
     this.pivotMotorPIDController = pivotMotor.getPIDController();
 
-    setupShuffleboardTab(shuffleboardTab);
+    if (SHUFFLEBOARD_ENABLED) {
+      setupShuffleboardTab(shuffleboardTab);
+    }
+
     setupDataLogging(DataLogManager.getLog());
   }
 
