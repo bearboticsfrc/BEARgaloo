@@ -4,7 +4,6 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
@@ -18,6 +17,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.function.DoubleSupplier;
 
 /** A SwerveModules consists of a drive motor and a steer motor */
 public class SwerveModule {
@@ -37,8 +38,6 @@ public class SwerveModule {
   private Rotation2d chassisAngularOffset;
 
   private boolean parked = false;
-
-  private final boolean SHUFFLEBOARD_ENABLED = false;
 
   private HashMap<String, DoubleLogEntry> dataLogs = new HashMap<String, DoubleLogEntry>();
 
@@ -71,10 +70,7 @@ public class SwerveModule {
     this.driveMotorPIDController = driveMotor.getPIDController();
     this.pivotMotorPIDController = pivotMotor.getPIDController();
 
-    if (SHUFFLEBOARD_ENABLED) {
-      setupShuffleboardTab(shuffleboardTab);
-    }
-
+    setupShuffleboardTab(shuffleboardTab);
     setupDataLogging(DataLogManager.getLog());
   }
 
@@ -102,18 +98,24 @@ public class SwerveModule {
         .withSize(1, 1);
   }
 
+  /**
+   * Setup data logging
+   *
+   * @param log The log to use
+   */
   private void setupDataLogging(DataLog log) {
+    // TODO: refactor this, maybe
+
     for (String motorType : new String[] {"DRIVE", "PIVOT"}) {
+      String pathMotorType = motorType.toLowerCase();
+
       if (motorType.equals("PIVOT")) {
         dataLogs.put(
             String.format("%s_MOTOR_POSITION", motorType),
             new DoubleLogEntry(
-                log,
-                String.format("/drive/%s/%s_motor/current", moduleName, motorType.toLowerCase())));
+                log, String.format("/drive/%s/%s_motor/position", moduleName, pathMotorType)));
       }
 
-      String pathMotorType = motorType.toLowerCase();
-
       dataLogs.put(
           String.format("%s_MOTOR_CURRENT", motorType),
           new DoubleLogEntry(
@@ -122,56 +124,50 @@ public class SwerveModule {
       dataLogs.put(
           String.format("%s_MOTOR_VELOCITY", motorType),
           new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
+              log, String.format("/drive/%s/%s_motor/velocity", moduleName, pathMotorType)));
+
       dataLogs.put(
           String.format("%s_MOTOR_APPLIED_OUTPUT", motorType),
           new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
+              log, String.format("/drive/%s/%s_motor/applied_output", moduleName, pathMotorType)));
+
       dataLogs.put(
           String.format("%s_MOTOR_TEMPERATURE", motorType),
           new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_CURRENT", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_POSITION", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_VELOCITY", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_APPLIED_OUTPUT", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
-      dataLogs.put(
-          String.format("%s_MOTOR_TEMPERATURE", motorType),
-          new DoubleLogEntry(
-              log, String.format("/drive/%s/%s_motor/current", moduleName, pathMotorType)));
+              log, String.format("/drive/%s/%s_motor/temperature", moduleName, pathMotorType)));
     }
   }
 
+  /** Updates data logs */
   public void updateDataLogs() {
-    CANSparkMax[] motors = new CANSparkMax[] {driveMotor, pivotMotor};
+    for (Entry<String, DoubleLogEntry> entry : dataLogs.entrySet()) {
+      final CANSparkMax motor = entry.getKey().startsWith("PIVOT") ? pivotMotor : driveMotor;
 
-    for (int iteration = 0; iteration < motors.length; iteration++) {
-      String motorType = iteration == 0 ? "DRIVE" : "PIVOT";
-      MotorFeedbackSensor motorEncoder = iteration == 0 ? driveMotorEncoder : pivotMotorEncoder;
-      CANSparkMax motor = motors[iteration];
+      DoubleSupplier propertySupplier = getPropertySupplier(motor, entry.getKey());
+      entry.getValue().append(propertySupplier.getAsDouble());
+    }
+  }
 
-      if (motorType == "PIVOT") {
-        dataLogs
-            .get(motorType + "_MOTOR_POSITION")
-            .append(((AbsoluteEncoder) motorEncoder).getPosition());
-      }
-
-      dataLogs.get(motorType + "_MOTOR_CURRENT").append(motor.getOutputCurrent());
-      dataLogs.get(motorType + "_MOTOR_VELOCITY").append(motor.getEncoder().getVelocity());
-      dataLogs.get(motorType + "_MOTOR_APPLIED_OUTPUT").append(motor.getAppliedOutput());
-      dataLogs.get(motorType + "_MOTOR_TEMPERATURE").append(motor.getMotorTemperature());
+  /**
+   * Returns the respective getter for <b>property</b>
+   *
+   * @param property The property
+   * @return The getter, wrapped as a DoubleSupplier
+   */
+  public DoubleSupplier getPropertySupplier(CANSparkMax motor, String property) {
+    switch (property) {
+      case "CURRENT":
+        return motor::getOutputCurrent;
+      case "VELOCITY":
+        return motor.getEncoder()::getVelocity;
+      case "APPLIED_OUTPUT":
+        return motor::getAppliedOutput;
+      case "TEMPERATURE":
+        return motor::getMotorTemperature;
+      case "POSITION":
+        return pivotMotorEncoder::getPosition;
+      default:
+        throw new IllegalArgumentException("Unknown motor property: " + property);
     }
   }
 

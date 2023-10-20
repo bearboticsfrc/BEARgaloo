@@ -20,7 +20,6 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.util.MotorConfig.MotorBuilder;
 import frc.robot.util.MotorConfig.MotorPIDBuilder;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ManipulatorSubsystem extends SubsystemBase {
   private final ArmSubsystem armSubsystem;
@@ -134,14 +133,12 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
   public Command getPickupPositionCommand() {
     return new SequentialCommandGroup(
-        getRollerRunCommand(RollerSpeed.INTAKE), getWristRunCommand(WristPositions.BOTTOM));
+        getWristRunCommand(WristPositions.BOTTOM), getRollerRunCommand(RollerSpeed.INTAKE));
   }
 
   public Command getCubeHuntCommand(DriveSubsystem driveSubsystem) {
     return new SequentialCommandGroup(
-        getPickupPositionCommand(),
-        new WaitCommand(0.04),
-        new CubeHuntCommand(driveSubsystem, this::hasCube).withTimeout(2));
+        getPickupPositionCommand(), new CubeHuntCommand(driveSubsystem, this::hasCube));
   }
 
   public boolean hasCube() {
@@ -149,9 +146,12 @@ public class ManipulatorSubsystem extends SubsystemBase {
   }
 
   public HashMap<String, Command> getEventMap() {
-    return new HashMap<>(
-        Map.of(
-            "lowerWrist", getWristRunCommand(WristPositions.BOTTOM),
-            "startRollers", getRollerRunCommand(RollerSpeed.INTAKE)));
+    // TODO: see if can be refactored
+    HashMap<String, Command> eventMap = new HashMap<>();
+
+    eventMap.put("lowerWrist", getWristRunCommand(WristPositions.BOTTOM));
+    eventMap.put("startRollers", getRollerRunCommand(RollerSpeed.INTAKE));
+
+    return eventMap;
   }
 }
