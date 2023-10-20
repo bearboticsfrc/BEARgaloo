@@ -81,6 +81,10 @@ public class WristSubsystem extends SubsystemBase {
     motorPid.setReference(position, ControlType.kPosition);
   }
 
+  public void calibrate() {
+    motorEncoder.setPosition(0);
+  }
+
   public double getTargetPosition() {
     return targetPosition;
   }
