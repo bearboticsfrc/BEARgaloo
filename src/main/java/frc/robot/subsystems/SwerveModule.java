@@ -104,6 +104,8 @@ public class SwerveModule {
    * @param log The log to use
    */
   private void setupDataLogging(DataLog log) {
+    // TODO: refactor this, maybe
+
     for (String motorType : new String[] {"DRIVE", "PIVOT"}) {
       String pathMotorType = motorType.toLowerCase();
 
