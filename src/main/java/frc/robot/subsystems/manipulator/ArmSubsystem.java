@@ -5,12 +5,18 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.manipulator.ArmConstants.ArmPositions;
 import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.function.DoubleSupplier;
 
 public class ArmSubsystem extends SubsystemBase {
   private String name;
@@ -18,6 +24,8 @@ public class ArmSubsystem extends SubsystemBase {
   private SparkMaxPIDController motorPid;
   private CANSparkMax motor;
   private CANSparkMax followerMotor;
+
+  private HashMap<String, DoubleLogEntry> dataLogs = new HashMap<String, DoubleLogEntry>();
 
   public ArmSubsystem(MotorBuilder motorConstants, MotorBuilder followerMotorConstants) {
     this.name = motorConstants.getName();
@@ -45,7 +53,7 @@ public class ArmSubsystem extends SubsystemBase {
         .burnFlash();
 
     setupShuffleboardTab(RobotConstants.MANIPULATOR_SYSTEM_TAB);
-    // setupDataLogging(DataLogManager.getLog()); TODO: impl
+    setupDataLogging(DataLogManager.getLog());
   }
 
   /**
@@ -64,6 +72,24 @@ public class ArmSubsystem extends SubsystemBase {
         .withSize(1, 1);
   }
 
+  /**
+   * Initalize data logging.
+   *
+   * @param log The log to use
+   */
+  private void setupDataLogging(DataLog log) {
+    final String LOG_PATH_BASE = "/%s/motor/%s".formatted(name, "%s"); // "/arm/%s"
+    final String LOG_NAME_BASE = "%s_MOTOR_%s".formatted(name, "%s"); // "arm_%s"
+    final String[] LOGS =
+        new String[] {"POSITION", "CURRENT", "VELOCITY", "APPLIED_OUTPUT", "TEMPERATURE"};
+
+    for (String logName : LOGS) {
+      dataLogs.put(
+          LOG_NAME_BASE.formatted(logName),
+          new DoubleLogEntry(log, LOG_PATH_BASE.formatted(logName)));
+    }
+  }
+
   public void set(ArmPositions position) {
     int slot = position == ArmPositions.HIGH ? 0 : 1;
     set(position, slot);
@@ -75,5 +101,39 @@ public class ArmSubsystem extends SubsystemBase {
 
   public boolean isHome() {
     return motorEncoder.getPosition() < .3;
+  }
+
+  @Override
+  public void periodic() {
+    updateDataLogs();
+  }
+
+  /** Updates the data logs */
+  public void updateDataLogs() {
+    for (Entry<String, DoubleLogEntry> entry : dataLogs.entrySet()) {
+      DoubleSupplier propertySupplier = getPropertySupplier(entry.getKey());
+      entry.getValue().append(propertySupplier.getAsDouble());
+    }
+  }
+
+  /**
+   * Returns the respective getter for <b>property</b>
+   *
+   * @param property The property
+   * @return The getter, wrapped as a DoubleSupplier
+   */
+  public DoubleSupplier getPropertySupplier(String property) {
+    switch (property) {
+      case "CURRENT":
+        return motor::getOutputCurrent;
+      case "VELOCITY":
+        return motor.getEncoder()::getVelocity;
+      case "APPLIED_OUTPUT":
+        return motor::getAppliedOutput;
+      case "TEMPERATURE":
+        return motor::getMotorTemperature;
+      default:
+        throw new IllegalArgumentException("Unknown motor property: " + property);
+    }
   }
 }

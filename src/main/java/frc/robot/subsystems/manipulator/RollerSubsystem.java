@@ -4,18 +4,26 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.manipulator.RollerConstants.RollerSpeed;
 import frc.robot.util.MotorConfig;
 import frc.robot.util.MotorConfig.MotorBuilder;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.function.DoubleSupplier;
 
 public class RollerSubsystem extends SubsystemBase {
   private MedianFilter medianFilter = new MedianFilter(10);
   private String name;
   private RelativeEncoder motorEncoder;
   private CANSparkMax motor;
+
+  private HashMap<String, DoubleLogEntry> dataLogs = new HashMap<String, DoubleLogEntry>();
 
   public RollerSubsystem(MotorBuilder motorConstants) {
     this.name = motorConstants.getName();
@@ -29,7 +37,7 @@ public class RollerSubsystem extends SubsystemBase {
         .burnFlash();
 
     setupShuffleboardTab(RobotConstants.MANIPULATOR_SYSTEM_TAB);
-    // setupDataLogging(DataLogManager.getLog()); TODO: impl
+    setupDataLogging(DataLogManager.getLog());
   }
 
   /**
@@ -51,6 +59,24 @@ public class RollerSubsystem extends SubsystemBase {
         .withSize(2, 1);
   }
 
+  /**
+   * Initalize data logging.
+   *
+   * @param log The log to use
+   */
+  private void setupDataLogging(DataLog log) {
+    final String LOG_PATH_BASE = "/%s/motor/%s".formatted(name, "%s"); // "/roller/%s"
+    final String LOG_NAME_BASE = "%s_MOTOR_%s".formatted(name, "%s"); // "roller_%s"
+    final String[] LOGS =
+        new String[] {"POSITION", "CURRENT", "VELOCITY", "APPLIED_OUTPUT", "TEMPERATURE"};
+
+    for (String logName : LOGS) {
+      dataLogs.put(
+          LOG_NAME_BASE.formatted(logName),
+          new DoubleLogEntry(log, LOG_PATH_BASE.formatted(logName)));
+    }
+  }
+
   public boolean hasCube() {
     double adjustedOutput = medianFilter.calculate(motor.getOutputCurrent());
     return motorEncoder.getVelocity() < 0 && (adjustedOutput > 40);
@@ -69,6 +95,37 @@ public class RollerSubsystem extends SubsystemBase {
   public void periodic() {
     if (motor.get() < 0 && hasCube()) {
       motor.set(0);
-    } // intake
+    }
+
+    updateDataLogs();
+  }
+
+  /** Updates the data logs */
+  public void updateDataLogs() {
+    for (Entry<String, DoubleLogEntry> entry : dataLogs.entrySet()) {
+      DoubleSupplier propertySupplier = getPropertySupplier(entry.getKey());
+      entry.getValue().append(propertySupplier.getAsDouble());
+    }
+  }
+
+  /**
+   * Returns the respective getter for <b>property</b>
+   *
+   * @param property The property
+   * @return The getter, wrapped as a DoubleSupplier
+   */
+  public DoubleSupplier getPropertySupplier(String property) {
+    switch (property) {
+      case "CURRENT":
+        return motor::getOutputCurrent;
+      case "VELOCITY":
+        return motor.getEncoder()::getVelocity;
+      case "APPLIED_OUTPUT":
+        return motor::getAppliedOutput;
+      case "TEMPERATURE":
+        return motor::getMotorTemperature;
+      default:
+        throw new IllegalArgumentException("Unknown motor property: " + property);
+    }
   }
 }

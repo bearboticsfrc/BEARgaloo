@@ -134,14 +134,12 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
   public Command getPickupPositionCommand() {
     return new SequentialCommandGroup(
-        getRollerRunCommand(RollerSpeed.INTAKE), getWristRunCommand(WristPositions.BOTTOM));
+        getWristRunCommand(WristPositions.BOTTOM), getRollerRunCommand(RollerSpeed.INTAKE));
   }
 
   public Command getCubeHuntCommand(DriveSubsystem driveSubsystem) {
     return new SequentialCommandGroup(
-        getPickupPositionCommand(),
-        new WaitCommand(0.04),
-        new CubeHuntCommand(driveSubsystem, this::hasCube).withTimeout(2));
+        getPickupPositionCommand(), new CubeHuntCommand(driveSubsystem, this::hasCube));
   }
 
   public boolean hasCube() {
