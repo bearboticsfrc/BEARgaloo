@@ -12,7 +12,7 @@ public class WristCalibrateCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    manipulatorSubsystem.adjustWristHeight(-1);
+    manipulatorSubsystem.setWristSpeed(-0.2);
   }
 
   @Override

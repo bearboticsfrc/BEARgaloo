@@ -105,7 +105,11 @@ public class ManipulatorSubsystem extends SubsystemBase {
     }
 
     double position = wristSubsystem.getTargetPosition() + (direction * 0.1);
-    wristSubsystem.set(position);
+    wristSubsystem.setReference(position);
+  }
+
+  public void setWristSpeed(double speed) {
+    wristSubsystem.set(speed);
   }
 
   public CommandBase getHomeAllCommand() {
