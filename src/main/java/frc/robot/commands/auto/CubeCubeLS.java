@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.PathCommand;
 import frc.robot.constants.AutoConstants;
 import frc.robot.location.LocationHelper;
 import frc.robot.subsystems.DriveSubsystem;
@@ -32,7 +31,7 @@ public class CubeCubeLS {
     return new SequentialCommandGroup(
             manipulatorSubsystem.getShootCubeCommand(),
             new FollowPathWithEvents(
-                new PathCommand(driveSubsystem, pathPlannerTrajectory, true, true),
+                new PathCommandMission(driveSubsystem, pathPlannerTrajectory, true, true),
                 pathPlannerTrajectory.getMarkers(),
                 manipulatorSubsystem.getEventMap()),
             manipulatorSubsystem.getHomeAllCommand(),
@@ -66,7 +65,7 @@ public class CubeCubeLS {
                     endPose.getTranslation(), endPose.getRotation(), Rotation2d.fromDegrees(0))
                 .withPrevControlLength(1));
 
-    return new PathCommand(driveSubsystem, trajectory, false, false)
+    return new PathCommandMission(driveSubsystem, trajectory, false, false)
         .andThen(driveSubsystem.getDriveStopCommand());
   }
 
@@ -96,7 +95,7 @@ public class CubeCubeLS {
                     Rotation2d.fromDegrees(0))
                 .withPrevControlLength(1));
 
-    return new PathCommand(driveSubsystem, trajectory, false, false)
+    return new PathCommandMission(driveSubsystem, trajectory, false, false)
         .andThen(driveSubsystem.getDriveStopCommand());
   }
 
@@ -127,7 +126,7 @@ public class CubeCubeLS {
     PathPlannerTrajectory trajectory =
         PathPlanner.generatePath(new PathConstraints(2.5, 4), points, eventMarkers);
 
-    return new PathCommand(driveSubsystem, trajectory, false, false)
+    return new PathCommandMission(driveSubsystem, trajectory, false, false)
         .andThen(driveSubsystem.getDriveStopCommand());
   }
 
@@ -151,7 +150,7 @@ public class CubeCubeLS {
                     Rotation2d.fromDegrees(0))
                 .withPrevControlLength(1));
 
-    return new PathCommand(driveSubsystem, trajectory, false, false)
+    return new PathCommandMission(driveSubsystem, trajectory, false, false)
         .andThen(driveSubsystem.getDriveStopCommand());
   }
 }
