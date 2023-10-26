@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.auto;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -8,21 +8,23 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.PathPlannerDebugCommand;
 import frc.robot.constants.AutoConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
 import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** A command to run a given trajectory with support for debug output about trajectory accuracy */
-public class PathCommand extends SequentialCommandGroup {
+public class PathCommandMission extends SequentialCommandGroup {
   public static final boolean DEBUG_MODE = false;
 
-  public PathCommand(DriveSubsystem driveSubsystem, PathPlannerTrajectory pathPlannerTrajectory) {
+  public PathCommandMission(
+      DriveSubsystem driveSubsystem, PathPlannerTrajectory pathPlannerTrajectory) {
     this(driveSubsystem, pathPlannerTrajectory, true, true);
   }
 
   /** Creates a new PathCommand. */
-  public PathCommand(
+  public PathCommandMission(
       DriveSubsystem driveSubsystem,
       PathPlannerTrajectory pathPlannerTrajectory,
       boolean withRequirements,
@@ -69,5 +71,9 @@ public class PathCommand extends SequentialCommandGroup {
     if (withRequirements) {
       addRequirements(driveSubsystem);
     }
+  }
+
+  public boolean isSuccess() {
+    return true;
   }
 }
