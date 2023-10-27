@@ -40,4 +40,12 @@ public class Campaign {
 
     return sum;
   }
+
+  public String getName() {
+    return name;
+  }
+
+  public MissionTree getMissions() {
+    return missions;
+  }
 }

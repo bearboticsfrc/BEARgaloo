@@ -1,8 +1,11 @@
 package frc.robot.auto.campaign;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.function.BooleanSupplier;
 
-public abstract class CommandMission extends Mission {
+public class CommandMission extends Mission {
+  private BooleanSupplier successSupplier = () -> true;
+
   /**
    * @see edu.wpi.first.wpilibj2.command.Command#initialize()
    */
@@ -61,6 +64,14 @@ public abstract class CommandMission extends Mission {
    */
   public String getName() {
     return command.getName();
+  }
+
+  public void setSuccessCallback(BooleanSupplier callback) {
+    this.successSupplier = callback;
+  }
+
+  public boolean isSuccess() {
+    return successSupplier.getAsBoolean();
   }
 
   private final Command command;

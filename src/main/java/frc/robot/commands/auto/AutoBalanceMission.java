@@ -67,6 +67,6 @@ public class AutoBalanceMission extends Mission {
 
   @Override
   public boolean isSuccess() {
-    return isFinished();
+    return false;
   }
 }

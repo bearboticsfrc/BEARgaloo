@@ -74,15 +74,12 @@ public class WristSubsystem extends SubsystemBase {
    * @param log Which log to append to
    */
   private void setupDataLogging(DataLog log) { // TODO: Abstract into own lib
-    final String LOG_PATH_BASE = "/%s/motor/%s".formatted(name, "%s"); // "/wrist/%s"
-    final String LOG_NAME_BASE = "%s_MOTOR_%s".formatted(name, "%s"); // "wrist_%s"
+    final String LOG_PATH_BASE = "/wrist/motor/%s"; // "/wrist/%s"
     final String[] LOGS =
         new String[] {"POSITION", "CURRENT", "VELOCITY", "APPLIED_OUTPUT", "TEMPERATURE"};
 
     for (String logName : LOGS) {
-      dataLogs.put(
-          LOG_NAME_BASE.formatted(logName),
-          new DoubleLogEntry(log, LOG_PATH_BASE.formatted(logName)));
+      dataLogs.put(logName, new DoubleLogEntry(log, LOG_PATH_BASE.formatted(logName)));
     }
   }
 
@@ -134,6 +131,8 @@ public class WristSubsystem extends SubsystemBase {
    */
   public DoubleSupplier getPropertySupplier(String property) {
     switch (property) {
+      case "POSITION":
+        return motor.getEncoder()::getPosition;
       case "CURRENT":
         return motor::getOutputCurrent;
       case "VELOCITY":

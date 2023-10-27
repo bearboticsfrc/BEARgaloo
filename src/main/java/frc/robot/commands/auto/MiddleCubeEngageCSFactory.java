@@ -8,18 +8,29 @@ import frc.robot.auto.campaign.Mission;
 import frc.robot.auto.campaign.MissionTree;
 import frc.robot.constants.AutoConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.manipulator.ManipulatorSubsystem;
 
-public class MiddleCubeEngageCSCampaign {
+public class MiddleCubeEngageCSFactory {
   static final String NAME = "Middle Cube Engage Charge Station";
 
-  public static Campaign get(DriveSubsystem driveSubsystem) {
+  public static Campaign get(
+      DriveSubsystem driveSubsystem, ManipulatorSubsystem manipulatorSubsystem) {
+
     final MissionTree parkMissionNode = new MissionTree(new ParkMission(driveSubsystem));
+
     final MissionTree autoBalanceMissionNode =
         new MissionTree(new AutoBalanceMission(driveSubsystem)).setSuccessNode(parkMissionNode);
+
     final MissionTree pathMissionNode =
         new MissionTree(getPathMission(driveSubsystem)).setSuccessNode(autoBalanceMissionNode);
 
-    return new Campaign(NAME, pathMissionNode);
+    final MissionTree cubeShootMissionNode =
+        new MissionTree(
+                new CommandMission(
+                    manipulatorSubsystem.getShootCubeCommand().withName("Shoot Mission")))
+            .setSuccessNode(pathMissionNode);
+
+    return new Campaign(NAME, cubeShootMissionNode);
   }
 
   public static Mission getPathMission(DriveSubsystem driveSubsystem) {
@@ -30,11 +41,7 @@ public class MiddleCubeEngageCSCampaign {
             AutoConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
 
     return new CommandMission(
-        new PathCommandMission(driveSubsystem, pathPlannerTrajectory) {
-          @Override
-          public boolean isSuccess() {
-            return true;
-          }
-        }.withName("StraightToChargeStationFromMiddle"));
+        new PathCommandMission(driveSubsystem, pathPlannerTrajectory)
+            .withName("StraightToChargeStationFromMiddle"));
   }
 }

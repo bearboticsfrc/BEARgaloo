@@ -19,4 +19,9 @@ public class ParkMission extends Mission {
   public boolean isSuccess() {
     return true;
   }
+
+  @Override
+  public boolean isFinished() {
+    return true;
+  }
 }

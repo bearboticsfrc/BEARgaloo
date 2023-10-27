@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.auto.campaign.CampaignExecutor;
 import frc.robot.commands.auto.BumpTwoCube;
 import frc.robot.commands.auto.CubeCubeLS;
 import frc.robot.commands.auto.DropCubeBottomExitCommunity;
@@ -21,6 +23,7 @@ import frc.robot.commands.auto.DropCubeTopExitCommunity;
 import frc.robot.commands.auto.LeaveCommunityBottom;
 import frc.robot.commands.auto.LeaveCommunityTop;
 import frc.robot.commands.auto.MiddleCubeEngageCS;
+import frc.robot.commands.auto.MiddleCubeEngageCSFactory;
 import frc.robot.constants.AutoConstants.ScorePosition;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
@@ -188,6 +191,8 @@ public class RobotContainer {
   }
 
   private void buildAutoList() {
+    DataLogManager.log(
+        "Factor.get() -> " + MiddleCubeEngageCSFactory.get(driveSubsystem, manipulatorSubsystem));
     addToAutoList("0-Nothing", new InstantCommand());
     addToAutoList("1-DropCubeBottomExitCommunity", DropCubeBottomExitCommunity.get(driveSubsystem));
     addToAutoList(
@@ -199,6 +204,9 @@ public class RobotContainer {
     addToAutoList("6-2CubeBump", BumpTwoCube.get(driveSubsystem, manipulatorSubsystem));
     addToAutoList(
         "7-MiddleCubeEngageCS", MiddleCubeEngageCS.get(driveSubsystem, manipulatorSubsystem));
+    addToAutoList(
+        "Campaign",
+        new CampaignExecutor(MiddleCubeEngageCSFactory.get(driveSubsystem, manipulatorSubsystem)));
   }
 
   public Command getAutonomousCommand() {
