@@ -91,7 +91,7 @@ public class WristSubsystem extends SubsystemBase {
     motorPid.setReference(position.getPosition(), ControlType.kPosition);
   }
 
-  public void set(double position) {
+  public void setReference(double position) {
     if (position < WristPositions.HOME.getPosition()
         || position > WristPositions.BOTTOM.getPosition()) {
       return;
@@ -99,6 +99,19 @@ public class WristSubsystem extends SubsystemBase {
 
     targetPosition = position;
     motorPid.setReference(position, ControlType.kPosition);
+  }
+
+  /**
+   * Applies a speed to the wrist motor.
+   *
+   * @param speed The speed to apply to the wrist motor.
+   */
+  public void set(double speed) {
+    motor.set(speed);
+  }
+
+  public void calibrate() {
+    motorEncoder.setPosition(0);
   }
 
   public double getTargetPosition() {

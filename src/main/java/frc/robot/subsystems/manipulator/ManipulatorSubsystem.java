@@ -105,7 +105,11 @@ public class ManipulatorSubsystem extends SubsystemBase {
     }
 
     double position = wristSubsystem.getTargetPosition() + (direction * 0.1);
-    wristSubsystem.set(position);
+    wristSubsystem.setReference(position);
+  }
+
+  public void setWristSpeed(double speed) {
+    wristSubsystem.set(speed);
   }
 
   public CommandBase getHomeAllCommand() {
@@ -144,6 +148,14 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
   public boolean hasCube() {
     return rollerSubsystem.hasCube();
+  }
+
+  public boolean isWristHome() {
+    return wristSubsystem.isHome();
+  }
+
+  public void calibrateWrist() {
+    wristSubsystem.calibrate();
   }
 
   public HashMap<String, Command> getEventMap() {
