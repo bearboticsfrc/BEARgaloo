@@ -5,25 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.auto.campaign.CampaignExecutor;
-import frc.robot.commands.auto.BumpTwoCube;
-import frc.robot.commands.auto.CubeCubeLS;
-import frc.robot.commands.auto.DropCubeBottomExitCommunity;
-import frc.robot.commands.auto.DropCubeTopExitCommunity;
-import frc.robot.commands.auto.LeaveCommunityBottom;
-import frc.robot.commands.auto.LeaveCommunityTop;
-import frc.robot.commands.auto.MiddleCubeEngageCS;
-import frc.robot.commands.auto.MiddleCubeEngageCSFactory;
+import frc.robot.commands.auto.missions.AutoBalanceMission;
+import frc.robot.commands.auto.missions.ParkMission;
 import frc.robot.constants.AutoConstants.ScorePosition;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.DriveConstants.SpeedMode;
@@ -31,8 +21,10 @@ import frc.robot.constants.manipulator.RollerConstants.RollerSpeed;
 import frc.robot.constants.manipulator.WristConstants.WristPositions;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.manipulator.ManipulatorSubsystem;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -41,7 +33,6 @@ import java.util.List;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private List<Pair<String, Command>> autoList = new ArrayList<Pair<String, Command>>();
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
   private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem();
 
@@ -50,9 +41,8 @@ public class RobotContainer {
   private final CommandXboxController operatorController =
       new CommandXboxController(DriveConstants.OPERATOR_CONTROLLER_PORT);
 
-  private SendableChooser<Command> chooser = new SendableChooser<>();
-
   private boolean isTeleop = false;
+  private Map<String, Command> missionsMap;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -60,7 +50,8 @@ public class RobotContainer {
     setManipulatorDefaultCommand();
     configureControllerMappings();
     buildAutoList();
-    setupShuffleboardTab();
+
+    missionsMap = new HashMap<>();
   }
 
   private RunCommand getDefaultCommand() {
@@ -177,39 +168,51 @@ public class RobotContainer {
     operatorController.leftBumper().onTrue(manipulatorSubsystem.getShootCubeCommand());
   }
 
-  private void setupShuffleboardTab() {
-    for (Pair<String, Command> command : autoList) {
-      chooser.addOption(command.getFirst(), command.getSecond());
+  /**
+   * Gets a mission by name, fuzzily.
+   *
+   * @param name The mission name, can either be the index or name.
+   * @return The mission.
+   */
+  public Command getMission(String name) {
+    for (Entry<String, Command> missionEntry : missionsMap.entrySet()) {
+      String[] normalized = missionEntry.getKey().split(" - ");
+
+      if (normalized[0] == name) {
+        return missionEntry.getValue();
+      } else if (normalized[1].toLowerCase() == name.toLowerCase()) {
+        return missionEntry.getValue();
+      }
     }
 
-    chooser.setDefaultOption(autoList.get(0).getFirst(), autoList.get(0).getSecond());
-    DriveConstants.COMPETITION_TAB.add("Auto Command", chooser).withSize(4, 1).withPosition(0, 1);
+    throw new NoSuchElementException(name + " Could not be fuzzily matched.");
   }
 
-  private void addToAutoList(String name, Command command) {
-    autoList.add(new Pair<String, Command>(name, command));
+  /**
+   * Gets a mission by name, fuzzily.
+   *
+   * @param name The mission name, can either be the index or name.
+   * @return The mission.
+   */
+  public Command getMission(int index) {
+    return getMission(String.valueOf(index));
+  }
+
+  public Command getMission(String name, boolean fuzzy) {
+    if (fuzzy) {
+      return getMission(name);
+    }
+
+    return missionsMap.get(name);
+  }
+
+  private void addMission(String name, Command command) {
+    missionsMap.put(name, command);
   }
 
   private void buildAutoList() {
-    DataLogManager.log(
-        "Factor.get() -> " + MiddleCubeEngageCSFactory.get(driveSubsystem, manipulatorSubsystem));
-    addToAutoList("0-Nothing", new InstantCommand());
-    addToAutoList("1-DropCubeBottomExitCommunity", DropCubeBottomExitCommunity.get(driveSubsystem));
-    addToAutoList(
-        "2-DropCubeTopmmunity", DropCubeTopExitCommunity.get(driveSubsystem, manipulatorSubsystem));
-    addToAutoList(
-        "3-LeaveCommunityBottom", LeaveCommunityBottom.get(driveSubsystem)); // TODO: remove maybe
-    addToAutoList("4-LeaveCommunityTop", LeaveCommunityTop.get(driveSubsystem)); // ^
-    addToAutoList("5-CubeCubeLS", CubeCubeLS.get(driveSubsystem, manipulatorSubsystem));
-    addToAutoList("6-2CubeBump", BumpTwoCube.get(driveSubsystem, manipulatorSubsystem));
-    addToAutoList(
-        "7-MiddleCubeEngageCS", MiddleCubeEngageCS.get(driveSubsystem, manipulatorSubsystem));
-    addToAutoList(
-        "Campaign",
-        new CampaignExecutor(MiddleCubeEngageCSFactory.get(driveSubsystem, manipulatorSubsystem)));
-  }
-
-  public Command getAutonomousCommand() {
-    return chooser.getSelected();
+    addMission("0 - NoOp", new InstantCommand());
+    addMission("1 - Park", new ParkMission(driveSubsystem));
+    addMission("2 - Balance", new AutoBalanceMission(driveSubsystem));
   }
 }
