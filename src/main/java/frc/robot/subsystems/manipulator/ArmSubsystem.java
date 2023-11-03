@@ -78,15 +78,12 @@ public class ArmSubsystem extends SubsystemBase {
    * @param log The log to use
    */
   private void setupDataLogging(DataLog log) {
-    final String LOG_PATH_BASE = "/%s/motor/%s".formatted(name, "%s"); // "/arm/%s"
-    final String LOG_NAME_BASE = "%s_MOTOR_%s".formatted(name, "%s"); // "arm_%s"
+    final String LOG_PATH_BASE = "/arm/motor/%s";
     final String[] LOGS =
         new String[] {"POSITION", "CURRENT", "VELOCITY", "APPLIED_OUTPUT", "TEMPERATURE"};
 
     for (String logName : LOGS) {
-      dataLogs.put(
-          LOG_NAME_BASE.formatted(logName),
-          new DoubleLogEntry(log, LOG_PATH_BASE.formatted(logName)));
+      dataLogs.put(logName, new DoubleLogEntry(log, LOG_PATH_BASE.formatted(logName)));
     }
   }
 
@@ -124,6 +121,8 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public DoubleSupplier getPropertySupplier(String property) {
     switch (property) {
+      case "POSITION":
+        return motor.getEncoder()::getPosition;
       case "CURRENT":
         return motor::getOutputCurrent;
       case "VELOCITY":
