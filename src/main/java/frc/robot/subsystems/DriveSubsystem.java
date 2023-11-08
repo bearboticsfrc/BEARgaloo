@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+// import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -493,7 +493,15 @@ public class DriveSubsystem extends SubsystemBase {
    *
    * @param state The state of the PathPlanner trajectory to contstruct a pose.
    */
-  public void resetOdometry(PathPlannerState state) {
-    resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
+  // public void resetOdometry(PathPlannerState state) {
+  //   resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation));
+  // }
+
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return RobotConstants.DRIVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+  }
+
+  public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
+    setModuleStates(RobotConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds));
   }
 }

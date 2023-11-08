@@ -17,9 +17,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.WristCalibrateCommand;
 import frc.robot.commands.auto.BumpTwoCube;
 import frc.robot.commands.auto.CubeCubeLS;
-import frc.robot.commands.auto.DropCubeBottomExitCommunity;
-import frc.robot.commands.auto.DropCubeTopExitCommunity;
-import frc.robot.commands.auto.LeaveCommunityBottom;
 import frc.robot.commands.auto.LeaveCommunityTop;
 import frc.robot.commands.auto.MiddleCubeEngageCS;
 import frc.robot.constants.AutoConstants.ScorePosition;
@@ -185,11 +182,6 @@ public class RobotContainer {
 
   private void buildAutoList() {
     addToAutoList("0-Nothing", new InstantCommand());
-    addToAutoList("1-DropCubeBottomExitCommunity", DropCubeBottomExitCommunity.get(driveSubsystem));
-    addToAutoList(
-        "2-DropCubeTopmmunity", DropCubeTopExitCommunity.get(driveSubsystem, manipulatorSubsystem));
-    addToAutoList(
-        "3-LeaveCommunityBottom", LeaveCommunityBottom.get(driveSubsystem)); // TODO: remove maybe
     addToAutoList("4-LeaveCommunityTop", LeaveCommunityTop.get(driveSubsystem)); // ^
     addToAutoList("5-CubeCubeLS", CubeCubeLS.get(driveSubsystem, manipulatorSubsystem));
     addToAutoList("6-2CubeBump", BumpTwoCube.get(driveSubsystem, manipulatorSubsystem));

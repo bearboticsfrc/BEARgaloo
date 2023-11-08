@@ -8,11 +8,11 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DataLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.HashMap;
 
-public class AutoBalanceCommand extends CommandBase {
+public class AutoBalanceCommand extends Command {
   private final double MAX_SPEED = 0.3;
 
   private final DriveSubsystem driveSubsystem;

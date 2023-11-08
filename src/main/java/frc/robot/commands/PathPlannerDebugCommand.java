@@ -1,17 +1,17 @@
 package frc.robot.commands;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerTrajectory.State;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.Supplier;
 
 /**
  * Command to run in parallel with a trajectory based command. Prints the current trajectory point
  * and the odomentry point.
  */
-public class PathPlannerDebugCommand extends CommandBase {
+public class PathPlannerDebugCommand extends Command {
 
   private PathPlannerTrajectory trajectory;
   private Supplier<Pose2d> poseSupplier;
@@ -32,21 +32,22 @@ public class PathPlannerDebugCommand extends CommandBase {
   public void execute() {
     double curTime = timer.get();
 
-    PathPlannerState desiredState = (PathPlannerState) trajectory.sample(curTime);
+    State desiredState = trajectory.sample(curTime);
     Pose2d pose = poseSupplier.get();
 
     System.out.println(
         String.format(
             "trajectory[%05.2f, %05.2f, %05.2f] actual[%05.2f, %05.2f, %05.2f] error[%05.2f, %05.2f, %05.2f]",
-            desiredState.poseMeters.getX(),
-            desiredState.poseMeters.getY(),
-            desiredState.holonomicRotation.getDegrees(),
+            desiredState.getTargetHolonomicPose().getX(),
+            desiredState.getTargetHolonomicPose().getY(),
+            desiredState.getTargetHolonomicPose().getRotation().getDegrees(),
             pose.getX(),
             pose.getY(),
             pose.getRotation().getDegrees(),
-            desiredState.poseMeters.getX() - pose.getX(),
-            desiredState.poseMeters.getY() - pose.getY(),
-            desiredState.holonomicRotation.getDegrees() - pose.getRotation().getDegrees()));
+            desiredState.getTargetHolonomicPose().getX() - pose.getX(),
+            desiredState.getTargetHolonomicPose().getY() - pose.getY(),
+            desiredState.getTargetHolonomicPose().getRotation().getDegrees()
+                - pose.getRotation().getDegrees()));
   }
 
   @Override
