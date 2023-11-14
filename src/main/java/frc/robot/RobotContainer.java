@@ -10,10 +10,13 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.PlayFetchCommand;
+import frc.robot.commands.TurnAroundCommand;
 import frc.robot.commands.WristCalibrateCommand;
 import frc.robot.commands.auto.BumpTwoCube;
 import frc.robot.commands.auto.CubeCubeLS;
@@ -104,6 +107,11 @@ public class RobotContainer {
         .x()
         .whileTrue(manipulatorSubsystem.getCubeHuntCommand(driveSubsystem))
         .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
+
+    driverController.y().onTrue(new TurnAroundCommand(driveSubsystem));
+    driverController
+        .a()
+        .toggleOnTrue(new RepeatCommand(PlayFetchCommand.get(driveSubsystem, manipulatorSubsystem)));
 
     driverController
         .leftBumper()
