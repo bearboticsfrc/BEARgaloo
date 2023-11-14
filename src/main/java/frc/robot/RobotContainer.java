@@ -111,7 +111,8 @@ public class RobotContainer {
     driverController.y().onTrue(new TurnAroundCommand(driveSubsystem));
     driverController
         .a()
-        .toggleOnTrue(new RepeatCommand(PlayFetchCommand.get(driveSubsystem, manipulatorSubsystem)));
+        .toggleOnTrue(
+            new RepeatCommand(PlayFetchCommand.get(driveSubsystem, manipulatorSubsystem)));
 
     driverController
         .leftBumper()
