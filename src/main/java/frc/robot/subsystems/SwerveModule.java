@@ -165,23 +165,15 @@ public class SwerveModule {
    */
   public DoubleSupplier getPropertySupplier(CANSparkMax motor, String property) {
     switch (property) {
-      case "DRIVE_MOTOR_CURRENT":
+      case "CURRENT":
         return motor::getOutputCurrent;
-      case "PIVOT_MOTOR_CURRENT":
-        return pivotMotor::getOutputCurrent;
-      case "DRIVE_MOTOR_VELOCITY":
+      case "VELOCITY":
         return motor.getEncoder()::getVelocity;
-      case "PIVOT_MOTOR_VELOCITY":
-        return pivotMotor.getEncoder()::getVelocity;
-      case "DRIVE_MOTOR_APPLIED_OUTPUT":
+      case "APPLIED_OUTPUT":
         return motor::getAppliedOutput;
-      case "PIVOT_MOTOR_APPLIED_OUTPUT":
-        return pivotMotor::getAppliedOutput;
-      case "DRIVE_MOTOR_TEMPERATURE":
+      case "TEMPERATURE":
         return motor::getMotorTemperature;
-      case "PIVOT_MOTOR_TEMPERATURE":
-        return pivotMotor::getMotorTemperature;
-      case "PIVOT_MOTOR_POSITION":
+      case "POSITION":
         return pivotMotorEncoder::getPosition;
       default:
         throw new IllegalArgumentException("Unknown motor property: " + property);

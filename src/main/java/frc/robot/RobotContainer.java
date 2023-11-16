@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.auto.campaign.CampaignExecutor;
+import frc.robot.commands.auto.PlayFetchFactory;
 import frc.robot.commands.auto.missions.AutoBalanceMission;
 import frc.robot.commands.auto.missions.ParkMission;
 import frc.robot.constants.AutoConstants.ScorePosition;
@@ -204,13 +206,10 @@ public class RobotContainer {
   }
 
   private void buildAutoList() {
-    addMission("0 - NoOp", new InstantCommand());
-    addMission("1 - Park", new ParkMission(driveSubsystem));
-    addMission("2 - Balance", new AutoBalanceMission(driveSubsystem));
-
-    for (Entry<String, Command> entry : missionsMap.entrySet()) {
-      autoCampaignChooser.addOption(entry.getKey(), entry.getValue());
-    }
+    //addMission("0 - NoOp", new InstantCommand());
+    //addMission("1 - Park", new ParkMission(driveSubsystem));
+    //addMission("2 - Balance", new AutoBalanceMission(driveSubsystem));
+    autoCampaignChooser.addOption("3 - Fetch!", new CampaignExecutor(PlayFetchFactory.get(driveSubsystem, manipulatorSubsystem)));
 
     DriveConstants.COMPETITION_TAB.add("Auto Command", autoCampaignChooser).withSize(4, 1).withPosition(0, 1);
   }
