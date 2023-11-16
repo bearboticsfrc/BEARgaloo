@@ -1,10 +1,14 @@
 package frc.robot.commands.auto.missions;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -26,10 +30,14 @@ public class PathCommandMission extends SequentialCommandGroup {
   /** Creates a new PathCommand. */
   public PathCommandMission(
       DriveSubsystem driveSubsystem,
-      PathPlannerTrajectory pathPlannerTrajectory,
+      PathPlannerPath path,
       boolean withRequirements,
       boolean isFirstPath) {
+    // Pose2d initialPose = new Pose2d(path.getPoint(0).position,
+    // path.getPoint(0).holonomicRotation);
 
+    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0, 0, 0);
+    PathPlannerTrajectory pathPlannerTrajectory = new PathPlannerTrajectory(path, chassisSpeeds);
     if (DEBUG_MODE) {
       DataLogManager.log(
           "%%%%%%%%%% Trajectory total time = " + pathPlannerTrajectory.getTotalTimeSeconds());
@@ -37,7 +45,19 @@ public class PathCommandMission extends SequentialCommandGroup {
           "%%%%%%%%%% Trajectory states size = " + pathPlannerTrajectory.getStates().size());
     }
 
-    AutoConstants.THETA_SPEED_CONTROLLER.enableContinuousInput(-Math.PI, Math.PI);
+    HolonomicPathFollowerConfig holonomicPathFollowerConfig =
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
+            // your Constants class
+            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+            AutoConstants.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in m/s
+            RobotConstants
+                .ROBOT_RADIUS, // Drive base radius in meters. Distance from robot center to
+            // furthest
+            // module.
+            new ReplanningConfig() // Default path replanning config. See the API for the options
+            // here
+            );
 
     addCommands(
         new InstantCommand(
@@ -45,29 +65,28 @@ public class PathCommandMission extends SequentialCommandGroup {
               if (isFirstPath) {
                 driveSubsystem.setSpeedMode(SpeedMode.TURBO);
 
-                PathPlannerTrajectory transformedTrajectory =
-                    PathPlannerTrajectory.transformTrajectoryForAlliance(
-                        pathPlannerTrajectory, DriverStation.getAlliance());
-
-                Pose2d pose = transformedTrajectory.getInitialHolonomicPose();
+                //  PathPlannerTrajectory transformedTrajectory =
+                //      PathPlannerTrajectory.transformTrajectoryForAlliance(
+                //          pathPlannerTrajectory, DriverStation.getAlliance());
+                //
+                //                Pose2d pose = transformedTrajectory.getInitialHolonomicPose();
+                //                driveSubsystem.resetOdometry(pose);
+                Pose2d pose = pathPlannerTrajectory.getInitialTargetHolonomicPose();
                 driveSubsystem.resetOdometry(pose);
               }
             }),
-        new PPSwerveControllerCommand(
-                pathPlannerTrajectory,
+        new FollowPathHolonomic(
+                path,
                 driveSubsystem::getPose,
-                RobotConstants.DRIVE_KINEMATICS,
-                AutoConstants.X_SPEED_CONTROLLER,
-                AutoConstants.Y_SPEED_CONTROLLER,
-                AutoConstants.THETA_SPEED_CONTROLLER,
-                driveSubsystem::setModuleStates,
-                true)
+                driveSubsystem::getRobotRelativeSpeeds,
+                driveSubsystem::driveRobotRelative,
+                holonomicPathFollowerConfig,
+                driveSubsystem)
             .alongWith(
                 new ConditionalCommand(
                     new PathPlannerDebugCommand(pathPlannerTrajectory, driveSubsystem::getPose),
                     new InstantCommand(),
                     () -> DEBUG_MODE)));
-
     if (withRequirements) {
       addRequirements(driveSubsystem);
     }

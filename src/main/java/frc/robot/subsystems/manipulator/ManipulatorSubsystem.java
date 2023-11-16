@@ -1,7 +1,6 @@
 package frc.robot.subsystems.manipulator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -87,15 +86,15 @@ public class ManipulatorSubsystem extends SubsystemBase {
     return new RollerSubsystem(rollerMotorConfig);
   }
 
-  public CommandBase getRollerRunCommand(RollerSpeed speed) {
+  public Command getRollerRunCommand(RollerSpeed speed) {
     return new InstantCommand(() -> rollerSubsystem.set(speed), rollerSubsystem);
   }
 
-  public CommandBase getWristRunCommand(WristPositions position) {
+  public Command getWristRunCommand(WristPositions position) {
     return new InstantCommand(() -> wristSubsystem.set(position), wristSubsystem);
   }
 
-  public CommandBase getArmRunCommand(ArmPositions position) {
+  public Command getArmRunCommand(ArmPositions position) {
     return new InstantCommand(() -> armSubsystem.set(position), armSubsystem);
   }
 
@@ -105,10 +104,14 @@ public class ManipulatorSubsystem extends SubsystemBase {
     }
 
     double position = wristSubsystem.getTargetPosition() + (direction * 0.1);
-    wristSubsystem.set(position);
+    wristSubsystem.setReference(position);
   }
 
-  public CommandBase getHomeAllCommand() {
+  public void setWristSpeed(double speed) {
+    wristSubsystem.set(speed);
+  }
+
+  public Command getHomeAllCommand() {
     return new ParallelCommandGroup(
         getWristRunCommand(WristPositions.HOME),
         getArmRunCommand(ArmPositions.HOME),
@@ -117,7 +120,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
         new InstantCommand(() -> armSubsystem.set(ArmPositions.HOME, 0)));
   }
 
-  public CommandBase getShelfScoreCommand(ScorePosition position) {
+  public Command getShelfScoreCommand(ScorePosition position) {
     ArmPositions armPosition =
         position == ScorePosition.HIGH ? ArmPositions.HIGH : ArmPositions.HOME;
 
@@ -144,6 +147,14 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
   public boolean hasCube() {
     return rollerSubsystem.hasCube();
+  }
+
+  public boolean isWristHome() {
+    return wristSubsystem.isHome();
+  }
+
+  public void calibrateWrist() {
+    wristSubsystem.calibrate();
   }
 
   public HashMap<String, Command> getEventMap() {

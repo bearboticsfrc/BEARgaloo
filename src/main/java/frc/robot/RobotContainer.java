@@ -79,15 +79,6 @@ public class RobotContainer {
             () -> {
               manipulatorSubsystem.adjustWristHeight(
                   MathUtil.applyDeadband(operatorController.getRightY(), 0.2));
-              /*  manipulatorSubsystem.setDefaultCommand(
-              new RunCommand(
-                  () ->
-                      manipulatorSubsystem.runRollerDefault(
-                          MathUtil.applyDeadband(operatorController.getLeftTriggerAxis(), 0.1),
-                          MathUtil.applyDeadband(
-                              operatorController.getRightTriggerAxis(), 0.1)),
-                  manipulatorSubsystem));
-                  */
             },
             manipulatorSubsystem));
   }

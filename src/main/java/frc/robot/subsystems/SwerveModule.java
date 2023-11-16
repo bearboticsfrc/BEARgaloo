@@ -147,8 +147,12 @@ public class SwerveModule {
   public void updateDataLogs() {
     for (Entry<String, DoubleLogEntry> entry : dataLogs.entrySet()) {
       final CANSparkMax motor = entry.getKey().startsWith("PIVOT") ? pivotMotor : driveMotor;
+      final String property =
+          entry
+              .getKey()
+              .replaceAll("^(PIVOT_MOTOR_|DRIVE_MOTOR_)", ""); // PIVOT_MOTOR_POSITION -> POSITION
 
-      DoubleSupplier propertySupplier = getPropertySupplier(motor, entry.getKey());
+      DoubleSupplier propertySupplier = getPropertySupplier(motor, property);
       entry.getValue().append(propertySupplier.getAsDouble());
     }
   }

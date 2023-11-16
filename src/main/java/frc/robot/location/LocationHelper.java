@@ -1,10 +1,5 @@
 package frc.robot.location;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -14,10 +9,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.constants.AutoConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.fms.AllianceColor;
@@ -26,43 +17,45 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class LocationHelper {
 
-  public static PathPlannerTrajectory generateTrajectory(
-      Pose2d robotPose, Pose2d target, Translation2d currentSpeed) {
-    Translation2d robotToTargetTranslation =
-        target.getTranslation().minus(robotPose.getTranslation());
+  /*   public static PathPlannerTrajectory generateTrajectory(
+        Pose2d robotPose, Pose2d target, Translation2d currentSpeed) {
+      Translation2d robotToTargetTranslation =
+          target.getTranslation().minus(robotPose.getTranslation());
 
-    return PathPlanner.generatePath(
-        new PathConstraints(2, 4),
-        new PathPoint(
-            robotPose.getTranslation(),
-            getDirection(robotToTargetTranslation),
-            robotPose.getRotation(),
-            currentSpeed.getNorm()),
-        new PathPoint(
-            target.getTranslation(), getDirection(robotToTargetTranslation), target.getRotation()));
-  }
+      return PathPlanner.generatePath(
+          new PathConstraints(2, 4),
+          new PathPoint(
+              robotPose.getTranslation(),
+              getDirection(robotToTargetTranslation),
+              robotPose.getRotation(),
+              currentSpeed.getNorm()),
+          new PathPoint(
+              target.getTranslation(), getDirection(robotToTargetTranslation), target.getRotation()));
+    }
+  */
 
-  public static Command followTrajectoryCommand(
-      PathPlannerTrajectory trajectory, boolean isFirstPath, DriveSubsystem driveSubsystem) {
-    return new SequentialCommandGroup(
-        new InstantCommand(
-            () -> {
-              if (isFirstPath) {
-                driveSubsystem.resetOdometry(trajectory.getInitialHolonomicPose());
-              }
-            }),
-        new PPSwerveControllerCommand(
-            trajectory,
-            driveSubsystem::getPose,
-            RobotConstants.DRIVE_KINEMATICS,
-            AutoConstants.X_SPEED_CONTROLLER,
-            AutoConstants.Y_SPEED_CONTROLLER,
-            AutoConstants.THETA_SPEED_CONTROLLER,
-            driveSubsystem::setModuleStates,
-            false,
-            driveSubsystem));
-  }
-
+  /*
+    public static Command followTrajectoryCommand(
+        PathPlannerTrajectory trajectory, boolean isFirstPath, DriveSubsystem driveSubsystem) {
+      return new SequentialCommandGroup(
+          new InstantCommand(
+              () -> {
+                if (isFirstPath) {
+                  driveSubsystem.resetOdometry(trajectory.getInitialHolonomicPose());
+                }
+              }),
+          new PPSwerveControllerCommand(
+              trajectory,
+              driveSubsystem::getPose,
+              RobotConstants.DRIVE_KINEMATICS,
+              AutoConstants.X_SPEED_CONTROLLER,
+              AutoConstants.Y_SPEED_CONTROLLER,
+              AutoConstants.THETA_SPEED_CONTROLLER,
+              driveSubsystem::setModuleStates,
+              false,
+              driveSubsystem));
+    }
+  */
   public static Rotation2d getDirection(Transform2d transform) {
     return getDirection(transform.getTranslation());
   }
@@ -96,7 +89,7 @@ public class LocationHelper {
       return rotation;
     }
 
-    return rotation.times(-1);
+    return rotation.times(-1.0);
   }
 
   public static Pose2d getPoseByDistanceAndAngleToPose(
