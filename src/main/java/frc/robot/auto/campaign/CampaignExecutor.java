@@ -1,9 +1,9 @@
 package frc.robot.auto.campaign;
 
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 
-public class CampaignExecutor extends CommandBase {
+public class CampaignExecutor extends Command {
   private Campaign campaign;
   private MissionTree missions = null;
   private Mission currentMission = null;

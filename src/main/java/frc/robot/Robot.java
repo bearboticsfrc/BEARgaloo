@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     robotContainer.setTeleop(false);
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    autonomousCommand = robotContainer.getAutonomousCampaign();
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {

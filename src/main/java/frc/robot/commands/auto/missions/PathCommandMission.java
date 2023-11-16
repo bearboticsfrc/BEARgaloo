@@ -22,9 +22,8 @@ import frc.robot.subsystems.DriveSubsystem;
 public class PathCommandMission extends SequentialCommandGroup {
   public static final boolean DEBUG_MODE = false;
 
-  public PathCommandMission(
-      DriveSubsystem driveSubsystem, PathPlannerTrajectory pathPlannerTrajectory) {
-    this(driveSubsystem, pathPlannerTrajectory, true, true);
+  public PathCommandMission(DriveSubsystem driveSubsystem, PathPlannerPath path) {
+    this(driveSubsystem, path, true, true);
   }
 
   /** Creates a new PathCommand. */

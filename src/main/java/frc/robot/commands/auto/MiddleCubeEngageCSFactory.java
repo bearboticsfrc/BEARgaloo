@@ -1,7 +1,7 @@
 package frc.robot.commands.auto;
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.auto.campaign.Campaign;
 import frc.robot.auto.campaign.CommandMission;
 import frc.robot.auto.campaign.Mission;
@@ -9,7 +9,6 @@ import frc.robot.auto.campaign.MissionTree;
 import frc.robot.commands.auto.missions.AutoBalanceMission;
 import frc.robot.commands.auto.missions.ParkMission;
 import frc.robot.commands.auto.missions.PathCommandMission;
-import frc.robot.constants.AutoConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.manipulator.ManipulatorSubsystem;
 
@@ -37,14 +36,11 @@ public class MiddleCubeEngageCSFactory {
   }
 
   public static Mission getPathMission(DriveSubsystem driveSubsystem) {
-    PathPlannerTrajectory pathPlannerTrajectory =
-        PathPlanner.loadPath(
-            "StraightToChargeStationFromMiddle",
-            AutoConstants.MAX_SPEED_METERS_PER_SECOND,
-            AutoConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED);
+    PathPlannerPath path = PathPlannerPath.fromPathFile("StraightToChargeStationFromMiddle");
 
     return new CommandMission(
-        new PathCommandMission(driveSubsystem, pathPlannerTrajectory)
+        new SequentialCommandGroup(
+                new PathCommandMission(driveSubsystem, path), driveSubsystem.getDriveStopCommand())
             .withName("StraightToChargeStationFromMiddle"));
   }
 }

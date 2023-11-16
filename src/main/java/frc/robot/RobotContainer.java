@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -43,6 +44,7 @@ public class RobotContainer {
 
   private boolean isTeleop = false;
   private Map<String, Command> missionsMap;
+  private SendableChooser<Command> autoCampaignChooser = new SendableChooser<>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -205,5 +207,15 @@ public class RobotContainer {
     addMission("0 - NoOp", new InstantCommand());
     addMission("1 - Park", new ParkMission(driveSubsystem));
     addMission("2 - Balance", new AutoBalanceMission(driveSubsystem));
+
+    for (Entry<String, Command> entry : missionsMap.entrySet()) {
+      autoCampaignChooser.addOption(entry.getKey(), entry.getValue());
+    }
+
+    DriveConstants.COMPETITION_TAB.add("Auto Command", autoCampaignChooser).withSize(4, 1).withPosition(0, 1);
+  }
+
+  public Command getAutonomousCampaign() {
+    return autoCampaignChooser.getSelected();
   }
 }
