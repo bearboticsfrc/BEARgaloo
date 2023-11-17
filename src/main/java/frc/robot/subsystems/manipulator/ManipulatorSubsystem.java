@@ -149,8 +149,16 @@ public class ManipulatorSubsystem extends SubsystemBase {
     return rollerSubsystem.hasCube();
   }
 
+  public boolean holdingCube() {
+    return rollerSubsystem.isHoldingCube();
+  }
+
   public boolean isWristHome() {
     return wristSubsystem.isHome();
+  }
+
+  public boolean isPickupReady() {
+    return wristSubsystem.isPickupPosition();
   }
 
   public void calibrateWrist() {

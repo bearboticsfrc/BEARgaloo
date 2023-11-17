@@ -119,6 +119,10 @@ public class WristSubsystem extends SubsystemBase {
     return limitSwitch.get();
   }
 
+  public boolean isPickupPosition() {
+    return motorEncoder.getPosition() > WristPositions.BOTTOM.getPosition();
+  }
+
   @Override
   public void periodic() {
     if (isHome() && motorEncoder.getPosition() != 0) {

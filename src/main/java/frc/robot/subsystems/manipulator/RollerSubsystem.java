@@ -22,6 +22,7 @@ public class RollerSubsystem extends SubsystemBase {
   private String name;
   private RelativeEncoder motorEncoder;
   private CANSparkMax motor;
+  private boolean isHoldingCube = false;
 
   private HashMap<String, DoubleLogEntry> dataLogs = new HashMap<String, DoubleLogEntry>();
 
@@ -79,6 +80,9 @@ public class RollerSubsystem extends SubsystemBase {
     return motorEncoder.getVelocity() < 0 && (adjustedOutput > 40);
   }
 
+  public boolean isHoldingCube() {
+    return isHoldingCube;
+  }
   /**
    * Sets the roller speed.
    *
@@ -92,6 +96,11 @@ public class RollerSubsystem extends SubsystemBase {
   public void periodic() {
     if (motor.get() < 0 && hasCube()) {
       motor.set(0);
+      isHoldingCube = true;
+    }
+
+    if (motor.get() > 0) {
+      isHoldingCube = false;
     }
 
     updateDataLogs();
