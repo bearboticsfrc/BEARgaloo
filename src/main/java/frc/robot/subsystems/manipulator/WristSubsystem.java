@@ -120,7 +120,7 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public boolean isPickupPosition() {
-    return motorEncoder.getPosition() > WristPositions.BOTTOM.getPosition();
+    return motorEncoder.getPosition() > WristPositions.BOTTOM.getPosition() - 5;
   }
 
   @Override

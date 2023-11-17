@@ -24,11 +24,11 @@ public class PlayFetchCommand {
                 new WaitCommand(0.5),
                 new TurnAroundCommand(driveSubsystem),
                 manipulatorSubsystem.getPickupPositionCommand(),
-               // new WaitUntilCommand(manipulatorSubsystem::isPickupReady),
-                manipulatorSubsystem.getCubeHuntCommand(driveSubsystem).withTimeout(5.0),
+                // new WaitUntilCommand(manipulatorSubsystem::isPickupReady),
+                manipulatorSubsystem.getCubeHuntCommand(driveSubsystem).withTimeout(3.0),
                 new ConditionalCommand(
                     new InstantCommand(),
-                    new InstantCommand(() -> cancelHook.run()),
+                    new InstantCommand(cancelHook::run),
                     manipulatorSubsystem::holdingCube),
                 manipulatorSubsystem.getHomeAllCommand())
             .withName("PlayFetch");
