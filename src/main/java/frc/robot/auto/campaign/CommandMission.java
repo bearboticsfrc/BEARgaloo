@@ -66,8 +66,9 @@ public class CommandMission extends Mission {
     return command.getName();
   }
 
-  public void setSuccessCallback(BooleanSupplier callback) {
+  public CommandMission setSuccessCallback(BooleanSupplier callback) {
     this.successSupplier = callback;
+    return this;
   }
 
   public boolean isSuccess() {

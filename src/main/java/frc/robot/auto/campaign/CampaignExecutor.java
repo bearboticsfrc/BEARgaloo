@@ -25,7 +25,7 @@ public class CampaignExecutor extends Command {
   @Override
   public void execute() {
     currentMission.execute();
-
+    
     if (!currentMission.isFinished() || missions == null) {
       return;
     } else {

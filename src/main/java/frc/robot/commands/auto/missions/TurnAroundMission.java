@@ -7,8 +7,7 @@ import frc.robot.auto.campaign.Mission;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TurnAroundMission extends Mission {
-      private final double MAX_SPEED = 0.2;
-
+  private final double MAX_SPEED = 0.2;
   private final DriveSubsystem driveSubsystem;
   private final PIDController rotationSpeedController = new PIDController(0.003, 0.0, 0);
   private final Debouncer setpointDebouncer = new Debouncer(0.2);
@@ -17,7 +16,7 @@ public class TurnAroundMission extends Mission {
   public TurnAroundMission(DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
 
-    rotationSpeedController.setTolerance(1);
+    rotationSpeedController.setTolerance(5);
     rotationSpeedController.enableContinuousInput(0.0, 360.0);
     addRequirements(driveSubsystem);
   }
