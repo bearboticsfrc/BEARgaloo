@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.PlayFetchCommand;
-import frc.robot.commands.TurnAroundCommand;
 import frc.robot.commands.WristCalibrateCommand;
 import frc.robot.commands.auto.BumpTwoCube;
 import frc.robot.commands.auto.CubeCubeLS;
@@ -95,6 +94,14 @@ public class RobotContainer {
     configureOperatorController();
   }
 
+  private Command playFetchCommand =
+      new RepeatCommand(
+          PlayFetchCommand.get(driveSubsystem, manipulatorSubsystem, this::cancelFetch));
+
+  public void cancelFetch() {
+    playFetchCommand.cancel();
+  }
+
   private void configureDriverController() {
     driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
 
@@ -108,11 +115,7 @@ public class RobotContainer {
         .whileTrue(manipulatorSubsystem.getCubeHuntCommand(driveSubsystem))
         .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
 
-    driverController.y().onTrue(new TurnAroundCommand(driveSubsystem));
-    driverController
-        .a()
-        .toggleOnTrue(
-            new RepeatCommand(PlayFetchCommand.get(driveSubsystem, manipulatorSubsystem)));
+    driverController.y().toggleOnTrue(playFetchCommand);
 
     driverController
         .leftBumper()
