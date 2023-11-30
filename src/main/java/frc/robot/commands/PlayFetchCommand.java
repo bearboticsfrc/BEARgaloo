@@ -1,10 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.manipulator.ManipulatorSubsystem;
@@ -18,19 +15,29 @@ public class PlayFetchCommand {
 
     final Command command =
         new SequentialCommandGroup(
-                manipulatorSubsystem.getHomeAllCommand(),
+                new LogStatusCommandWrapper(
+                    manipulatorSubsystem.getHomeAllCommand().withName("HomeCommand")),
                 new WaitUntilCommand(manipulatorSubsystem::isWristHome),
-                manipulatorSubsystem.getShootCubeCommand(),
-                new WaitCommand(0.5),
+                new LogStatusCommandWrapper(
+                    manipulatorSubsystem.getShootCubeCommand().withName("ShootCommand")),
+                // new WaitCommand(0.5),
                 new TurnAroundCommand(driveSubsystem),
-                manipulatorSubsystem.getPickupPositionCommand(),
+                // manipulatorSubsystem.getPickupPositionCommand(),
+                // new WaitCommand(0.5),
                 // new WaitUntilCommand(manipulatorSubsystem::isPickupReady),
-                manipulatorSubsystem.getCubeHuntCommand(driveSubsystem).withTimeout(3.0),
-                new ConditionalCommand(
-                    new InstantCommand(),
-                    new InstantCommand(cancelHook::run),
-                    manipulatorSubsystem::holdingCube),
-                manipulatorSubsystem.getHomeAllCommand())
+                new LogCommand("Starting Hunting"),
+                manipulatorSubsystem.getCubeHuntCommand(driveSubsystem),
+                new LogCommand("End Hunting")
+                // new WaitCommand(2.0)
+                // new
+                // LogStatusCommandWrapper(manipulatorSubsystem.getHoldCubeCommand().withName("HoldcubeCommand")),
+                // new ConditionalCommand(
+                // new InstantCommand(),
+                // new InstantCommand(cancelHook::run),
+                // manipulatorSubsystem::holdingCube),
+                // new LogStatusCommandWrapper(
+                // manipulatorSubsystem.getHomeAllCommand().withName("HomeCommand2"))
+                )
             .withName("PlayFetch");
 
     return command;

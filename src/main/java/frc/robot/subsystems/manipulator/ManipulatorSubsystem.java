@@ -116,8 +116,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
         getWristRunCommand(WristPositions.HOME),
         getArmRunCommand(ArmPositions.HOME),
         getRollerRunCommand(RollerSpeed.OFF),
-        new WaitUntilCommand(armSubsystem::isHome),
-        new InstantCommand(() -> armSubsystem.set(ArmPositions.HOME, 0)));
+        new WaitUntilCommand(armSubsystem::isHome));
   }
 
   public Command getShelfScoreCommand(ScorePosition position) {
@@ -140,9 +139,16 @@ public class ManipulatorSubsystem extends SubsystemBase {
         getWristRunCommand(WristPositions.BOTTOM), getRollerRunCommand(RollerSpeed.INTAKE));
   }
 
+  public Command getHoldCubeCommand() {
+    return getRollerRunCommand(RollerSpeed.INTAKE);
+  }
+
+  static int i = 1;
+
   public Command getCubeHuntCommand(DriveSubsystem driveSubsystem) {
     return new SequentialCommandGroup(
-        getPickupPositionCommand(), new CubeHuntCommand(driveSubsystem, this::hasCube));
+        getPickupPositionCommand(),
+        new CubeHuntCommand(driveSubsystem, this::hasCube, "CubeHunt" + i++));
   }
 
   public boolean hasCube() {
