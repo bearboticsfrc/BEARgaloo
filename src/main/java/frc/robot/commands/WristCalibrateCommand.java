@@ -12,13 +12,14 @@ public class WristCalibrateCommand extends Command {
 
   @Override
   public void initialize() {
-    manipulatorSubsystem.setWristSpeed(-0.2);
+    manipulatorSubsystem.setWristSpeed(-0.35);
   }
 
   @Override
   public boolean isFinished() {
     if (manipulatorSubsystem.isWristHome()) {
       manipulatorSubsystem.calibrateWrist();
+      manipulatorSubsystem.setWristSpeed(0);
     }
 
     return manipulatorSubsystem.isWristHome();

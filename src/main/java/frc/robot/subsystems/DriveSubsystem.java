@@ -367,6 +367,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @param mode Whether field-relative is enabled or not.
    */
   public void setFieldRelative(boolean mode) {
+    System.out.println(mode ? "Switching to field relative" : "Switching to robot relative"); // TODO: remove
+
     fieldRelativeMode = mode;
   }
 

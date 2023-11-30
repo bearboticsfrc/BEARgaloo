@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.campaign.CampaignExecutor;
+import frc.robot.commands.WristCalibrateCommand;
 import frc.robot.commands.auto.PlayFetchFactory;
 import frc.robot.constants.AutoConstants.ScorePosition;
 import frc.robot.constants.DriveConstants;
@@ -204,6 +205,8 @@ public class RobotContainer {
   }
 
   private void buildAutoList() {
+    DriveConstants.COMPETITION_TAB.add("Wrist Calibrate", new WristCalibrateCommand(manipulatorSubsystem));
+
     //addMission("0 - NoOp", new InstantCommand());
     //addMission("1 - Park", new ParkMission(driveSubsystem));
     //addMission("2 - Balance", new AutoBalanceMission(driveSubsystem));

@@ -142,7 +142,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
   public Command getCubeHuntCommand(DriveSubsystem driveSubsystem) {
     return new SequentialCommandGroup(
-        getPickupPositionCommand(), new CubeHuntCommand(driveSubsystem, this::hasCube));
+        getPickupPositionCommand(), new CubeHuntCommand(driveSubsystem, this::hasCube)).withName("Cube Hunt");
   }
 
   public boolean hasCube() {

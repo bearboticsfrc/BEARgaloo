@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.util.LimelightHelpers;
@@ -41,10 +42,15 @@ public class CubeHuntCommand extends Command {
     double xSpeed = -xSpeedController.calculate(targetY, 0);
     double rot = rotSpeedController.calculate(targetX, 0);
 
+    if (xSpeed < 0) {
+      return;
+    }
+
     if (xSpeedController.atSetpoint()) {
       xSpeed += 1;
     }
 
+    DataLogManager.log("targetY = " + targetY + " targetX = " + targetX + " xSpeed = " + xSpeed);
     driveSubsystem.drive(xSpeed, 0, rot, false);
   }
 

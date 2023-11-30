@@ -3,6 +3,7 @@ package frc.robot.auto.campaign;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.BooleanSupplier;
 
+/** Adapter class for a Command to a Mission */
 public class CommandMission extends Mission {
   private BooleanSupplier successSupplier = () -> true;
 

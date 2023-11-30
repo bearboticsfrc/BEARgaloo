@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class CampaignExecutor extends Command {
   private Campaign campaign;
-  private MissionTree missions = null;
+  private MissionTree nextMission = null;
   private Mission currentMission = null;
   private int successes = 0;
 
@@ -16,8 +16,9 @@ public class CampaignExecutor extends Command {
 
   @Override
   public void initialize() {
-    missions = campaign.getMissions();
-    currentMission = missions.getNode();
+    nextMission = campaign.getMissions();
+    currentMission = nextMission.getNode();
+
     DataLogManager.log("initalizing command -> " + currentMission.getName());
     currentMission.initialize();
   }
@@ -26,7 +27,7 @@ public class CampaignExecutor extends Command {
   public void execute() {
     currentMission.execute();
     
-    if (!currentMission.isFinished() || missions == null) {
+    if (!currentMission.isFinished() || nextMission == null) {
       return;
     } else {
       currentMission.end(false);
@@ -34,41 +35,42 @@ public class CampaignExecutor extends Command {
 
     if (currentMission.isSuccess()) {
       successes += 1;
-      MissionTree cMission = missions.getSuccessNode();
+      MissionTree cMission = nextMission.getSuccessNode();
       String message =
           cMission == null
               ? currentMission.getName()
                   + " was successful. "
                   + "Successfully campaigned "
                   + successes
-                  + " missions"
+                  + " nextMission"
               : currentMission.getName()
                   + " was successful. executing mission -> "
-                  + missions.getSuccessNode().getNode().getName();
+                  + nextMission.getSuccessNode().getNode().getName();
       DataLogManager.log(message);
 
-      missions = missions.getSuccessNode();
+      nextMission = nextMission.getSuccessNode();
     } else {
-      MissionTree cMission = missions.getFailureNode();
+      MissionTree cMission = nextMission.getFailureNode();
       String message =
           cMission == null
               ? currentMission.getName()
                   + " failed. "
                   + "Successfully campaigned "
                   + successes
-                  + " missions"
+                  + " nextMission"
               : currentMission.getName()
                   + " failed. executing mission -> "
-                  + missions.getFailureNode().getNode().getName();
+                  + nextMission.getFailureNode().getNode().getName();
       DataLogManager.log(message);
-      missions = missions.getFailureNode();
+      nextMission = nextMission.getFailureNode();
     }
 
-    if (missions == null) {
+    if (nextMission == null) {
+      currentMission = null;
       return; // TODO: Logic needs reworking here
     }
 
-    currentMission = missions.getNode();
+    currentMission = nextMission.getNode();
     currentMission.initialize();
   }
 
