@@ -15,10 +15,19 @@ public class PlayFetchFactory {
 
   public static Campaign get(DriveSubsystem driveSubsystem, ManipulatorSubsystem manipulatorSubsystem) {
     MissionTree homeAllMission = new MissionTree(new CommandMission(getHomeAllCommand(manipulatorSubsystem)));
-    final MissionTree pickupCubeMission = new MissionTree(new CommandMission(manipulatorSubsystem.getCubeHuntCommand(driveSubsystem))).setSuccessNode(homeAllMission);
+    final MissionTree pickupCubeMission = new MissionTree(new CommandMission(manipulatorSubsystem.getCubeHuntCommand(driveSubsystem).withTimeout(5)))
+    .setSuccessNode(homeAllMission)
+    .setFailureNode(new MissionTree(new CommandMission(getHomeAllCommand(manipulatorSubsystem))));
+    
     final MissionTree turnAroundMission = new MissionTree(new CommandMission(new TurnAroundMission(driveSubsystem))).setSuccessNode(pickupCubeMission);
     final MissionTree cuebShootMisson = new MissionTree(new CommandMission(manipulatorSubsystem.getShootCubeCommand())).setSuccessNode(turnAroundMission);
     homeAllMission = homeAllMission.setSuccessNode(cuebShootMisson);
+
+    // MissionTree campaignTree = new MissionTree(new CommandMission(manipulatorSubsystem.getCubeHuntCommand(driveSubsystem)))
+    //   .chainSuccessNode(new MissionTree(new TurnAroundMission(driveSubsystem))
+    //   .chainSuccessNode(new MissionTree(new CommandMission(manipulatorSubsystem.getShootCubeCommand()))
+    //   .chainSuccessNode(new MissionTree(new CommandMission(getHomeAllCommand(manipulatorSubsystem))))));
+    
 
     return new Campaign(NAME, homeAllMission);
   }

@@ -50,7 +50,7 @@ public class CubeHuntCommand extends Command {
       xSpeed += 1;
     }
 
-    DataLogManager.log("targetY = " + targetY + " targetX = " + targetX + " xSpeed = " + xSpeed);
+    driveSubsystem.setFieldRelative(false);
     driveSubsystem.drive(xSpeed, 0, rot, false);
   }
 

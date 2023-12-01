@@ -76,6 +76,7 @@ public class CampaignExecutor extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    DataLogManager.log("Ended campaign -> " + campaign.getName());
     if (currentMission != null) {
       currentMission.end(false);
     }

@@ -18,21 +18,13 @@ public class MiddleCubeEngageCSFactory {
   public static Campaign get(
       DriveSubsystem driveSubsystem, ManipulatorSubsystem manipulatorSubsystem) {
 
-    final MissionTree parkMissionNode = new MissionTree(new ParkMission(driveSubsystem));
+    final MissionTree campaignTree =
+        new MissionTree(new CommandMission(manipulatorSubsystem.getShootCubeCommand()))
+            .chainSuccessNode(new MissionTree(getPathMission(driveSubsystem)))
+            .chainSuccessNode(new MissionTree(new AutoBalanceMission(driveSubsystem))
+            .chainSuccessNode(new MissionTree(new ParkMission(driveSubsystem))));
 
-    final MissionTree autoBalanceMissionNode =
-        new MissionTree(new AutoBalanceMission(driveSubsystem)).setSuccessNode(parkMissionNode);
-
-    final MissionTree pathMissionNode =
-        new MissionTree(getPathMission(driveSubsystem)).setSuccessNode(autoBalanceMissionNode);
-
-    final MissionTree cubeShootMissionNode =
-        new MissionTree(
-                new CommandMission(
-                    manipulatorSubsystem.getShootCubeCommand().withName("Shoot Mission")))
-            .setSuccessNode(pathMissionNode);
-
-    return new Campaign(NAME, cubeShootMissionNode);
+    return new Campaign(NAME, campaignTree);
   }
 
   public static Mission getPathMission(DriveSubsystem driveSubsystem) {

@@ -25,6 +25,14 @@ public class MissionTree {
   }
 
   /**
+   * @param successNode the successNode to set
+   */
+  public MissionTree chainSuccessNode(MissionTree successNode) {
+    this.successNode = successNode;
+    return successNode;
+  }
+
+  /**
    * @return the failureNode
    */
   public MissionTree getFailureNode() {
@@ -37,6 +45,14 @@ public class MissionTree {
   public MissionTree setFailureNode(MissionTree failureNode) {
     this.failureNode = failureNode;
     return this;
+  }
+
+  /**
+   * @param failureNode the failureNode to set
+   */
+  public MissionTree chainFailureNode(MissionTree failureNode) {
+    this.failureNode = failureNode;
+    return failureNode;
   }
 
   /**
