@@ -7,6 +7,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -35,7 +36,8 @@ public class PathCommand extends SequentialCommandGroup {
     // path.getPoint(0).holonomicRotation);
 
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0, 0, 0);
-    PathPlannerTrajectory pathPlannerTrajectory = new PathPlannerTrajectory(path, chassisSpeeds);
+    PathPlannerTrajectory pathPlannerTrajectory =
+        new PathPlannerTrajectory(path, chassisSpeeds, new Rotation2d());
     if (DEBUG_MODE) {
       DataLogManager.log(
           "%%%%%%%%%% Trajectory total time = " + pathPlannerTrajectory.getTotalTimeSeconds());
@@ -79,6 +81,7 @@ public class PathCommand extends SequentialCommandGroup {
                 driveSubsystem::getRobotRelativeSpeeds,
                 driveSubsystem::driveRobotRelative,
                 holonomicPathFollowerConfig,
+                () -> false,
                 driveSubsystem)
             .alongWith(
                 new ConditionalCommand(
