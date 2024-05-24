@@ -95,20 +95,16 @@ public class RobotContainer {
   private void configureDriverController() {
     driverController.a().onTrue(new InstantCommand(driveSubsystem::zeroHeading));
 
-    driverController
-        .b()
-        .onTrue(new InstantCommand(() -> driveSubsystem.setParkMode(true)))
-        .onFalse(new InstantCommand(() -> driveSubsystem.setParkMode(false)));
+    driverController.b().onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
 
     driverController
         .x()
         .whileTrue(manipulatorSubsystem.getCubeHuntCommand(driveSubsystem))
         .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
 
-    driverController
-        .leftBumper()
-        .onTrue(new InstantCommand(() -> driveSubsystem.setFieldRelative(false)))
-        .onFalse(new InstantCommand(() -> driveSubsystem.setFieldRelative(true)));
+    driverController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
+
+    driverController.leftBumper().onTrue(manipulatorSubsystem.getShootCubeCommand());
 
     driverController
         .leftTrigger(0.1)
@@ -117,8 +113,22 @@ public class RobotContainer {
 
     driverController
         .rightTrigger(0.1)
-        .onTrue(new InstantCommand(() -> driveSubsystem.setSpeedMode(SpeedMode.TURTLE)))
-        .onFalse(new InstantCommand(() -> driveSubsystem.setSpeedMode((SpeedMode.NORMAL))));
+        .onTrue(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.INTAKE))
+        .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
+
+    driverController
+        .povDown()
+        .onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.BOTTOM));
+
+    driverController.povUp().onTrue(manipulatorSubsystem.getShelfScoreCommand(ScorePosition.HIGH));
+
+    driverController
+        .povLeft()
+        .onTrue(manipulatorSubsystem.getShelfScoreCommand(ScorePosition.MIDDLE));
+
+    driverController
+        .povRight()
+        .onTrue(manipulatorSubsystem.getWristRunCommand(WristPositions.HIGH));
 
     new Trigger(() -> manipulatorSubsystem.hasCube() && isTeleop)
         .onTrue(
