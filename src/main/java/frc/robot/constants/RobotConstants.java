@@ -22,6 +22,8 @@ public class RobotConstants {
           new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2), // BL
           new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)); // BR
 
+  public static double ROBOT_RADIUS = new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2).getNorm();
+
   public enum SwerveCorner {
     FRONT_LEFT,
     FRONT_RIGHT,

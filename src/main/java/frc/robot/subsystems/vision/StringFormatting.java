@@ -1,6 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -124,20 +123,6 @@ public class StringFormatting {
     sb.append(df.format(translation.getY()));
     // sb.append("@");
     // sb.append(df.format(translation.getAngle().getDegrees()));
-    sb.append("]");
-
-    return sb.toString();
-  }
-
-  public static String pathPointToString(PathPoint point) {
-
-    StringBuilder sb = new StringBuilder();
-    sb.append("PathPoint[");
-    sb.append(translation2dToString(point.position));
-    sb.append(", Heading[");
-    sb.append(df.format(point.heading.getDegrees()));
-    sb.append("], Angle[");
-    sb.append(df.format(point.holonomicRotation.getDegrees()));
     sb.append("]");
 
     return sb.toString();

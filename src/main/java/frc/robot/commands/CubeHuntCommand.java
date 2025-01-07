@@ -1,12 +1,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.util.LimelightHelpers;
 import java.util.function.BooleanSupplier;
 
-public class CubeHuntCommand extends CommandBase {
+public class CubeHuntCommand extends Command {
 
   private final DriveSubsystem driveSubsystem;
   private final BooleanSupplier hasCube;

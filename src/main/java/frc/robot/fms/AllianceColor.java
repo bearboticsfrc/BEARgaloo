@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AllianceColor {
-  public static Alliance alliance = Alliance.Invalid;
+  public static Alliance alliance = null;
   public static List<AllianceReadyListener> listeners = new ArrayList<AllianceReadyListener>();
 
   public static void addListener(AllianceReadyListener listener) {
