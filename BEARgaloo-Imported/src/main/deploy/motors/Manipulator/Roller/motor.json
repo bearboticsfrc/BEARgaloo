@@ -1,0 +1,6 @@
+{
+    "type": "max",
+    "id": 10,
+    "inverted": false,
+    "current_limit": 60
+}
