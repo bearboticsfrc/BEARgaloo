@@ -95,7 +95,6 @@ public class RobotContainer {
 
     driverController
         .x()
-        .whileTrue(manipulatorSubsystem.getCubeHuntCommand(driveSubsystem))
         .onFalse(manipulatorSubsystem.getRollerRunCommand(RollerSpeed.OFF));
 
     driverController.y().onTrue(manipulatorSubsystem.getHomeAllCommand());
