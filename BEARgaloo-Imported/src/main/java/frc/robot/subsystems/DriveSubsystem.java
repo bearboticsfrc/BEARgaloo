@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+
+import bearlib.motor.deserializer.MotorParser;
 // import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,10 +31,13 @@ import frc.robot.constants.SwerveModuleConstants.FrontLeftConstants;
 import frc.robot.constants.SwerveModuleConstants.FrontRightConstants;
 import frc.robot.subsystems.SwerveModule.SwerveModuleBuilder;
 import frc.robot.util.CTREUtil;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.io.File;
 
 /** Controls the four swerve modules for autonomous and teleoperated modes. */
 public class DriveSubsystem extends SubsystemBase {
@@ -45,6 +50,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private double maxSpeed = DriveConstants.DRIVE_VELOCITY;
   private boolean fieldRelativeMode = true;
+
+  private File file = new File("motors/drive");
 
   public DriveSubsystem() {
     CTREUtil.checkCtreError(pigeonImu.configFactoryDefault());
@@ -124,6 +131,13 @@ public class DriveSubsystem extends SubsystemBase {
                 FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
             .setPositionPidWrappingMax(
                 FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX);
+
+    try {
+      MotorParser motorParser = new MotorParser(file); 
+      
+    } catch (IOException ioException) {
+      // TODO: handle exception
+    }
 
     MotorBuilder driveConfig =
         new MotorBuilder()
