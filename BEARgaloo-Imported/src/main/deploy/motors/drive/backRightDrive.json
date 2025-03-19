@@ -1,7 +1,7 @@
 {
-    "type": "max",
-    "id": 21,
-    "current_limit": 50,
-    "idle_mode": "brake",
-    "inverted": false
+"type": "max",
+"id": 21,
+"current_limit": 50,
+"idle_mode": "brake",
+"inverted": false
 }
