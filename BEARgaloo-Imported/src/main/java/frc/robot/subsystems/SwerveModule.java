@@ -1,11 +1,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.spark.SparkMax;
-//import com.revrobotics.spark.SparkMax.ControlType;
-import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkBase;
+import bearlib.motor.deserializer.MotorParser;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkAbsoluteEncoder.Type;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -13,7 +12,11 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+//import frc.robot.constants.RobotConstants;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.function.DoubleSupplier;
@@ -24,8 +27,8 @@ public class SwerveModule {
 
   private String moduleName;
 
-  private SparkMax driveMotor;
-  private SparkMax pivotMotor;
+  private SparkBase driveMotor;
+  private SparkBase pivotMotor;
 
   private RelativeEncoder driveMotorEncoder;
   private AbsoluteEncoder pivotMotorEncoder;
@@ -46,29 +49,32 @@ public class SwerveModule {
     this.parkedAngle = swerveModule.getParkAngle();
     this.chassisAngularOffset = swerveModule.getChassisAngularOffset();
 
-    this.driveMotor =
-        new CANSparkMax(
-            swerveModule.getDriveMotor().getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
+    File directory = new File(Filesystem.getDeployDirectory(), "motors/drive");
 
-    this.pivotMotor =
-        new CANSparkMax(
-            swerveModule.getPivotMotor().getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
-
-    this.driveMotorEncoder = driveMotor.getEncoder();
-    this.pivotMotorEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
-
-    MotorConfig.fromMotorConstants(driveMotor, driveMotorEncoder, swerveModule.getDriveMotor())
-        .configureMotor()
-        .configurePID(swerveModule.getDriveMotor().getMotorPID())
-        .burnFlash();
-
-    MotorConfig.fromMotorConstants(pivotMotor, pivotMotorEncoder, swerveModule.getPivotMotor())
-        .configureMotor()
-        .configurePID(swerveModule.getPivotMotor().getMotorPID())
-        .burnFlash();
-
-    this.driveMotorPIDController = driveMotor.getClosedLoopController();
-    this.pivotMotorPIDController = pivotMotor.getClosedLoopController();
+     try {
+        driveMotor =
+            new MotorParser(directory)
+                .withMotor(swerveModule.getModuleName() + "Drive.json")
+                .withEncoder(swerveModule.getModuleName() + "DriveEncoder.json")
+                .withPidf(swerveModule.getModuleName() + "pidf.json")
+                .configureAsync();
+  
+          pivotMotor =
+                new MotorParser(directory)
+                    .withMotor(swerveModule.getModuleName() + "Pivot.json")
+                    .withEncoder("PivotEncoder.json")
+                    .withPidf(swerveModule.getModuleName() + "Pidf.json")
+                    .configureAsync();
+  
+       // RelativeEncoderConfig driveMotorEncoderConfig
+       
+        driveMotorEncoder = driveMotor.getEncoder();
+        pivotMotorEncoder = pivotMotor.getAbsoluteEncoder();
+        driveMotorPIDController = driveMotor.getClosedLoopController();
+        pivotMotorPIDController = pivotMotor.getClosedLoopController();
+      } catch (IOException exception) {
+        throw new RuntimeException("Failed to configure drive motor(s): ", exception);
+      }
 
     if (SHUFFLEBOARD_ENABLED) {
       setupShuffleboardTab(shuffleboardTab);
@@ -144,7 +150,7 @@ public class SwerveModule {
   /** Updates data logs */
   public void updateDataLogs() {
     for (Entry<String, DoubleLogEntry> entry : dataLogs.entrySet()) {
-      final SparkMax motor = entry.getKey().startsWith("PIVOT") ? pivotMotor : driveMotor;
+      final SparkBase motor = entry.getKey().startsWith("PIVOT") ? pivotMotor : driveMotor;
       final String property =
           entry
               .getKey()
@@ -161,7 +167,7 @@ public class SwerveModule {
    * @param property The property
    * @return The getter, wrapped as a DoubleSupplier
    */
-  public DoubleSupplier getPropertySupplier(SparkMax motor, String property) {
+  public DoubleSupplier getPropertySupplier(SparkBase motor, String property) {
     switch (property) {
       case "CURRENT":
         return motor::getOutputCurrent;
@@ -257,12 +263,15 @@ public class SwerveModule {
     referenceAngle = desiredState.angle;
   }
 
+  //TODO: add PID wrapping constants
   public static class SwerveModuleBuilder {
     private String moduleName;
     private Rotation2d parkAngle;
     private Rotation2d chassisAngularOffset;
-    private MotorBuilder driveMotor;
-    private MotorBuilder pivotMotor;
+    private SparkBase driveMotor;
+    private SparkBase pivotMotor;
+  // private MotorBuilder driveMotor;
+  // private MotorBuilder pivotMotor;
 
     public String getModuleName() {
       return moduleName;
@@ -277,25 +286,63 @@ public class SwerveModule {
       return parkAngle;
     }
 
+    public SwerveModuleBuilder setPositionPidWrappingEnabled(boolean enabled) {
+      return this;
+    }
+
+    public SwerveModuleBuilder setPositionPidWrappingMin(double min){
+      return this;
+    }
+    
+    public SwerveModuleBuilder setPositionPidWrappingMax(double max) {
+      return this;
+    }
+
     public SwerveModuleBuilder setParkAngle(Rotation2d parkAngle) {
       this.parkAngle = parkAngle;
       return this;
     }
 
+    public SparkBase getDriveMotor() {
+      return driveMotor;
+    }
+/* 
     public MotorBuilder getDriveMotor() {
       return driveMotor;
     }
+*/
 
-    public SwerveModuleBuilder setDriveMotor(MotorBuilder driveMotor) {
+    public SwerveModuleBuilder setDriveMotor(SparkBase driveMotor) {
       this.driveMotor = driveMotor;
       return this;
     }
 
-    public MotorBuilder getPivotMotor() {
+    public SparkBase getPivotMotor() {
       return pivotMotor;
     }
 
-    public SwerveModuleBuilder setPivotMotor(MotorBuilder pivotMotor) {
+    public SwerveModuleBuilder setDrivePositionConversionFactor(double positionConversionFactor) {
+      return this;
+    }
+
+    public SwerveModuleBuilder setDriveVelocityConversionFactor(double velocityConversionFactor) {
+      return this;
+      }
+
+    public SwerveModuleBuilder setPivotPositionConversionFactor(double positionConversionFactor) {
+      return this;
+        
+      }
+
+    public SwerveModuleBuilder setPivotVelocityConversionFactor(double velocityConversionFactor) {
+      return this;
+      }
+/* 
+    public MotorBuilder getPivotMotor() {
+      return pivotMotor;
+    }
+*/
+    public SwerveModuleBuilder setPivotMotor(SparkBase pivotMotor) {
       this.pivotMotor = pivotMotor;
       return this;
     }

@@ -117,205 +117,74 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private SwerveModuleBuilder getFrontLeftSwerveConfig() {
-    MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder()
-            .setP(FrontLeftConstants.DriveMotor.MotorPid.P)
-            .setFf(FrontLeftConstants.DriveMotor.MotorPid.Ff);
-
-    MotorPIDBuilder pivotMotorPid =
-        new MotorPIDBuilder()
-            .setP(FrontLeftConstants.PivotMotor.MotorPid.P)
-            .setPositionPidWrappingEnabled(
-                FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
-            .setPositionPidWrappingMin(
-                FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
-            .setPositionPidWrappingMax(
-                FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX);
-
-    try {
-      MotorParser motorParser = new MotorParser(file); 
-      
-    } catch (IOException ioException) {
-      // TODO: handle exception
-    }
-
-    MotorBuilder driveConfig =
-        new MotorBuilder()
-            .setName(FrontLeftConstants.DriveMotor.NAME)
-            .setMotorPort(FrontLeftConstants.DriveMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontLeftConstants.DriveMotor.CURRENT_LIMT)
-            .setMotorInverted(FrontLeftConstants.DriveMotor.INVERTED)
-            .setEncoderInverted(FrontLeftConstants.DriveMotor.ENCODER_INVERTED)
-            .setPositionConversionFactor(FrontLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
-            .setVelocityConversionFactor(FrontLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
-            .setMotorPID(driveMotorPid);
-
-            
-    MotorBuilder pivotConfig =
-        new MotorBuilder()
-            .setName(FrontLeftConstants.PivotMotor.NAME)
-            .setMotorPort(FrontLeftConstants.PivotMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontLeftConstants.PivotMotor.CURRENT_LIMT)
-            .setMotorInverted(FrontLeftConstants.PivotMotor.INVERTED)
-            .setEncoderInverted(FrontLeftConstants.PivotMotor.ENCODER_INVERTED)
-            .setPositionConversionFactor(FrontLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
-            .setVelocityConversionFactor(FrontLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
-            .setMotorPID(pivotMotorPid);
-
     SwerveModuleBuilder moduleConfig =
         new SwerveModuleBuilder()
             .setModuleName(FrontLeftConstants.MODULE_NAME)
             .setParkAngle(FrontLeftConstants.PARK_ANGLE)
             .setChassisAngularOffset(FrontLeftConstants.CHASSIS_ANGULAR_OFFSET)
-            .setDriveMotor(driveConfig)
-            .setPivotMotor(pivotConfig);
+            .setPositionPidWrappingEnabled(FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
+            .setPositionPidWrappingMin(FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
+            .setPositionPidWrappingMax(FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX)
+            .setDrivePositionConversionFactor(FrontLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setDriveVelocityConversionFactor(FrontLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
+            .setPivotPositionConversionFactor(FrontLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setPivotVelocityConversionFactor(FrontLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR);
 
     return moduleConfig;
   }
 
   private SwerveModuleBuilder getBackLeftSwerveConfig() {
-    MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder()
-            .setP(BackLeftConstants.DriveMotor.MotorPid.P)
-            .setFf(BackLeftConstants.DriveMotor.MotorPid.Ff);
-
-    MotorPIDBuilder pivotMotorPid =
-        new MotorPIDBuilder()
-            .setP(BackLeftConstants.PivotMotor.MotorPid.P)
-            .setPositionPidWrappingEnabled(
-                BackLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
-            .setPositionPidWrappingMin(
-                BackLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
-            .setPositionPidWrappingMax(
-                BackLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX);
-
-    MotorBuilder driveConfig =
-        new MotorBuilder()
-            .setName(BackLeftConstants.DriveMotor.NAME)
-            .setMotorPort(BackLeftConstants.DriveMotor.MOTOR_PORT)
-            .setCurrentLimit(BackLeftConstants.DriveMotor.CURRENT_LIMT)
-            .setMotorInverted(BackLeftConstants.DriveMotor.INVERTED)
-            .setEncoderInverted(BackLeftConstants.DriveMotor.ENCODER_INVERTED)
-            .setPositionConversionFactor(BackLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
-            .setVelocityConversionFactor(BackLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
-            .setMotorPID(driveMotorPid);
-
-    MotorBuilder pivotConfig =
-        new MotorBuilder()
-            .setName(BackLeftConstants.PivotMotor.NAME)
-            .setMotorPort(BackLeftConstants.PivotMotor.MOTOR_PORT)
-            .setCurrentLimit(BackLeftConstants.PivotMotor.CURRENT_LIMT)
-            .setMotorInverted(BackLeftConstants.PivotMotor.INVERTED)
-            .setEncoderInverted(BackLeftConstants.PivotMotor.ENCODER_INVERTED)
-            .setPositionConversionFactor(BackLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
-            .setVelocityConversionFactor(BackLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
-            .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
         new SwerveModuleBuilder()
             .setModuleName(BackLeftConstants.MODULE_NAME)
             .setParkAngle(BackLeftConstants.PARK_ANGLE)
             .setChassisAngularOffset(BackLeftConstants.CHASSIS_ANGULAR_OFFSET)
-            .setDriveMotor(driveConfig)
-            .setPivotMotor(pivotConfig);
+            .setPositionPidWrappingEnabled(BackLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
+            .setPositionPidWrappingMin(BackLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
+            .setPositionPidWrappingMax(BackLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX)
+            .setDrivePositionConversionFactor(BackLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setDriveVelocityConversionFactor(BackLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
+            .setPivotPositionConversionFactor(BackLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setPivotVelocityConversionFactor(BackLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR);
 
     return moduleConfig;
   }
 
   private SwerveModuleBuilder getFrontRightSwerveConfig() {
-    MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder()
-            .setP(FrontRightConstants.DriveMotor.MotorPid.P)
-            .setFf(FrontRightConstants.DriveMotor.MotorPid.Ff);
 
-    MotorPIDBuilder pivotMotorPid =
-        new MotorPIDBuilder()
-            .setP(FrontRightConstants.PivotMotor.MotorPid.P)
-            .setPositionPidWrappingEnabled(
-                FrontRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
-            .setPositionPidWrappingMin(
-                FrontRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
-            .setPositionPidWrappingMax(
-                FrontRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX);
-
-    MotorBuilder driveConfig =
-        new MotorBuilder()
-            .setName(FrontRightConstants.DriveMotor.NAME)
-            .setMotorPort(FrontRightConstants.DriveMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontRightConstants.DriveMotor.CURRENT_LIMT)
-            .setMotorInverted(FrontRightConstants.DriveMotor.INVERTED)
-            .setEncoderInverted(FrontRightConstants.DriveMotor.ENCODER_INVERTED)
-            .setPositionConversionFactor(FrontRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
-            .setVelocityConversionFactor(FrontRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
-            .setMotorPID(driveMotorPid);
-
-    MotorBuilder pivotConfig =
-        new MotorBuilder()
-            .setName(FrontRightConstants.PivotMotor.NAME)
-            .setMotorPort(FrontRightConstants.PivotMotor.MOTOR_PORT)
-            .setCurrentLimit(FrontRightConstants.PivotMotor.CURRENT_LIMT)
-            .setMotorInverted(FrontRightConstants.PivotMotor.INVERTED)
-            .setEncoderInverted(FrontRightConstants.PivotMotor.ENCODER_INVERTED)
-            .setPositionConversionFactor(FrontRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
-            .setVelocityConversionFactor(FrontRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
-            .setMotorPID(pivotMotorPid);
+  
 
     SwerveModuleBuilder moduleConfig =
         new SwerveModuleBuilder()
             .setModuleName(FrontRightConstants.MODULE_NAME)
             .setParkAngle(FrontRightConstants.PARK_ANGLE)
             .setChassisAngularOffset(FrontRightConstants.CHASSIS_ANGULAR_OFFSET)
-            .setDriveMotor(driveConfig)
-            .setPivotMotor(pivotConfig);
+            .setPositionPidWrappingEnabled(FrontRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
+            .setPositionPidWrappingMin(FrontRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
+            .setPositionPidWrappingMax(FrontRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX)
+            .setDrivePositionConversionFactor(FrontRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setDriveVelocityConversionFactor(FrontRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
+            .setPivotPositionConversionFactor(FrontRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setPivotVelocityConversionFactor(FrontRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR);
 
     return moduleConfig;
   }
 
   private SwerveModuleBuilder getBackRightSwerveConfig() {
-    MotorPIDBuilder driveMotorPid =
-        new MotorPIDBuilder()
-            .setP(BackRightConstants.DriveMotor.MotorPid.P)
-            .setFf(BackRightConstants.DriveMotor.MotorPid.Ff);
-
-    MotorPIDBuilder pivotMotorPid =
-        new MotorPIDBuilder()
-            .setP(BackRightConstants.PivotMotor.MotorPid.P)
-            .setPositionPidWrappingEnabled(
-                BackRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
-            .setPositionPidWrappingMin(
-                BackRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
-            .setPositionPidWrappingMax(
-                BackRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX);
-
-    MotorBuilder driveConfig =
-        new MotorBuilder()
-            .setName(BackRightConstants.DriveMotor.NAME)
-            .setMotorPort(BackRightConstants.DriveMotor.MOTOR_PORT)
-            .setCurrentLimit(BackRightConstants.DriveMotor.CURRENT_LIMT)
-            .setMotorInverted(BackRightConstants.DriveMotor.INVERTED)
-            .setEncoderInverted(BackRightConstants.DriveMotor.ENCODER_INVERTED)
-            .setPositionConversionFactor(BackRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
-            .setVelocityConversionFactor(BackRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
-            .setMotorPID(driveMotorPid);
-
-    MotorBuilder pivotConfig =
-        new MotorBuilder()
-            .setName(BackRightConstants.PivotMotor.NAME)
-            .setMotorPort(BackRightConstants.PivotMotor.MOTOR_PORT)
-            .setCurrentLimit(BackRightConstants.PivotMotor.CURRENT_LIMT)
-            .setMotorInverted(BackRightConstants.PivotMotor.INVERTED)
-            .setEncoderInverted(BackRightConstants.PivotMotor.ENCODER_INVERTED)
-            .setPositionConversionFactor(BackRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
-            .setVelocityConversionFactor(BackRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
-            .setMotorPID(pivotMotorPid);
 
     SwerveModuleBuilder moduleConfig =
         new SwerveModuleBuilder()
             .setModuleName(BackRightConstants.MODULE_NAME)
             .setParkAngle(BackRightConstants.PARK_ANGLE)
             .setChassisAngularOffset(BackRightConstants.CHASSIS_ANGULAR_OFFSET)
-            .setDriveMotor(driveConfig)
-            .setPivotMotor(pivotConfig);
+            .setPositionPidWrappingEnabled(BackRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
+            .setPositionPidWrappingMin(BackRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
+            .setPositionPidWrappingMax(BackRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX)
+            .setPivotPositionConversionFactor(BackRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
+            .setPivotVelocityConversionFactor(BackRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
+            .setDrivePositionConversionFactor(BackRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
+            .setDriveVelocityConversionFactor(BackRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR);
 
     return moduleConfig;
   }

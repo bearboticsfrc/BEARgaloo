@@ -31,7 +31,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   public ArmSubsystem() {
 
-      File directory = new File(Filesystem.getDeployDirectory(), "motors/elevator");
+      File directory = new File(Filesystem.getDeployDirectory(), "motors/Manipulator/Arm");
   
       try {
         motor =
