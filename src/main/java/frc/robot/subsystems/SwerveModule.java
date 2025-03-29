@@ -55,15 +55,15 @@ public class SwerveModule {
         driveMotor =
             new MotorParser(directory)
                 .withMotor(swerveModule.getModuleName() + "Drive.json")
-                .withEncoder(swerveModule.getModuleName() + "DriveEncoder.json")
-                .withPidf(swerveModule.getModuleName() + "pidf.json")
+                .withEncoder("driveEncoder.json")
+                .withPidf(swerveModule.getModuleName() + "DrivePidf.json")
                 .configureAsync();
   
           pivotMotor =
                 new MotorParser(directory)
                     .withMotor(swerveModule.getModuleName() + "Pivot.json")
                     .withEncoder("PivotEncoder.json")
-                    .withPidf(swerveModule.getModuleName() + "Pidf.json")
+                    .withPidf(swerveModule.getModuleName() + "PivotPidf.json")
                     .configureAsync();
   
        // RelativeEncoderConfig driveMotorEncoderConfig

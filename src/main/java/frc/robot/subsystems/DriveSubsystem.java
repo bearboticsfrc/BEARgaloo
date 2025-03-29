@@ -6,8 +6,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
-import bearlib.motor.deserializer.MotorParser;
-// import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,13 +29,10 @@ import frc.robot.constants.SwerveModuleConstants.FrontLeftConstants;
 import frc.robot.constants.SwerveModuleConstants.FrontRightConstants;
 import frc.robot.subsystems.SwerveModule.SwerveModuleBuilder;
 import frc.robot.util.CTREUtil;
-
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.io.File;
 
 /** Controls the four swerve modules for autonomous and teleoperated modes. */
 public class DriveSubsystem extends SubsystemBase {
@@ -51,7 +46,6 @@ public class DriveSubsystem extends SubsystemBase {
   private double maxSpeed = DriveConstants.DRIVE_VELOCITY;
   private boolean fieldRelativeMode = true;
 
-  private File file = new File("motors/drive");
 
   public DriveSubsystem() {
     CTREUtil.checkCtreError(pigeonImu.configFactoryDefault());
@@ -121,14 +115,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModuleBuilder()
             .setModuleName(FrontLeftConstants.MODULE_NAME)
             .setParkAngle(FrontLeftConstants.PARK_ANGLE)
-            .setChassisAngularOffset(FrontLeftConstants.CHASSIS_ANGULAR_OFFSET)
-            .setPositionPidWrappingEnabled(FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
-            .setPositionPidWrappingMin(FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
-            .setPositionPidWrappingMax(FrontLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX)
-            .setDrivePositionConversionFactor(FrontLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
-            .setDriveVelocityConversionFactor(FrontLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
-            .setPivotPositionConversionFactor(FrontLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
-            .setPivotVelocityConversionFactor(FrontLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR);
+            .setChassisAngularOffset(FrontLeftConstants.CHASSIS_ANGULAR_OFFSET);
 
     return moduleConfig;
   }
@@ -139,14 +126,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModuleBuilder()
             .setModuleName(BackLeftConstants.MODULE_NAME)
             .setParkAngle(BackLeftConstants.PARK_ANGLE)
-            .setChassisAngularOffset(BackLeftConstants.CHASSIS_ANGULAR_OFFSET)
-            .setPositionPidWrappingEnabled(BackLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
-            .setPositionPidWrappingMin(BackLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
-            .setPositionPidWrappingMax(BackLeftConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX)
-            .setDrivePositionConversionFactor(BackLeftConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
-            .setDriveVelocityConversionFactor(BackLeftConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
-            .setPivotPositionConversionFactor(BackLeftConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
-            .setPivotVelocityConversionFactor(BackLeftConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR);
+            .setChassisAngularOffset(BackLeftConstants.CHASSIS_ANGULAR_OFFSET);
 
     return moduleConfig;
   }
@@ -159,14 +139,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModuleBuilder()
             .setModuleName(FrontRightConstants.MODULE_NAME)
             .setParkAngle(FrontRightConstants.PARK_ANGLE)
-            .setChassisAngularOffset(FrontRightConstants.CHASSIS_ANGULAR_OFFSET)
-            .setPositionPidWrappingEnabled(FrontRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
-            .setPositionPidWrappingMin(FrontRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
-            .setPositionPidWrappingMax(FrontRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX)
-            .setDrivePositionConversionFactor(FrontRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
-            .setDriveVelocityConversionFactor(FrontRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR)
-            .setPivotPositionConversionFactor(FrontRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
-            .setPivotVelocityConversionFactor(FrontRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR);
+            .setChassisAngularOffset(FrontRightConstants.CHASSIS_ANGULAR_OFFSET);
 
     return moduleConfig;
   }
@@ -177,14 +150,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModuleBuilder()
             .setModuleName(BackRightConstants.MODULE_NAME)
             .setParkAngle(BackRightConstants.PARK_ANGLE)
-            .setChassisAngularOffset(BackRightConstants.CHASSIS_ANGULAR_OFFSET)
-            .setPositionPidWrappingEnabled(BackRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_ENABLED)
-            .setPositionPidWrappingMin(BackRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MIN)
-            .setPositionPidWrappingMax(BackRightConstants.PivotMotor.MotorPid.POSITION_PID_WRAPPING_MAX)
-            .setPivotPositionConversionFactor(BackRightConstants.PivotMotor.POSITION_CONVERSION_FACTOR)
-            .setPivotVelocityConversionFactor(BackRightConstants.PivotMotor.VELOCITY_CONVERSION_FACTOR)
-            .setDrivePositionConversionFactor(BackRightConstants.DriveMotor.POSITION_CONVERSION_FACTOR)
-            .setDriveVelocityConversionFactor(BackRightConstants.DriveMotor.VELOCITY_CONVERSION_FACTOR);
+            .setChassisAngularOffset(BackRightConstants.CHASSIS_ANGULAR_OFFSET);
 
     return moduleConfig;
   }
