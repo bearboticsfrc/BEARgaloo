@@ -61,7 +61,7 @@ public class WristSubsystem extends SubsystemBase {
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
     shuffleboardTab.addBoolean(String.format("%s Home?", name), this::isHome).withSize(1, 1);
     shuffleboardTab
-        .addNumber(String.format("%s Pos", name), this.motorEncoder::getPosition)
+        .addNumber(String.format("%s WristPos", name), this.motorEncoder::getPosition)
         .withSize(1, 1);
     shuffleboardTab
         .addNumber(String.format("%s Amps", name), this.motor::getOutputCurrent)

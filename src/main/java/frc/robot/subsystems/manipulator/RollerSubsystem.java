@@ -50,17 +50,17 @@ public class RollerSubsystem extends SubsystemBase {
    */
   private void setupShuffleboardTab(ShuffleboardTab shuffleboardTab) {
     shuffleboardTab
-        .addNumber(String.format("%s Pos", name), this.motorEncoder::getPosition)
+        .addNumber(String.format("%s RollerPos", name), this.motorEncoder::getPosition)
         .withSize(2, 1);
     shuffleboardTab
-        .addNumber(String.format("%s Amps", name), this.motor::getOutputCurrent)
+        .addNumber(String.format("%s RollerAmps", name), this.motor::getOutputCurrent)
         .withSize(2, 1);
     shuffleboardTab
-        .addNumber(String.format("%s Output", name), this.motor::getAppliedOutput)
+        .addNumber(String.format("%s RollerOutput", name), this.motor::getAppliedOutput)
         .withSize(2, 1);
-    shuffleboardTab.addBoolean(String.format("%s Cube?", name), this::hasCube).withSize(1, 1);
+    shuffleboardTab.addBoolean(String.format("%s RollerCube?", name), this::hasCube).withSize(1, 1);
     shuffleboardTab
-        .addNumber(String.format("%s temp", name), this.motor::getMotorTemperature)
+        .addNumber(String.format("%s Rollertemp", name), this.motor::getMotorTemperature)
         .withSize(2, 1);
   }
 
